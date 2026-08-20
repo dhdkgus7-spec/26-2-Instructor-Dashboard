@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>객실훈련팀 교관용 초기 훈련생 통합 관리 대시보드</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons UMD Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (XLSX) CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         body {
@@ -62,27 +67,27 @@
 
             <!-- Tab Navigation Buttons -->
             <nav class="flex space-x-8 overflow-x-auto custom-scrollbar pt-2 text-sm font-medium">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-button tab-active pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                <button onclick="window.switchTab('dashboard')" id="tab-dashboard" class="tab-button tab-active pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>종합 현황</span>
                 </button>
-                <button onclick="switchTab('schedule')" id="tab-schedule" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                <button onclick="window.switchTab('schedule')" id="tab-schedule" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
                     <i data-lucide="calendar" class="w-4 h-4"></i>
                     <span>훈련 시간표</span>
                 </button>
-                <button onclick="switchTab('trainees')" id="tab-trainees" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                <button onclick="window.switchTab('trainees')" id="tab-trainees" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
                     <i data-lucide="users" class="w-4 h-4"></i>
                     <span>훈련생 정보 (30명)</span>
                 </button>
-                <button onclick="switchTab('demerit')" id="tab-demerit" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                <button onclick="window.switchTab('demerit')" id="tab-demerit" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
                     <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                     <span>벌점/근태 현황</span>
                 </button>
-                <button onclick="switchTab('evaluation')" id="tab-evaluation" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                <button onclick="window.switchTab('evaluation')" id="tab-evaluation" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
                     <i data-lucide="file-check-2" class="w-4 h-4"></i>
                     <span>TEST 평가 현황</span>
                 </button>
-                <button onclick="switchTab('assignment')" id="tab-assignment" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                <button onclick="window.switchTab('assignment')" id="tab-assignment" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
                     <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                     <span>과제 안내</span>
                 </button>
@@ -178,7 +183,7 @@
                             </div>
                         </div>
                     </div>
-                    <button onclick="switchTab('schedule')" class="mt-4 w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition text-center border border-slate-200">
+                    <button onclick="window.switchTab('schedule')" class="mt-4 w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition text-center border border-slate-200">
                         전체 시간표 상세보기 &rarr;
                     </button>
                 </div>
@@ -217,14 +222,14 @@
                                     <i data-lucide="megaphone" class="w-3.5 h-3.5 text-orange-500"></i>
                                     <span>교관 전달사항 공유</span>
                                 </h3>
-                                <button onclick="openNoticeModal()" class="text-xs text-orange-600 font-bold hover:underline">수정</button>
+                                <button onclick="window.openNoticeModal()" class="text-xs text-orange-600 font-bold hover:underline">수정</button>
                             </div>
                             <div id="noticeContent" class="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 leading-relaxed min-h-[70px]">
                                 📌 09/01 입과 첫날 OT 서약서 제출 상태 점검 및 유니폼 체촌 사이즈 재확인 필요.
                             </div>
                         </div>
                     </div>
-                    <button onclick="openNoticeModal()" class="mt-3 w-full py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold rounded-xl transition text-center border border-orange-200">
+                    <button onclick="window.openNoticeModal()" class="mt-3 w-full py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold rounded-xl transition text-center border border-orange-200">
                         교관 전달사항 작성 / 수정
                     </button>
                 </div>
@@ -241,11 +246,11 @@
                             <h2 class="text-lg font-bold text-slate-900">커리큘럼 & 훈련 시간표</h2>
                             <!-- View Switcher Toggle -->
                             <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-medium">
-                                <button onclick="setScheduleViewMode('calendar')" id="btn-view-calendar" class="px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1">
+                                <button onclick="window.setScheduleViewMode('calendar')" id="btn-view-calendar" class="px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1">
                                     <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                                     <span>달력 보기</span>
                                 </button>
-                                <button onclick="setScheduleViewMode('list')" id="btn-view-list" class="px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+                                <button onclick="window.setScheduleViewMode('list')" id="btn-view-list" class="px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
                                     <i data-lucide="list" class="w-3.5 h-3.5"></i>
                                     <span>리스트 보기</span>
                                 </button>
@@ -256,12 +261,12 @@
 
                     <!-- Week Tabs -->
                     <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl overflow-x-auto custom-scrollbar">
-                        <button onclick="filterScheduleWeek(1)" id="btn-week-1" class="week-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">1주차 (08/31~)</button>
-                        <button onclick="filterScheduleWeek(2)" id="btn-week-2" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">2주차 (09/07~)</button>
-                        <button onclick="filterScheduleWeek(3)" id="btn-week-3" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">3주차 (09/14~)</button>
-                        <button onclick="filterScheduleWeek(4)" id="btn-week-4" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">4주차 (09/21~)</button>
-                        <button onclick="filterScheduleWeek(5)" id="btn-week-5" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">5주차 (09/28~)</button>
-                        <button onclick="filterScheduleWeek('future')" id="btn-week-future" class="week-btn text-slate-400 hover:text-slate-600 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">6주차 이후 (예정)</button>
+                        <button onclick="window.filterScheduleWeek(1)" id="btn-week-1" class="week-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">1주차 (08/31~)</button>
+                        <button onclick="window.filterScheduleWeek(2)" id="btn-week-2" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">2주차 (09/07~)</button>
+                        <button onclick="window.filterScheduleWeek(3)" id="btn-week-3" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">3주차 (09/14~)</button>
+                        <button onclick="window.filterScheduleWeek(4)" id="btn-week-4" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">4주차 (09/21~)</button>
+                        <button onclick="window.filterScheduleWeek(5)" id="btn-week-5" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">5주차 (09/28~)</button>
+                        <button onclick="window.filterScheduleWeek('future')" id="btn-week-future" class="week-btn text-slate-400 hover:text-slate-600 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">6주차 이후 (예정)</button>
                     </div>
                 </div>
 
@@ -304,9 +309,15 @@
                         <h2 class="text-lg font-bold text-slate-900">초기 훈련생 명부 (30명)</h2>
                         <p class="text-xs text-slate-500 mt-0.5">사번 중심 특이사항 및 교관 간 개별 메모 관리</p>
                     </div>
-                    <div class="relative min-w-[240px]">
-                        <input type="text" id="searchTraineeInput" oninput="renderTraineesTable()" placeholder="사번 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                    <div class="flex items-center space-x-2">
+                        <div class="relative min-w-[200px]">
+                            <input type="text" id="searchTraineeInput" oninput="window.renderTraineesTable()" placeholder="사번 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                        </div>
+                        <button onclick="window.exportTraineeDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm whitespace-nowrap">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>엑셀 내보내기</span>
+                        </button>
                     </div>
                 </div>
 
@@ -338,7 +349,7 @@
                         <h2 class="text-lg font-bold text-slate-900">벌점 & 근태 관리</h2>
                         <p class="text-xs text-slate-500 mt-0.5">근태 불량, 복장 규정 미준수, 심사 Fail 등 항목별 벌점 내역</p>
                     </div>
-                    <button onclick="openDemeritModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm self-start sm:self-auto">
+                    <button onclick="window.openDemeritModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm self-start sm:self-auto">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
                         <span>벌점 등록</span>
                     </button>
@@ -377,16 +388,16 @@
 
                     <!-- Category Sub Tabs -->
                     <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
-                        <button onclick="switchTestCategory('safety')" id="btn-test-safety" class="test-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">안전 (Safety)</button>
-                        <button onclick="switchTestCategory('service')" id="btn-test-service" class="test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스 (Service)</button>
-                        <button onclick="switchTestCategory('broadcast')" id="btn-test-broadcast" class="test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
+                        <button onclick="window.switchTestCategory('safety')" id="btn-test-safety" class="test-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">안전 (Safety)</button>
+                        <button onclick="window.switchTestCategory('service')" id="btn-test-service" class="test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스 (Service)</button>
+                        <button onclick="window.switchTestCategory('broadcast')" id="btn-test-broadcast" class="test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
                     </div>
                 </div>
 
                 <!-- Specific Test Select Dropdown -->
                 <div class="mb-4 flex items-center space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="text-xs font-bold text-slate-700 whitespace-nowrap">세부 평가 과목 선택:</label>
-                    <select id="testSubjectSelect" onchange="renderTestsTable()" class="text-xs border border-slate-200 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 w-full max-w-md">
+                    <select id="testSubjectSelect" onchange="window.renderTestsTable()" class="text-xs border border-slate-200 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 w-full max-w-md">
                         <!-- JS Dyn Populate -->
                     </select>
                 </div>
@@ -419,18 +430,24 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div>
                         <h2 class="text-lg font-bold text-slate-900">과목별 과제 안내 및 제출 현황</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">안전, 서비스, 기내 방송 등 훈련 과정별 과제 가이던스 및 제출 내역</p>
+                        <p class="text-xs text-slate-500 mt-0.5">안전, 서비스, 기내 방송 등 훈련 과정별 과제 가이던스 및 체크리스트</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Category Sub Tabs -->
                         <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
-                            <button onclick="filterAssignmentCat('ALL')" id="btn-assign-all" class="assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">전체</button>
-                            <button onclick="filterAssignmentCat('기타')" id="btn-assign-etc" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기타</button>
-                            <button onclick="filterAssignmentCat('안전')" id="btn-assign-safety" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">안전</button>
-                            <button onclick="filterAssignmentCat('서비스')" id="btn-assign-service" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스</button>
-                            <button onclick="filterAssignmentCat('기내 방송')" id="btn-assign-broadcast" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
+                            <button onclick="window.filterAssignmentCat('ALL')" id="btn-assign-all" class="assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">전체</button>
+                            <button onclick="window.filterAssignmentCat('기타')" id="btn-assign-etc" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기타</button>
+                            <button onclick="window.filterAssignmentCat('안전')" id="btn-assign-safety" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">안전</button>
+                            <button onclick="window.filterAssignmentCat('서비스')" id="btn-assign-service" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스</button>
+                            <button onclick="window.filterAssignmentCat('기내 방송')" id="btn-assign-broadcast" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
                         </div>
-                        <button onclick="openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                        <!-- Excel Upload Hidden Input & Trigger Button -->
+                        <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="window.handleExcelUpload(event)" class="hidden">
+                        <button onclick="document.getElementById('excelFileInput').click()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                            <span>엑셀 파일 파싱/업로드</span>
+                        </button>
+                        <button onclick="window.openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
                             <i data-lucide="plus-circle" class="w-4 h-4"></i>
                             <span>신규 과제 등록</span>
                         </button>
@@ -451,15 +468,15 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-base font-bold text-slate-900" id="modalTraineeTitle">특이사항 편집</h3>
-                <button onclick="closeNoteModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="window.closeNoteModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div>
                 <label class="text-xs font-semibold text-slate-600 block mb-1">교관 공유 특이사항</label>
                 <textarea id="modalNoteInput" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="특이사항 및 메모 입력..."></textarea>
             </div>
             <div class="flex justify-end space-x-2">
-                <button onclick="closeNoteModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="saveTraineeNote()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장</button>
+                <button onclick="window.closeNoteModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveTraineeNote()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장</button>
             </div>
         </div>
     </div>
@@ -469,7 +486,7 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-base font-bold text-slate-900">벌점 내역 추가</h3>
-                <button onclick="closeDemeritModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="window.closeDemeritModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
                 <div>
@@ -498,8 +515,8 @@
                 </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
-                <button onclick="closeDemeritModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="addDemeritRecord()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">등록</button>
+                <button onclick="window.closeDemeritModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.addDemeritRecord()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">등록</button>
             </div>
         </div>
     </div>
@@ -509,15 +526,15 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-base font-bold text-slate-900">교관 전달사항 작성 / 수정</h3>
-                <button onclick="closeNoticeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="window.closeNoticeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div>
                 <label class="text-xs font-semibold text-slate-600 block mb-1">전달사항 내용</label>
                 <textarea id="modalNoticeInput" rows="5" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="교관 간 공유할 공지사항을 입력하세요..."></textarea>
             </div>
             <div class="flex justify-end space-x-2">
-                <button onclick="closeNoticeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="saveNotice()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+                <button onclick="window.closeNoticeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveNotice()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
             </div>
         </div>
     </div>
@@ -527,15 +544,15 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-base font-bold text-slate-900" id="feedbackModalTitle">교관 평가 피드백</h3>
-                <button onclick="closeFeedbackModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="window.closeFeedbackModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div>
                 <label class="text-xs font-semibold text-slate-600 block mb-1">피드백 메모</label>
                 <textarea id="modalFeedbackInput" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="해당 과목에 대한 세부 평가 피드백 입력..."></textarea>
             </div>
             <div class="flex justify-end space-x-2">
-                <button onclick="closeFeedbackModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="saveFeedback()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+                <button onclick="window.closeFeedbackModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveFeedback()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
             </div>
         </div>
     </div>
@@ -545,7 +562,7 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-base font-bold text-slate-900">신규 과제 등록</h3>
-                <button onclick="closeAssignmentModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="window.closeAssignmentModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3 text-xs">
                 <div>
@@ -583,8 +600,8 @@
                 </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
-                <button onclick="closeAssignmentModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="addAssignment()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">등록하기</button>
+                <button onclick="window.closeAssignmentModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.addAssignment()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">등록하기</button>
             </div>
         </div>
     </div>
@@ -608,7 +625,7 @@
             { date: '2026-09-08', empId: '260805', category: '근태불량B', detail: '수업 중 무단 이탈', points: 2, instructor: '담당교관' }
         ];
 
-        // Schedule Data (Weeks 1 to 5)
+        // Schedule Data
         const scheduleData = [
             // Week 1
             { week: 1, date: '09월 01일', dayName: '09월 01일 (화)', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '오리엔테이션 & 본부장님 간담회', instructor: '유재진, 오아현, 본부장님' },
@@ -706,24 +723,24 @@
 
         const categorySubjectMap = {
             safety: [
-                { value: 'test_safety_k1', label: '[지식심사] 항공사 절차기본' },
-                { value: 'test_safety_k2', label: '[지식심사] 제주항공의 안전정책 및 절차(SMS)' },
-                { value: 'test_safety_k3', label: '[지식심사] 승무원 자원관리(CRM)' },
-                { value: 'test_safety_k4', label: '[지식심사] 항공보안' },
-                { value: 'test_safety_k5', label: '[지식심사] 응급처치' },
-                { value: 'test_safety_k6', label: '[지식심사] 항공기 지상훈련 TEST1' },
-                { value: 'test_safety_k7', label: '[지식심사] 항공기 지상훈련 TEST2' },
-                { value: 'test_safety_k8', label: '[지식심사] 위험물' },
-                { value: 'test_safety_s1', label: '[기량심사] 비상구 열 브리핑 & Safety DEMO' },
-                { value: 'test_safety_s2', label: '[기량심사] 항공보안' },
-                { value: 'test_safety_s3', label: '[기량심사] 응급처치' },
-                { value: 'test_safety_s4', label: '[기량심사] 비상장비 구술심사' },
-                { value: 'test_safety_s5', label: '[기량심사] Door Operation & Escape Slide' },
-                { value: 'test_safety_s6', label: '[기량심사] 비상탈출 (객실준비절차 Role-play & 명령어)' },
-                { value: 'test_safety_s7', label: '[기량심사] 화재' },
-                { value: 'test_safety_s8', label: '[기량심사] 감압' },
-                { value: 'test_safety_s9', label: '[기량심사] 착수' },
-                { value: 'test_safety_s10', label: '[기량심사] 운항경험 (OE)' }
+                { value: 'test_safety_k1', label: '지식심사 - 항공사 절차기본' },
+                { value: 'test_safety_k2', label: '지식심사 - 제주항공의 안전정책 및 절차(SMS)' },
+                { value: 'test_safety_k3', label: '지식심사 - 승무원 자원관리(CRM)' },
+                { value: 'test_safety_k4', label: '지식심사 - 항공보안' },
+                { value: 'test_safety_k5', label: '지식심사 - 응급처치' },
+                { value: 'test_safety_k6', label: '지식심사 - 항공기 지상훈련 TEST1' },
+                { value: 'test_safety_k7', label: '지식심사 - 항공기 지상훈련 TEST2' },
+                { value: 'test_safety_k8', label: '지식심사 - 위험물' },
+                { value: 'test_safety_s1', label: '기량심사 - 비상구 열 브리핑 & Safety DEMO' },
+                { value: 'test_safety_s2', label: '기량심사 - 항공보안' },
+                { value: 'test_safety_s3', label: '기량심사 - 응급처치' },
+                { value: 'test_safety_s4', label: '기량심사 - 비상장비 구술심사' },
+                { value: 'test_safety_s5', label: '기량심사 - Door Operation & Escape Slide' },
+                { value: 'test_safety_s6', label: '기량심사 - 비상탈출(객실준비절차 Role-play & 명령어)' },
+                { value: 'test_safety_s7', label: '기량심사 - 화재' },
+                { value: 'test_safety_s8', label: '기량심사 - 감압' },
+                { value: 'test_safety_s9', label: '기량심사 - 착수' },
+                { value: 'test_safety_s10', label: '기량심사 - 운항경험(OE)' }
             ],
             service: [
                 { value: 'test_service_int_speech', label: '국제선 승객응대 화법 TEST' },
@@ -739,7 +756,7 @@
             ]
         };
 
-        // Evaluation Test Results Data (by empId & testCode)
+        // Evaluation Test Results Data
         const testResults = {};
         const testScores = {};
         trainees.forEach(t => {
@@ -747,7 +764,7 @@
             testScores[t.empId] = {};
         });
 
-        // Feedback Data (by empId & category)
+        // Feedback Data
         const feedbackData = {};
         trainees.forEach(t => {
             feedbackData[t.empId] = {
@@ -767,15 +784,16 @@
 
         let currentActiveWeek = 1;
         let currentActiveDay = 'ALL';
-        let scheduleViewMode = 'calendar'; // 'calendar' or 'list'
+        let scheduleViewMode = 'calendar';
         let currentTestCategory = 'safety';
         let currentAssignmentCat = 'ALL';
         let currentSelectedNoteEmp = null;
         let currentSelectedFeedbackEmp = null;
         let chartInstance = null;
 
-        // Assignments Sample Initial Data
+        // Complete Assignments Array (All categories, with interactive checklist items!)
         const assignmentsData = [
+            // 1. 기타 (Administrative Documents)
             {
                 id: 0,
                 cat: '기타',
@@ -802,20 +820,577 @@
                     { text: '그룹웨어/Naver Works APP 설치', done: false },
                     { text: 'Crew Connex APP 설치', done: false },
                     { text: '지급용 태블릿 WIFI 연결 가이드', done: false }
-                ],
-                submittedCount: 30
+                ]
             },
-            { id: 1, cat: '안전', subject: '비상장비 개론', title: 'B737-800 비상장비 점검 및 위치 암기표 작성', dueDate: '2026-09-04 18:00', method: '태블릿 LMS 제출', instructor: '임청 교관', detail: '비상구별 배치 장비 수량 및 비상탈출 슬라이드 점검 항목 자필 요약 작성', submittedCount: 30 },
-            { id: 2, cat: '서비스', subject: 'IMAGE MAKING 1', title: '어피어런스 셀프 체크리스트 & 가이던스 작성', dueDate: '2026-09-07 09:00', method: '실습실 서면 제출', instructor: '조연진, 오아현 교관', detail: '헤어, 메이크업, 유니폼 착용 규정 준수 항목 self-check 및 보완점 기록', submittedCount: 29 },
-            { id: 3, cat: '기내 방송', subject: '기내방송 1', title: '한국어/영어 필수 안내문 방송 음성 녹음 제출', dueDate: '2026-09-18 23:59', method: '음성 파일 음원 업로드', instructor: '한재민 교관', detail: '웰컴 방송 및 터뷸런스 안내문 표준 억양, 속도 준수하여 녹음 파일 업로드', submittedCount: 25 },
-            { id: 4, cat: '서비스', subject: '사전기내식', title: '사전기내식 메뉴 구성 및 특수식 응대 롤플레잉 대본 작성', dueDate: '2026-09-20 18:00', method: '태블릿 LMS 제출', instructor: '오아현 교관', detail: '승객 응대 표준 멘트 작성 및 주요 특수식(베지테리언/키즈밀) 응대 요령 정리', submittedCount: 18 }
+
+            // 2. 안전 (Safety)
+            {
+                id: 101,
+                cat: '안전',
+                subject: '비상장비 개론',
+                title: 'B737-800 비상장비 점검 및 위치 암기표 작성',
+                dueDate: '2026-09-04 18:00',
+                method: '태블릿 LMS 제출',
+                instructor: '임청 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '비상구별 배치 장비 수량 암기', done: false },
+                    { text: '비상탈출 슬라이드 점검 항목 자필 요약 작성', done: false },
+                    { text: '태블릿 LMS 제출 완료', done: false }
+                ]
+            },
+            {
+                id: 102,
+                cat: '안전',
+                subject: '안전보건교육',
+                title: '신규채용자 안전보건교육 동영상 수료',
+                dueDate: '교육 생성 후 안내',
+                method: 'CORSS CHK & 담임교관 보고',
+                instructor: '담당 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '신규채용자 안전보건교육 동영상 수료', done: false },
+                    { text: 'CL에게 CORSS CHK 완료', done: false },
+                    { text: 'CL ➔ 담임교관 수료 현황 보고', done: false }
+                ]
+            },
+
+            // 3. 서비스 (Service) - Date Order (09/02 ~ 10/01)
+            {
+                id: 1,
+                cat: '서비스',
+                subject: 'Image Making',
+                title: '동영상보기 (Hair-do 시청 및 헤어/메이크업 준비)',
+                dueDate: '09월 02일 (수업 전날)',
+                method: '러닝플랫폼 시청 & 실습도구 지참',
+                instructor: '조연진, 오아현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '러닝플랫폼 내 Hair-do 영상 시청 (단발/중단발/포니테일/쪽머리/숏컷)', done: false },
+                    { text: '메이크업 & 헤어 연출 전체 도구 지참 (스프레이, 젤, U핀, 미세망 등)', done: false }
+                ]
+            },
+            {
+                id: 2,
+                cat: '서비스',
+                subject: '기내 서비스 용어',
+                title: '용어 암기 및 영상 시청',
+                dueDate: '09월 07일 (수업 전날)',
+                method: '암기 & 러닝플랫폼 시청 (당일 구두 TEST)',
+                instructor: '박민지A, 현윤선, 오아현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '각 기내 서비스 용어 암기', done: false },
+                    { text: '러닝플랫폼 [처음 만난 기내 서비스 용어] 영상 시청', done: false },
+                    { text: '당일 수업 랜덤 구두 TEST 대비', done: false }
+                ]
+            },
+            {
+                id: 3,
+                cat: '서비스',
+                subject: '국내선 이론',
+                title: '전체적인 국내선 절차 암기',
+                dueDate: '09월 08일 (수업 전날)',
+                method: '러닝플랫폼 영상 시청 및 사전 암기',
+                instructor: '박혜린 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '러닝플랫폼 [진짜 첫비행] 영상 시청', done: false },
+                    { text: '국내선 전체 절차 사전 숙지 및 암기', done: false }
+                ]
+            },
+            {
+                id: 4,
+                cat: '서비스',
+                subject: '승객 응대 롤플레이',
+                title: '상황별 멘트 암기',
+                dueDate: '09월 08일 (수업 전날)',
+                method: '교재 암기 (당일 구두 TEST)',
+                instructor: '오아현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '교재 내 롤플레이 상황별 멘트 암기', done: false },
+                    { text: '당일 수업 랜덤 구두 TEST 대비', done: false }
+                ]
+            },
+            {
+                id: 5,
+                cat: '서비스',
+                subject: '국내선 이론',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '09월 09일 (수업 직후)',
+                method: 'NAVER WORKS 공용 드라이브 업로드',
+                instructor: '박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '국내선 이론2 항목 수강 후 패드 내 워크시트 작성', done: false },
+                    { text: 'NAVER WORKS 공용 드라이브 업로드 제출', done: false }
+                ]
+            },
+            {
+                id: 6,
+                cat: '서비스',
+                subject: '국내선 에어카페 이론',
+                title: '브로셔 내용 숙지 (브로셔 PDF 배포)',
+                dueDate: '09월 09일 (수업 전날)',
+                method: '책자 숙독 및 암기 (당일 쪽지 TEST)',
+                instructor: '김연희 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '에어카페 책자 PDF 숙독 및 암기', done: false },
+                    { text: '당일 쪽지 TEST 대비 (10문제 중 3문제 오답 시 재시험)', done: false }
+                ]
+            },
+            {
+                id: 7,
+                cat: '서비스',
+                subject: '국제선 승객응대화법(중국어)',
+                title: '(전공자 대상) 기내방송 청취 및 녹음 제출',
+                dueDate: '09월 10일 (수업 1주 전 주말)',
+                method: '러닝플랫폼 음성 파일 제출',
+                instructor: '박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '기내방송 모델보이스 청취 및 연습', done: false },
+                    { text: '녹음 후 러닝플랫폼 제출', done: false }
+                ]
+            },
+            {
+                id: 8,
+                cat: '서비스',
+                subject: '국내선 에어카페 실습',
+                title: '동영상보기 (에어카페 실습)',
+                dueDate: '09월 11일 (수업 전날)',
+                method: '실습 동영상 시청',
+                instructor: '김연희, 현윤선 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '공용드라이브 내 에어카페 실습 동영상 시청', done: false }
+                ]
+            },
+            {
+                id: 9,
+                cat: '서비스',
+                subject: '국내선 에어카페 판매 서비스',
+                title: 'J-LOG 훈련센터용 애플리케이션 다운로드하기',
+                dueDate: '09월 11일 (태블릿 배포 이후)',
+                method: '태블릿 App 설치',
+                instructor: '김연희, 현윤선 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'WIFI(refresh_wind, girl) 연결 설정', done: false },
+                    { text: 'J-LOG App 다운로드 및 정상 실행 확인', done: false }
+                ]
+            },
+            {
+                id: 10,
+                cat: '서비스',
+                subject: '국제선 승객응대화법(일본어)',
+                title: '숫자쓰기 숙제',
+                dueDate: '09월 14일 (수업 직후)',
+                method: 'A4용지 서면 제출',
+                instructor: '최수연 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'A4 용지에 담당 교관 안내 숫자 작성 완료', done: false },
+                    { text: '수업 시 서면 제출', done: false }
+                ]
+            },
+            {
+                id: 11,
+                cat: '서비스',
+                subject: '국제선 승객응대화법(일본어)',
+                title: '히라가나 암기',
+                dueDate: '09월 14일 (수업 1주 전 안내)',
+                method: '암기 (당일 쪽지 TEST)',
+                instructor: '최수연 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '교재 p.5 히라가나 암기', done: false },
+                    { text: '당일 쪽지 TEST 대비', done: false }
+                ]
+            },
+            {
+                id: 12,
+                cat: '서비스',
+                subject: '국제선 이론',
+                title: 'FR DUTY 워크시트 작성 (패드 내 삽입)',
+                dueDate: '09월 15일 (수업 직후)',
+                method: 'NAVER WORKS 공용 드라이브 업로드',
+                instructor: '최슬기 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'FR DUTY 시간흐름별 업무 내용 기입', done: false },
+                    { text: 'NAVER WORKS 공용 드라이브 업로드 제출', done: false }
+                ]
+            },
+            {
+                id: 13,
+                cat: '서비스',
+                subject: '국제선 이론',
+                title: '동영상보기 (진짜 첫 비행)',
+                dueDate: '09월 15일 (수업 전날)',
+                method: '러닝플랫폼 시청',
+                instructor: '최슬기 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '러닝플랫폼 내 [진짜 첫 비행] 영상 시청', done: false }
+                ]
+            },
+            {
+                id: 16,
+                cat: '서비스',
+                subject: '사전 기내식',
+                title: 'Meal Code, 구성품 및 갤리브리핑 내용 암기',
+                dueDate: '09월 17일 (수업 1주 전 주말)',
+                method: '교재/핸드북 암기 (당일 쪽지 TEST)',
+                instructor: '오아현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Meal Code / 명칭 / 구성품 암기', done: false },
+                    { text: '사전 기내식 서비스 절차 암기', done: false },
+                    { text: '당일 쪽지 TEST 대비', done: false }
+                ]
+            },
+            {
+                id: 17,
+                cat: '서비스',
+                subject: '사전 기내식 실습',
+                title: '동영상보기 (사전기내식 실습)',
+                dueDate: '09월 17일 (수업 전날)',
+                method: '공용드라이브 영상 시청',
+                instructor: '오아현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '공용드라이브 내 사전기내식 실습 영상 시청', done: false }
+                ]
+            },
+            {
+                id: 18,
+                cat: '서비스',
+                subject: '사전 기내식',
+                title: '실습 상황 공유 숙지',
+                dueDate: '09월 17일 (시험 2일 전)',
+                method: '내용 숙지',
+                instructor: '오아현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '실습상황 6가지 공유 숙지', done: false },
+                    { text: '노선별 기타 추가질문 숙지', done: false }
+                ]
+            },
+            {
+                id: 19,
+                cat: '서비스',
+                subject: 'C.I.Q',
+                title: '국가별 면세허용량 암기',
+                dueDate: '09월 18일 (수업 1주 전 안내)',
+                method: '다운로드 및 암기 (당일 구두 TEST)',
+                instructor: '현윤선 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '스테이션인포 공지사항 내 노선 공지 다운로드', done: false },
+                    { text: '국가별 면세 허용량 암기', done: false },
+                    { text: '당일 아침 조회 구두 TEST 대비', done: false }
+                ]
+            },
+            {
+                id: 20,
+                cat: '서비스',
+                subject: 'C.I.Q',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '09월 18일 (수업 1주 전 안내)',
+                method: 'NAVER WORKS 공용 드라이브 업로드',
+                instructor: '현윤선 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '다운로드 내역 보고 워크시트 정리', done: false },
+                    { text: '정리 내용 암기 후 NAVER WORKS 업로드', done: false }
+                ]
+            },
+            {
+                id: 21,
+                cat: '서비스',
+                subject: 'C.I.Q',
+                title: '실습 상황 공유 숙지',
+                dueDate: '09월 18일 (시험 2일 전)',
+                method: '내용 숙지',
+                instructor: '현윤선 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '실습상황 2가지 (대한민국, 라오스) 공유 숙지', done: false },
+                    { text: '노선별 기타 추가질문 숙지', done: false }
+                ]
+            },
+            {
+                id: 22,
+                cat: '서비스',
+                subject: 'C.I.Q 실습',
+                title: '동영상보기 (C.I.Q 실습)',
+                dueDate: '09월 18일 (수업 전날)',
+                method: '공용드라이브 영상 시청',
+                instructor: '현윤선 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '공용드라이브 C.I.Q 실습 영상 시청', done: false }
+                ]
+            },
+            {
+                id: 26,
+                cat: '서비스',
+                subject: '유니폼의 이해',
+                title: '동영상보기 (Scarf 착용방법)',
+                dueDate: '09월 21일 (수업 전날)',
+                method: '러닝플랫폼 시청',
+                instructor: '박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '러닝플랫폼 Scarf 착용방법 영상 학습', done: false }
+                ]
+            },
+            {
+                id: 29,
+                cat: '서비스',
+                subject: '기내 면세 이론',
+                title: '쇼핑인포메이션 & 면세 월별공지사항 숙독',
+                dueDate: '09월 22일 (수업 전날)',
+                method: '책자 PDF 숙독 (당일 쪽지 TEST)',
+                instructor: '오아현, 박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '쇼핑인포메이션 PDF 책자 숙독', done: false },
+                    { text: '면세 월별 공지사항 암기 (당일 쪽지 TEST 대비)', done: false }
+                ]
+            },
+            {
+                id: 30,
+                cat: '서비스',
+                subject: '기내 면세 이론',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '09월 22일 (수업 1주 전 안내)',
+                method: 'NAVER WORKS 공용 드라이브 업로드',
+                instructor: '오아현, 박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '면세 책자 정리 내용 작성 후 워크시트 제출', done: false },
+                    { text: 'NAVER WORKS 공용 드라이브 업로드', done: false }
+                ]
+            },
+            {
+                id: 31,
+                cat: '서비스',
+                subject: '기내 면세 이론',
+                title: '실습 상황 공유 숙지',
+                dueDate: '09월 22일 (시험 2일 전)',
+                method: '내용 숙지',
+                instructor: '오아현, 박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '실습상황 6가지 공유 숙지', done: false },
+                    { text: '노선별 기타 추가질문 숙지', done: false }
+                ]
+            },
+            {
+                id: 32,
+                cat: '서비스',
+                subject: '기내 면세 이론',
+                title: '주류 공지사항 숙독',
+                dueDate: '09월 22일 (수업 전날)',
+                method: '공지사항 다운로드 (당일 구두 TEST)',
+                instructor: '오아현, 박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '기내 면세 주류 판매 서비스 공지 다운로드 후 숙독', done: false },
+                    { text: '수업 시 랜덤 구두 TEST 대비', done: false }
+                ]
+            },
+            {
+                id: 33,
+                cat: '서비스',
+                subject: '기내 면세 실습',
+                title: '동영상보기 (기내면세 실습)',
+                dueDate: '09월 23일 (수업 전날)',
+                method: '공용드라이브 영상 시청',
+                instructor: '현윤선, 박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '공용드라이브 기내면세 실습 영상 시청', done: false }
+                ]
+            },
+            {
+                id: 35,
+                cat: '서비스',
+                subject: '국제선 에어카페 이론 1,2',
+                title: '실습 상황 공유 숙지',
+                dueDate: '09월 30일 (시험 2일 전)',
+                method: '내용 숙지 (TEST 2일 전 공유)',
+                instructor: '김연희, 이은비 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '실습상황 6가지 공유 숙지', done: false },
+                    { text: '노선별 기타 추가질문 안내 숙지', done: false }
+                ]
+            },
+            {
+                id: 36,
+                cat: '서비스',
+                subject: '국제선 에어카페 이론 1,2',
+                title: '국제선 에어카페 절차 암기',
+                dueDate: '09월 30일 (수업 전날)',
+                method: '암기 (수업 시 랜덤 구두 TEST)',
+                instructor: '김연희, 이은비 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '국제선 에어카페 이론1 절차 암기', done: false },
+                    { text: '국제선 에어카페 이론2 절차 암기', done: false }
+                ]
+            },
+            {
+                id: 37,
+                cat: '서비스',
+                subject: '국제선 에어카페 판매 서비스',
+                title: '국내선 에어카페 판매 서비스 복습',
+                dueDate: '09월 30일 (수업 1주 전 연휴 이용)',
+                method: '복습 (수업 시 랜덤 구두 TEST)',
+                instructor: '박민지A 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '국내선 에어카페 판매 서비스 교재 참고해 복습', done: false }
+                ]
+            },
+            {
+                id: 38,
+                cat: '서비스',
+                subject: '국제선 에어카페 실습',
+                title: '동영상보기 (에어카페 실습)',
+                dueDate: '10월 01일 (수업 전날)',
+                method: '공용드라이브 영상 시청',
+                instructor: '담당 교관',
+                detail: '',
+                checklistItems: [
+                    { text: '에어카페 실습 동영상 시청 (보안 설정 후 제공)', done: false }
+                ]
+            },
+
+            // 4. 기내 방송 (In-flight Announcement)
+            {
+                id: 14,
+                cat: '기내 방송',
+                subject: '기내방송1',
+                title: 'CAM 다운로드, 총론 암기 및 방송문안 끊어읽기',
+                dueDate: '09월 16일 (수업 전날)',
+                method: '개인 Device 저장 & 육안 확인',
+                instructor: '한재민 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'CAM 최신상태 저장 (개인 Device)', done: false },
+                    { text: '총론 읽기 연습', done: false },
+                    { text: 'WELCOME / FAREWELL / TURBULENCE / SAFETY DEMO 한/영 끊어읽기 표시', done: false }
+                ]
+            },
+            {
+                id: 15,
+                cat: '기내 방송',
+                subject: '기내방송 1-2',
+                title: 'Shadowing 영상 시청 학습',
+                dueDate: '09월 16일 (수업 전날)',
+                method: '러닝플랫폼 시청',
+                instructor: '한재민 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Farewell / Turbulence / Safety Demo Shadowing 영상 시청', done: false }
+                ]
+            },
+            {
+                id: 23,
+                cat: '기내 방송',
+                subject: '기내 방송2',
+                title: 'Farewell:Normal & DEMO 녹음 제출',
+                dueDate: '09월 18일 (기내방송 2-2 수업 전)',
+                method: '러닝플랫폼 음성 제출',
+                instructor: '한재민 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Farewell:Normal 녹음 및 제출', done: false },
+                    { text: 'DEMO 녹음 및 제출', done: false }
+                ]
+            },
+            {
+                id: 24,
+                cat: '기내 방송',
+                subject: '기내방송 2-1',
+                title: 'Turbulence 방송 심사 대비 안내',
+                dueDate: '09월 18일 (수업 시 해당 교관 안내)',
+                method: '수업 진행 후 학습',
+                instructor: '한재민 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Turbulence 한/영/일/중 TEST 관련 안내 학습', done: false }
+                ]
+            },
+            {
+                id: 25,
+                cat: '기내 방송',
+                subject: '기내방송 2-2',
+                title: 'DEMO 녹음 및 제출',
+                dueDate: '09월 18일 (SVC 훈련 마지막 주)',
+                method: '러닝플랫폼 제출',
+                instructor: '한재민 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'DEMO 녹음 완료 후 러닝플랫폼 제출', done: false }
+                ]
+            },
+            {
+                id: 27,
+                cat: '기내 방송',
+                subject: '기내방송4 중국어',
+                title: 'Approach 문안 해석 및 워크시트 독음 작성',
+                dueDate: '09월 21일 (수업 전날)',
+                method: 'NAVER WORKS 공용 드라이브 업로드',
+                instructor: '정혜윤 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Approach 문안 해석 이해', done: false },
+                    { text: '워크시트에 독음 쓰기 (패드 내 삽입)', done: false },
+                    { text: 'NAVER WORKS 공용 드라이브 업로드', done: false }
+                ]
+            },
+            {
+                id: 28,
+                cat: '기내 방송',
+                subject: '기내방송4 중국어',
+                title: '[전공자 추가 숙제] Welcome, Demo 녹음',
+                dueDate: '09월 21일 (수업 이후)',
+                method: '러닝플랫폼 음성 제출',
+                instructor: '정혜윤 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Welcome 문안 녹음', done: false },
+                    { text: 'Demo 문안 녹음 후 러닝플랫폼 제출', done: false }
+                ]
+            },
+            {
+                id: 34,
+                cat: '기내 방송',
+                subject: '기내방송3 일본어',
+                title: 'Approach 문안 해석 및 워크시트 억양/끊어읽기 작성',
+                dueDate: '09월 29일 (수업 전날)',
+                method: 'NAVER WORKS 공용 드라이브 업로드',
+                instructor: '조상현 교관',
+                detail: '',
+                checklistItems: [
+                    { text: 'Approach 문안 해석 이해해오기', done: false },
+                    { text: '워크시트에 억양/끊어읽기 표시해오기', done: false },
+                    { text: 'NAVER WORKS 공용 드라이브 업로드', done: false }
+                ]
+            }
         ];
 
+        // --- 2. Global Event Handlers and Navigation ---
         window.updateGraduationDDay = function() {
             const gradDate = new Date('2026-11-10');
             const today = new Date();
-            gradDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
             const diffTime = gradDate - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             const badge = document.getElementById('dDayBadge');
@@ -830,560 +1405,570 @@
             }
         };
 
-        window.switchTab = function(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-button').forEach(el => {
-                el.classList.remove('tab-active');
-                el.classList.add('text-slate-600');
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-slate-600');
             });
-
-            const activeContent = document.getElementById(`content-${tabId}`);
-            if (activeContent) activeContent.classList.remove('hidden');
-
-            const activeTabBtn = document.getElementById(`tab-${tabId}`);
-            if (activeTabBtn) {
-                activeTabBtn.classList.add('tab-active');
-                activeTabBtn.classList.remove('text-slate-600');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('tab-active');
+                activeBtn.classList.remove('text-slate-600');
             }
 
-            if (tabId === 'dashboard') renderDashboard();
-            if (tabId === 'schedule') {
-                renderDayButtons();
-                renderScheduleTable();
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            const activeContent = document.getElementById(`content-${tabName}`);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
             }
-            if (tabId === 'trainees') renderTraineesTable();
-            if (tabId === 'demerit') renderDemeritsTable();
-            if (tabId === 'evaluation') switchTestCategory('safety');
-            if (tabId === 'assignment') renderAssignmentsGrid();
+
+            if (tabName === 'dashboard') window.renderDashboard();
+            if (tabName === 'schedule') {
+                window.renderScheduleCalendar();
+                window.renderScheduleTable();
+            }
+            if (tabName === 'trainees') window.renderTraineesTable();
+            if (tabName === 'demerit') window.renderDemeritsTable();
+            if (tabName === 'evaluation') {
+                window.switchTestCategory(currentTestCategory);
+            }
+            if (tabName === 'assignment') window.renderAssignmentsGrid();
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         };
 
         window.renderDashboard = function() {
-            const riskListEl = document.getElementById('riskTraineeList');
-            if (!riskListEl) return;
-            riskListEl.innerHTML = '';
-
-            const riskTraineesMap = new Map();
-
-            // 1. Demerit >= 10 OR Infractions >= 3
-            trainees.forEach(t => {
+            const riskTrainees = trainees.filter(t => {
                 const empDemerits = demerits.filter(d => d.empId === t.empId);
-                const totalPts = empDemerits.reduce((acc, curr) => acc + curr.points, 0);
-                const infractionCount = empDemerits.length;
+                const totalPoints = empDemerits.reduce((acc, curr) => acc + curr.points, 0);
+                const warningCount = empDemerits.length;
 
-                let reasons = [];
-                if (totalPts >= 10) reasons.push(`벌점 ${totalPts}점`);
-                if (infractionCount >= 3) reasons.push(`지적 ${infractionCount}회`);
-
-                if (reasons.length > 0) {
-                    riskTraineesMap.set(t.empId, { empId: t.empId, reasons: reasons });
+                let retestCount = 0;
+                let failCount = 0;
+                if (testResults[t.empId]) {
+                    Object.values(testResults[t.empId]).forEach(res => {
+                        if (res === 'RETEST') retestCount++;
+                        if (res === 'FAIL') failCount++;
+                    });
                 }
+
+                t._riskPoints = totalPoints;
+                t._retestCount = retestCount;
+                t._failCount = failCount;
+                t._warningCount = warningCount;
+
+                return totalPoints >= 10 || retestCount >= 2 || failCount >= 1 || warningCount >= 3;
             });
 
-            // 2. Retests >= 2 OR Fail >= 1
-            trainees.forEach(t => {
-                const results = testResults[t.empId] || {};
-                const values = Object.values(results);
-                const retestCount = values.filter(v => v === 'RETEST').length;
-                const failCount = values.filter(v => v === 'FAIL').length;
+            const countEl = document.getElementById('dashRiskCount');
+            if (countEl) countEl.innerHTML = `${riskTrainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
 
-                let reasons = riskTraineesMap.get(t.empId)?.reasons || [];
-                if (retestCount >= 2) reasons.push(`재시험 ${retestCount}건`);
-                if (failCount >= 1) reasons.push(`FAIL ${failCount}건`);
+            const listEl = document.getElementById('riskTraineeList');
+            if (listEl) {
+                if (riskTrainees.length === 0) {
+                    listEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">현재 집중 관리 대상자가 없습니다.</div>`;
+                } else {
+                    listEl.innerHTML = riskTrainees.map(t => {
+                        const tags = [];
+                        if (t._riskPoints >= 10) tags.push(`<span class="bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[10px]">벌점 ${t._riskPoints}점</span>`);
+                        if (t._retestCount >= 2) tags.push(`<span class="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px]">재시험 ${t._retestCount}건</span>`);
+                        if (t._failCount >= 1) tags.push(`<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px]">FAIL ${t._failCount}건</span>`);
+                        if (t._warningCount >= 3) tags.push(`<span class="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-[10px]">지적 ${t._warningCount}회</span>`);
 
-                if (reasons.length > 0) {
-                    riskTraineesMap.set(t.empId, { empId: t.empId, reasons: reasons });
+                        return `
+                            <div class="p-2.5 bg-red-50/60 rounded-xl border border-red-100 flex items-center justify-between text-xs">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-slate-800">사번 ${t.empId}</span>
+                                    <div class="flex flex-wrap gap-1">${tags.join('')}</div>
+                                </div>
+                                <button onclick="window.switchTab('trainees')" class="text-xs text-red-600 font-semibold hover:underline">상세 &rarr;</button>
+                            </div>
+                        `;
+                    }).join('');
                 }
-            });
-
-            const riskArray = Array.from(riskTraineesMap.values());
-            document.getElementById('dashRiskCount').innerHTML = `${riskArray.length} <span class="text-sm font-normal text-slate-500">명</span>`;
-
-            if (riskArray.length === 0) {
-                riskListEl.innerHTML = '<p class="text-xs text-slate-400 py-2 text-center">집중 관리 대상자가 없습니다.</p>';
-            } else {
-                riskArray.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "flex justify-between items-center bg-red-50/70 p-2 rounded-xl border border-red-100 text-xs";
-                    div.innerHTML = `
-                        <span class="font-bold text-red-900">사번 ${item.empId}</span>
-                        <div class="flex space-x-1">
-                            ${item.reasons.map(r => `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">${r}</span>`).join('')}
-                        </div>
-                    `;
-                    riskListEl.appendChild(div);
-                });
             }
 
-            renderChart();
+            window.renderChart();
         };
 
-        function renderChart() {
-            const canvas = document.getElementById('testResultChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
+        window.renderChart = function() {
+            const ctx = document.getElementById('testResultChart')?.getContext('2d');
+            if (!ctx) return;
+
             if (chartInstance) chartInstance.destroy();
 
             chartInstance = new Chart(ctx, {
-                type: 'bar',
+                type: 'doughnut',
                 data: {
-                    labels: ['안전 지식', '안전 기량', '서비스', '기내 방송'],
-                    datasets: [
-                        { label: 'PASS', data: [28, 27, 26, 29], backgroundColor: '#10b981' },
-                        { label: '재시험', data: [2, 3, 3, 1], backgroundColor: '#f59e0b' },
-                        { label: 'FAIL', data: [0, 0, 1, 0], backgroundColor: '#ef4444' }
-                    ]
+                    labels: ['PASS (통과)', '재시험 (Retest)', 'FAIL (불합격)'],
+                    datasets: [{
+                        data: [26, 3, 1],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 0
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } },
-                    scales: {
-                        x: { stacked: true },
-                        y: { stacked: true, max: 30, ticks: { stepSize: 5 } }
-                    }
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                    },
+                    cutout: '70%'
                 }
             });
-        }
-
-        window.filterScheduleWeek = function(weekNum) {
-            currentActiveWeek = weekNum;
-            currentActiveDay = 'ALL';
-
-            document.querySelectorAll('.week-btn').forEach(btn => {
-                btn.className = "week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap";
-            });
-
-            const activeBtn = document.getElementById(`btn-week-${weekNum}`);
-            if (activeBtn) {
-                activeBtn.className = "week-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs whitespace-nowrap";
-            }
-
-            renderDayButtons();
-            renderScheduleTable();
         };
 
         window.setScheduleViewMode = function(mode) {
             scheduleViewMode = mode;
-            const calBtn = document.getElementById('btn-view-calendar');
-            const listBtn = document.getElementById('btn-view-list');
-            if (calBtn && listBtn) {
-                if (mode === 'calendar') {
-                    calBtn.className = "px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1";
-                    listBtn.className = "px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1";
-                } else {
-                    listBtn.className = "px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1";
-                    calBtn.className = "px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1";
-                }
+            const btnCal = document.getElementById('btn-view-calendar');
+            const btnList = document.getElementById('btn-view-list');
+            const calContainer = document.getElementById('scheduleCalendarContainer');
+            const tableWrapper = document.getElementById('scheduleTableWrapper');
+
+            if (mode === 'calendar') {
+                btnCal?.classList.add('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btnCal?.classList.remove('text-slate-600');
+                btnList?.classList.remove('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btnList?.classList.add('text-slate-600');
+
+                calContainer?.classList.remove('hidden');
+                tableWrapper?.classList.add('hidden');
+            } else {
+                btnList?.classList.add('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btnList?.classList.remove('text-slate-600');
+                btnCal?.classList.remove('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btnCal?.classList.add('text-slate-600');
+
+                calContainer?.classList.add('hidden');
+                tableWrapper?.classList.remove('hidden');
             }
-            renderScheduleTable();
         };
 
-        window.filterScheduleDay = function(dayStr) {
-            currentActiveDay = dayStr;
-            document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.className = "day-btn text-slate-600 hover:text-slate-900 bg-slate-50 px-2.5 py-1 rounded-lg text-xs";
+        window.filterScheduleWeek = function(week) {
+            currentActiveWeek = week;
+            currentActiveDay = 'ALL';
+
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btn.classList.add('text-slate-600');
             });
-
-            const activeBtn = document.getElementById(`btn-day-${encodeURIComponent(dayStr)}`);
+            const activeBtn = document.getElementById(`btn-week-${week}`);
             if (activeBtn) {
-                activeBtn.className = "day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm";
+                activeBtn.classList.add('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600');
             }
 
-            renderScheduleTable();
+            window.renderDayFilterButtons();
+            window.renderScheduleCalendar();
+            window.renderScheduleTable();
         };
 
-        window.renderDayButtons = function() {
+        window.filterScheduleDay = function(day) {
+            currentActiveDay = day;
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('bg-orange-500', 'text-white', 'font-bold');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            const activeBtn = document.getElementById(`btn-day-${day.replace(/[^a-zA-Z0-9]/g, '')}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-orange-500', 'text-white', 'font-bold');
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+            }
+
+            window.renderScheduleCalendar();
+            window.renderScheduleTable();
+        };
+
+        window.renderDayFilterButtons = function() {
             const container = document.getElementById('dayFilterContainer');
             if (!container) return;
-            container.innerHTML = '';
 
-            if (currentActiveWeek === 'future') {
-                container.innerHTML = '<span class="text-xs text-slate-400">6주차 이후 커리큘럼 확정 후 날짜 세부 버튼이 업데이트됩니다.</span>';
+            const filteredWeekData = scheduleData.filter(s => s.week === currentActiveWeek);
+            const days = Array.from(new Set(filteredWeekData.map(s => s.date)));
+
+            let html = `
+                <button onclick="window.filterScheduleDay('ALL')" id="btn-day-ALL" class="day-btn ${currentActiveDay === 'ALL' ? 'bg-orange-500 text-white font-bold' : 'bg-slate-100 text-slate-600'} px-3 py-1 rounded-lg text-xs transition">
+                    전체 일자
+                </button>
+            `;
+
+            days.forEach(d => {
+                const cleanId = d.replace(/[^a-zA-Z0-9]/g, '');
+                html += `
+                    <button onclick="window.filterScheduleDay('${d}')" id="btn-day-${cleanId}" class="day-btn ${currentActiveDay === d ? 'bg-orange-500 text-white font-bold' : 'bg-slate-100 text-slate-600'} px-3 py-1 rounded-lg text-xs transition">
+                        ${d}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        };
+
+        window.renderScheduleCalendar = function() {
+            const container = document.getElementById('scheduleCalendarContainer');
+            if (!container) return;
+
+            const weekItems = scheduleData.filter(s => s.week === currentActiveWeek && (currentActiveDay === 'ALL' || s.date === currentActiveDay));
+            const groupedByDate = {};
+            weekItems.forEach(item => {
+                if (!groupedByDate[item.dayName]) groupedByDate[item.dayName] = [];
+                groupedByDate[item.dayName].push(item);
+            });
+
+            if (Object.keys(groupedByDate).length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl">해당 조건의 시간표 데이터가 없습니다.</div>`;
                 return;
             }
 
-            const weekSchedules = scheduleData.filter(s => s.week === currentActiveWeek);
-            const days = Array.from(new Set(weekSchedules.map(s => s.dayName)));
-
-            const allBtn = document.createElement('button');
-            allBtn.onclick = () => filterScheduleDay('ALL');
-            allBtn.id = 'btn-day-ALL';
-            allBtn.className = currentActiveDay === 'ALL'
-                ? "day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm"
-                : "day-btn text-slate-600 hover:text-slate-900 bg-slate-50 px-2.5 py-1 rounded-lg text-xs";
-            allBtn.textContent = '전체 일자';
-            container.appendChild(allBtn);
-
-            days.forEach(dayStr => {
-                const btn = document.createElement('button');
-                btn.onclick = () => filterScheduleDay(dayStr);
-                btn.id = `btn-day-${encodeURIComponent(dayStr)}`;
-                btn.className = currentActiveDay === dayStr
-                    ? "day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm"
-                    : "day-btn text-slate-600 hover:text-slate-900 bg-slate-50 px-2.5 py-1 rounded-lg text-xs";
-                btn.textContent = dayStr;
-                container.appendChild(btn);
-            });
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${Object.entries(groupedByDate).map(([dayName, items]) => `
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
+                                <span class="font-bold text-xs text-slate-800">${dayName}</span>
+                                <span class="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded-full text-slate-500 font-semibold">${items.length}개 과목</span>
+                            </div>
+                            <div class="space-y-2">
+                                ${items.map(it => `
+                                    <div class="p-2.5 bg-white rounded-xl border border-slate-100 shadow-sm text-xs">
+                                        <div class="flex justify-between items-start">
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${it.cat === '안전' ? 'bg-red-50 text-red-600' : it.cat === '서비스' ? 'bg-blue-50 text-blue-600' : it.cat === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${it.cat}</span>
+                                            <span class="text-[10px] text-slate-400">${it.period}</span>
+                                        </div>
+                                        <p class="font-bold text-slate-800 mt-1.5">${it.name}</p>
+                                        <p class="text-[11px] text-slate-500 mt-1"><i data-lucide="user" class="w-3 h-3 inline mr-1"></i>${it.instructor}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         };
 
         window.renderScheduleTable = function() {
             const tbody = document.getElementById('scheduleTableBody');
-            const calContainer = document.getElementById('scheduleCalendarContainer');
-            const tableWrapper = document.getElementById('scheduleTableWrapper');
-            if (!tbody || !calContainer || !tableWrapper) return;
+            if (!tbody) return;
 
-            tbody.innerHTML = '';
-            calContainer.innerHTML = '';
+            const weekItems = scheduleData.filter(s => s.week === currentActiveWeek && (currentActiveDay === 'ALL' || s.date === currentActiveDay));
 
-            if (currentActiveWeek === 'future') {
-                calContainer.classList.add('hidden');
-                tableWrapper.classList.remove('hidden');
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="p-8 text-center text-slate-400">
-                            📌 6주차 이후 세부 커리큘럼은 확정되는 대로 업데이트될 예정입니다.
-                        </td>
-                    </tr>
-                `;
+            if (weekItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-xs text-slate-400">등록된 시간표가 없습니다.</td></tr>`;
                 return;
             }
 
-            // Calendar mode rendering when ALL days or calendar mode active
-            if (scheduleViewMode === 'calendar' && currentActiveDay === 'ALL') {
-                calContainer.classList.remove('hidden');
-                tableWrapper.classList.add('hidden');
-
-                const weekSchedules = scheduleData.filter(s => s.week === currentActiveWeek);
-                const uniqueDays = Array.from(new Set(weekSchedules.map(s => s.dayName)));
-
-                const grid = document.createElement('div');
-                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-3.5";
-
-                uniqueDays.forEach(dayName => {
-                    const dayItems = weekSchedules.filter(s => s.dayName === dayName);
-                    const dayCard = document.createElement('div');
-                    dayCard.className = "bg-slate-50 border border-slate-200 rounded-2xl p-3 flex flex-col space-y-2.5 hover:shadow-sm transition";
-
-                    dayCard.innerHTML = `
-                        <div class="flex justify-between items-center pb-2 border-b border-slate-200">
-                            <span class="text-xs font-bold text-slate-900 flex items-center space-x-1">
-                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-orange-500"></i>
-                                <span>${dayName}</span>
-                            </span>
-                            <button onclick="filterScheduleDay('${dayName}')" class="text-[11px] font-semibold text-orange-600 hover:underline">상세보기</button>
-                        </div>
-                        <div class="space-y-2 flex-1">
-                            ${dayItems.map(item => {
-                                let bgStyle = "bg-white border-slate-200 text-slate-800";
-                                let badgeStyle = "bg-slate-100 text-slate-600";
-                                if (item.cat === '안전') { bgStyle = "bg-amber-50/80 border-amber-200 text-amber-950"; badgeStyle = "bg-amber-100 text-amber-800"; }
-                                if (item.cat === '서비스') { bgStyle = "bg-emerald-50/80 border-emerald-200 text-emerald-950"; badgeStyle = "bg-emerald-100 text-emerald-800"; }
-                                if (item.cat === 'TEST/평가') { bgStyle = "bg-blue-50/80 border-blue-200 text-blue-950"; badgeStyle = "bg-blue-100 text-blue-800"; }
-                                if (item.cat === '기내 방송') { bgStyle = "bg-purple-50/80 border-purple-200 text-purple-950"; badgeStyle = "bg-purple-100 text-purple-800"; }
-                                if (item.cat === '휴무') { bgStyle = "bg-red-50/80 border-red-200 text-red-950"; badgeStyle = "bg-red-100 text-red-800"; }
-
-                                return `
-                                    <div class="p-2.5 rounded-xl border text-xs ${bgStyle} space-y-1">
-                                        <div class="flex justify-between items-center text-[10px]">
-                                            <span class="font-bold text-slate-500">${item.period.split(' ')[0]}</span>
-                                            <span class="px-1.5 py-0.5 rounded font-bold ${badgeStyle}">${item.cat}</span>
-                                        </div>
-                                        <div class="font-bold leading-snug">${item.name}</div>
-                                        <div class="text-[10px] text-slate-500 truncate">👤 ${item.instructor}</div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    `;
-                    grid.appendChild(dayCard);
-                });
-
-                calContainer.appendChild(grid);
-                if (window.lucide) lucide.createIcons();
-                return;
-            }
-
-            // List view rendering
-            calContainer.classList.add('hidden');
-            tableWrapper.classList.remove('hidden');
-
-            let filtered = scheduleData.filter(s => s.week === currentActiveWeek);
-            if (currentActiveDay !== 'ALL') {
-                filtered = filtered.filter(s => s.dayName === currentActiveDay);
-            }
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">해당 일자의 시간표가 없습니다.</td></tr>';
-                return;
-            }
-
-            filtered.forEach(s => {
-                let badgeStyle = 'bg-slate-100 text-slate-600';
-                if (s.cat === '안전') badgeStyle = 'bg-amber-100 text-amber-800 font-bold';
-                if (s.cat === '서비스') badgeStyle = 'bg-emerald-100 text-emerald-800 font-bold';
-                if (s.cat === 'TEST/평가') badgeStyle = 'bg-blue-100 text-blue-800 font-bold';
-                if (s.cat === '기내 방송') badgeStyle = 'bg-purple-100 text-purple-800 font-bold';
-                if (s.cat === '휴무') badgeStyle = 'bg-red-100 text-red-800 font-bold';
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 font-medium text-slate-700">${s.period}</td>
+            tbody.innerHTML = weekItems.map(s => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-semibold text-slate-700">${s.period}</td>
                     <td class="p-3 text-slate-600">${s.dayName}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded-md text-[11px] ${badgeStyle}">${s.cat}</span></td>
-                    <td class="p-3 font-semibold text-slate-900">${s.name}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.cat === '안전' ? 'bg-red-50 text-red-600' : s.cat === '서비스' ? 'bg-blue-50 text-blue-600' : s.cat === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${s.cat}</span>
+                    </td>
+                    <td class="p-3 font-bold text-slate-800">${s.name}</td>
                     <td class="p-3 text-slate-600">${s.instructor}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+                </tr>
+            `).join('');
         };
 
         window.renderTraineesTable = function() {
             const tbody = document.getElementById('traineesTableBody');
-            const searchVal = document.getElementById('searchTraineeInput')?.value.trim() || '';
             if (!tbody) return;
-            tbody.innerHTML = '';
 
-            let filtered = trainees;
-            if (searchVal) {
-                filtered = filtered.filter(t => t.empId.includes(searchVal));
-            }
+            const query = (document.getElementById('searchTraineeInput')?.value || '').trim();
+            const filtered = trainees.filter(t => t.empId.includes(query));
 
-            filtered.forEach((t, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 font-medium text-slate-400">${index + 1}</td>
-                    <td class="p-3 font-bold text-slate-900">${t.empId}</td>
-                    <td class="p-3"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-semibold text-[11px]">${t.status}</span></td>
-                    <td class="p-3 text-slate-700 max-w-md">${t.note}</td>
+            tbody.innerHTML = filtered.map((t, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 text-slate-400">${idx + 1}</td>
+                    <td class="p-3 font-bold text-slate-800">${t.empId}</td>
+                    <td class="p-3">
+                        <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold text-[10px]">${t.status}</span>
+                    </td>
+                    <td class="p-3 text-slate-600">${t.note || '-'}</td>
                     <td class="p-3 text-center">
-                        <button onclick="openNoteModal('${t.empId}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">
+                        <button onclick="window.openNoteModal('${t.empId}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-lg transition">
                             메모 수정
                         </button>
                     </td>
-                `;
-                tbody.appendChild(tr);
-            });
+                </tr>
+            `).join('');
+        };
+
+        window.openNoteModal = function(empId) {
+            currentSelectedNoteEmp = empId;
+            const t = trainees.find(x => x.empId === empId);
+            const titleEl = document.getElementById('modalTraineeTitle');
+            const inputEl = document.getElementById('modalNoteInput');
+            if (titleEl) titleEl.textContent = `특이사항 편집 (사번 ${empId})`;
+            if (inputEl) inputEl.value = t ? t.note : '';
+            document.getElementById('noteModal')?.classList.remove('hidden');
+        };
+
+        window.closeNoteModal = function() {
+            document.getElementById('noteModal')?.classList.add('hidden');
+        };
+
+        window.saveTraineeNote = function() {
+            const t = trainees.find(x => x.empId === currentSelectedNoteEmp);
+            const inputEl = document.getElementById('modalNoteInput');
+            if (t && inputEl) {
+                t.note = inputEl.value;
+                window.renderTraineesTable();
+                window.closeNoteModal();
+            }
         };
 
         window.renderDemeritsTable = function() {
             const tbody = document.getElementById('demeritTableBody');
             if (!tbody) return;
-            tbody.innerHTML = '';
 
-            demerits.forEach(d => {
-                const empDemerits = demerits.filter(item => item.empId === d.empId);
-                const totalPts = empDemerits.reduce((acc, curr) => acc + curr.points, 0);
+            tbody.innerHTML = demerits.map(d => {
+                const empDemerits = demerits.filter(x => x.empId === d.empId);
+                const cumulative = empDemerits.reduce((sum, curr) => sum + curr.points, 0);
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-500">${d.date}</td>
-                    <td class="p-3 font-bold text-slate-900">${d.empId}</td>
-                    <td class="p-3"><span class="bg-red-50 text-red-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">${d.category}</span></td>
-                    <td class="p-3 text-slate-700">${d.detail}</td>
-                    <td class="p-3 font-bold text-red-600">+${d.points}</td>
-                    <td class="p-3 font-bold ${totalPts >= 3 ? 'text-red-600' : 'text-slate-800'}">${totalPts}점</td>
-                    <td class="p-3 text-slate-600">${d.instructor}</td>
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-slate-500">${d.date}</td>
+                        <td class="p-3 font-bold text-slate-800">${d.empId}</td>
+                        <td class="p-3"><span class="bg-red-50 text-red-600 px-2 py-0.5 rounded font-bold">${d.category}</span></td>
+                        <td class="p-3 text-slate-600">${d.detail}</td>
+                        <td class="p-3 font-bold text-red-600">+${d.points}점</td>
+                        <td class="p-3 font-bold text-slate-800">${cumulative}점</td>
+                        <td class="p-3 text-slate-500">${d.instructor}</td>
+                    </tr>
                 `;
-                tbody.appendChild(tr);
-            });
+            }).join('');
+        };
+
+        window.openDemeritModal = function() {
+            const selectEl = document.getElementById('demeritSelectEmp');
+            if (selectEl) {
+                selectEl.innerHTML = trainees.map(t => `<option value="${t.empId}">사번 ${t.empId}</option>`).join('');
+            }
+            document.getElementById('demeritModal')?.classList.remove('hidden');
+        };
+
+        window.closeDemeritModal = function() {
+            document.getElementById('demeritModal')?.classList.add('hidden');
+        };
+
+        window.addDemeritRecord = function() {
+            const empId = document.getElementById('demeritSelectEmp')?.value;
+            const category = document.getElementById('demeritCategory')?.value;
+            const detail = document.getElementById('demeritDetail')?.value || '세부사항 미입력';
+            const points = parseInt(document.getElementById('demeritPoints')?.value || '1', 10);
+
+            if (empId) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                demerits.unshift({
+                    date: todayStr,
+                    empId: empId,
+                    category: category,
+                    detail: detail,
+                    points: points,
+                    instructor: '담당교관'
+                });
+                window.renderDemeritsTable();
+                window.renderDashboard();
+                window.closeDemeritModal();
+            }
         };
 
         window.switchTestCategory = function(cat) {
             currentTestCategory = cat;
             document.querySelectorAll('.test-cat-btn').forEach(btn => {
-                btn.className = "test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs";
+                btn.classList.remove('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btn.classList.add('text-slate-600');
             });
-
             const activeBtn = document.getElementById(`btn-test-${cat}`);
             if (activeBtn) {
-                activeBtn.className = "test-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs";
+                activeBtn.classList.add('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600');
             }
 
-            populateTestSubjectSelect();
-            renderTestsTable();
+            const selectEl = document.getElementById('testSubjectSelect');
+            if (selectEl) {
+                const subjects = categorySubjectMap[cat] || [];
+                selectEl.innerHTML = subjects.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+            }
+
+            window.renderTestsTable();
         };
-
-        function populateTestSubjectSelect() {
-            const select = document.getElementById('testSubjectSelect');
-            if (!select) return;
-            select.innerHTML = '';
-
-            const subjects = categorySubjectMap[currentTestCategory] || [];
-            subjects.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s.value;
-                opt.textContent = s.label;
-                select.appendChild(opt);
-            });
-        }
 
         window.renderTestsTable = function() {
             const tbody = document.getElementById('testTableBody');
-            const select = document.getElementById('testSubjectSelect');
-            if (!tbody || !select) return;
-            tbody.innerHTML = '';
+            const testCode = document.getElementById('testSubjectSelect')?.value;
+            if (!tbody || !testCode) return;
 
-            const testCode = select.value || categorySubjectMap[currentTestCategory]?.[0]?.value;
-            if (!testCode) return;
+            tbody.innerHTML = trainees.map((t, idx) => {
+                const res = (testResults[t.empId] && testResults[t.empId][testCode]) || 'PASS';
+                const score = (testScores[t.empId] && testScores[t.empId][testCode]) !== undefined ? testScores[t.empId][testCode] : 100;
+                const fb = (feedbackData[t.empId] && feedbackData[t.empId][currentTestCategory]) || '';
 
-            trainees.forEach((t, idx) => {
-                const status = testResults[t.empId]?.[testCode] || '미응시';
-                const score = testScores[t.empId]?.[testCode] !== undefined ? testScores[t.empId][testCode] : '';
-                const feedback = feedbackData[t.empId]?.[currentTestCategory] || '-';
+                let statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">PASS</span>';
+                if (res === 'RETEST') statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">재시험</span>';
+                if (res === 'FAIL') statusBadge = '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-bold">FAIL</span>';
 
-                let statusBadge = 'bg-slate-100 text-slate-600';
-                if (status === 'PASS') statusBadge = 'bg-emerald-100 text-emerald-800 font-bold';
-                if (status === 'RETEST') statusBadge = 'bg-amber-100 text-amber-800 font-bold';
-                if (status === 'FAIL') statusBadge = 'bg-red-100 text-red-800 font-bold';
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
-                    <td class="p-3 font-bold text-slate-900">${t.empId}</td>
-                    <td class="p-3"><span class="px-2.5 py-1 rounded-lg text-xs ${statusBadge}">${status}</span></td>
-                    <td class="p-3">
-                        <div class="flex space-x-1">
-                            <button onclick="changeTestResult('${t.empId}', '${testCode}', 'PASS')" class="px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded text-[11px] font-bold">PASS</button>
-                            <button onclick="changeTestResult('${t.empId}', '${testCode}', 'RETEST')" class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded text-[11px] font-bold">재시험</button>
-                            <button onclick="changeTestResult('${t.empId}', '${testCode}', 'FAIL')" class="px-2 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded text-[11px] font-bold">FAIL</button>
-                        </div>
-                    </td>
-                    <td class="p-3">
-                        <input type="number" min="0" max="100" value="${score}" onchange="updateTestScore('${t.empId}', '${testCode}', this.value)" placeholder="점수" class="w-16 p-1 border border-slate-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-orange-500">
-                    </td>
-                    <td class="p-3 text-slate-600 max-w-xs truncate">${feedback}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="openFeedbackModal('${t.empId}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
-                            피드백 작성
-                        </button>
-                    </td>
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-slate-400">${idx + 1}</td>
+                        <td class="p-3 font-bold text-slate-800">${t.empId}</td>
+                        <td class="p-3">${statusBadge}</td>
+                        <td class="p-3">
+                            <div class="flex space-x-1">
+                                <button onclick="window.changeTestResult('${t.empId}', 'PASS')" class="px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded text-[10px] font-bold">PASS</button>
+                                <button onclick="window.changeTestResult('${t.empId}', 'RETEST')" class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded text-[10px] font-bold">재시험</button>
+                                <button onclick="window.changeTestResult('${t.empId}', 'FAIL')" class="px-2 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded text-[10px] font-bold">FAIL</button>
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            <input type="number" min="0" max="100" value="${score}" onchange="window.saveTestScore('${t.empId}', this.value)" class="w-16 p-1 border border-slate-200 rounded text-xs text-center font-bold focus:ring-2 focus:ring-orange-500">
+                        </td>
+                        <td class="p-3 text-slate-600 max-w-xs truncate">${fb || '<span class="text-slate-300">피드백 없음</span>'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.openFeedbackModal('${t.empId}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold text-xs transition">
+                                피드백 작성
+                            </button>
+                        </td>
+                    </tr>
                 `;
-                tbody.appendChild(tr);
-            });
+            }).join('');
         };
 
-        window.changeTestResult = function(empId, testCode, newStatus) {
-            if (!testResults[empId]) testResults[empId] = {};
-            testResults[empId][testCode] = newStatus;
-            renderTestsTable();
-            renderDashboard();
-        };
-
-        window.updateTestScore = function(empId, testCode, scoreVal) {
+        window.saveTestScore = function(empId, val) {
+            const testCode = document.getElementById('testSubjectSelect')?.value;
+            if (!testCode) return;
             if (!testScores[empId]) testScores[empId] = {};
-            testScores[empId][testCode] = scoreVal ? parseInt(scoreVal, 10) : '';
+            testScores[empId][testCode] = parseInt(val || '0', 10);
+        };
+
+        window.changeTestResult = function(empId, status) {
+            const testCode = document.getElementById('testSubjectSelect')?.value;
+            if (!testCode) return;
+            if (!testResults[empId]) testResults[empId] = {};
+            testResults[empId][testCode] = status;
+            window.renderTestsTable();
+            window.renderDashboard();
+        };
+
+        window.openFeedbackModal = function(empId) {
+            currentSelectedFeedbackEmp = empId;
+            const titleEl = document.getElementById('feedbackModalTitle');
+            const inputEl = document.getElementById('modalFeedbackInput');
+            if (titleEl) titleEl.textContent = `교관 평가 피드백 (사번 ${empId})`;
+            if (inputEl) inputEl.value = (feedbackData[empId] && feedbackData[empId][currentTestCategory]) || '';
+            document.getElementById('feedbackModal')?.classList.remove('hidden');
+        };
+
+        window.closeFeedbackModal = function() {
+            document.getElementById('feedbackModal')?.classList.add('hidden');
+        };
+
+        window.saveFeedback = function() {
+            const inputEl = document.getElementById('modalFeedbackInput');
+            if (currentSelectedFeedbackEmp && inputEl) {
+                if (!feedbackData[currentSelectedFeedbackEmp]) {
+                    feedbackData[currentSelectedFeedbackEmp] = { safety: '', service: '', broadcast: '' };
+                }
+                feedbackData[currentSelectedFeedbackEmp][currentTestCategory] = inputEl.value;
+                window.renderTestsTable();
+                window.closeFeedbackModal();
+            }
         };
 
         window.filterAssignmentCat = function(cat) {
             currentAssignmentCat = cat;
             document.querySelectorAll('.assign-cat-btn').forEach(btn => {
-                btn.className = "assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs";
+                btn.classList.remove('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                btn.classList.add('text-slate-600');
             });
-            const btnIdMap = { 'ALL': 'btn-assign-all', '기타': 'btn-assign-etc', '안전': 'btn-assign-safety', '서비스': 'btn-assign-service', '기내 방송': 'btn-assign-broadcast' };
-            if (btnIdMap[cat]) {
-                const activeBtn = document.getElementById(btnIdMap[cat]);
-                if (activeBtn) activeBtn.className = "assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs";
+
+            const activeBtn = cat === 'ALL' ? document.getElementById('btn-assign-all') :
+                              cat === '기타' ? document.getElementById('btn-assign-etc') :
+                              cat === '안전' ? document.getElementById('btn-assign-safety') :
+                              cat === '서비스' ? document.getElementById('btn-assign-service') :
+                              document.getElementById('btn-assign-broadcast');
+
+            if (activeBtn) {
+                activeBtn.classList.add('bg-white', 'text-orange-600', 'font-bold', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600');
             }
-            renderAssignmentsGrid();
+
+            window.renderAssignmentsGrid();
+        };
+
+        window.toggleChecklistItem = function(assignId, itemIdx) {
+            const assign = assignmentsData.find(a => a.id === assignId);
+            if (assign && assign.checklistItems && assign.checklistItems[itemIdx]) {
+                assign.checklistItems[itemIdx].done = !assign.checklistItems[itemIdx].done;
+                window.renderAssignmentsGrid();
+            }
         };
 
         window.renderAssignmentsGrid = function() {
             const grid = document.getElementById('assignmentGrid');
             if (!grid) return;
-            grid.innerHTML = '';
 
-            let filtered = assignmentsData;
-            if (currentAssignmentCat !== 'ALL') {
-                filtered = assignmentsData.filter(a => a.cat === currentAssignmentCat);
-            }
+            const items = assignmentsData.filter(a => currentAssignmentCat === 'ALL' || a.cat === currentAssignmentCat);
 
-            if (filtered.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 text-xs">등록된 과제가 없습니다.</div>';
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl">등록된 과제가 없습니다.</div>`;
                 return;
             }
 
-            filtered.forEach(item => {
-                let catColor = 'bg-slate-100 text-slate-700';
-                if (item.cat === '기타') catColor = 'bg-blue-50 text-blue-700 border border-blue-200';
-                if (item.cat === '안전') catColor = 'bg-red-50 text-red-700 border border-red-200';
-                if (item.cat === '서비스') catColor = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-                if (item.cat === '기내 방송') catColor = 'bg-purple-50 text-purple-700 border border-purple-200';
+            grid.innerHTML = items.map(a => {
+                let bodyHtml = '';
 
-                let detailHTML = '';
-                if (item.checklistItems && item.checklistItems.length > 0) {
-                    const completedCount = item.checklistItems.filter(c => c.done).length;
-                    const totalCount = item.checklistItems.length;
-                    const percent = Math.round((completedCount / totalCount) * 100);
+                if (a.checklistItems && a.checklistItems.length > 0) {
+                    const doneCount = a.checklistItems.filter(ci => ci.done).length;
+                    const percent = Math.round((doneCount / a.checklistItems.length) * 100);
 
-                    detailHTML = `
-                        <div class="mb-2 flex items-center justify-between text-[11px] font-bold text-slate-500">
-                            <span>진행 상황 (${completedCount}/${totalCount})</span>
-                            <span class="text-orange-600 font-extrabold">${percent}%</span>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-1.5 mb-3">
-                            <div class="bg-orange-500 h-1.5 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
-                        </div>
-                        <div class="space-y-1">
-                            ${item.checklistItems.map((chk, idx) => `
-                                <label class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer transition select-none ${chk.done ? 'bg-orange-50/50' : ''}">
-                                    <input type="checkbox" ${chk.done ? 'checked' : ''} onchange="toggleChecklistItem(${item.id}, ${idx})" class="rounded text-orange-500 focus:ring-orange-400 w-4 h-4 cursor-pointer accent-orange-500">
-                                    <span class="${chk.done ? 'line-through text-slate-400 font-normal' : 'text-slate-800 font-semibold'}">${chk.text}</span>
-                                </label>
-                            `).join('')}
+                    bodyHtml = `
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                                <span>이행 체크리스트 (${doneCount}/${a.checklistItems.length})</span>
+                                <span class="${percent === 100 ? 'text-emerald-600' : 'text-orange-600'} font-bold">${percent}% ${percent === 100 ? '완료 🎉' : ''}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                <div class="${percent === 100 ? 'bg-emerald-500' : 'bg-orange-500'} h-1.5 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
+                            </div>
+                            <div class="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pt-1">
+                                ${a.checklistItems.map((ci, idx) => `
+                                    <div onclick="window.toggleChecklistItem(${a.id}, ${idx})" class="flex items-start space-x-2 p-2 rounded-lg border text-xs cursor-pointer transition ${ci.done ? 'bg-orange-50/70 border-orange-200 text-orange-900 line-through' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}">
+                                        <input type="checkbox" ${ci.done ? 'checked' : ''} class="mt-0.5 rounded text-orange-500 focus:ring-orange-500 pointer-events-none">
+                                        <span class="leading-tight">${ci.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     `;
                 } else {
-                    detailHTML = item.detail ? item.detail.replace(/\n/g, '<br>') : '';
+                    bodyHtml = `<p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed">${a.detail || '상세 가이드 없음'}</p>`;
                 }
 
-                const card = document.createElement('div');
-                card.className = "p-4 bg-slate-50/80 rounded-2xl border border-slate-200 hover:border-orange-300 transition flex flex-col justify-between space-y-3";
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md ${catColor}">${item.cat}</span>
-                            <span class="text-[11px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200">${item.subject}</span>
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-3 hover:shadow-md transition">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${a.cat === '안전' ? 'bg-red-50 text-red-600' : a.cat === '서비스' ? 'bg-blue-50 text-blue-600' : a.cat === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${a.cat}</span>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">${a.subject}</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-900 mt-2">${a.title}</h3>
+                            <div class="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                ${bodyHtml}
+                            </div>
                         </div>
-                        <h3 class="text-sm font-bold text-slate-900 leading-snug mb-1">${item.title}</h3>
-                        <div class="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-xl border border-slate-100 my-2 max-h-60 overflow-y-auto custom-scrollbar">${detailHTML}</div>
-                    </div>
-
-                    <div class="space-y-1.5 pt-2 border-t border-slate-200/60 text-xs text-slate-500">
-                        <div class="flex justify-between">
-                            <span class="font-medium">제출 기한:</span>
-                            <span class="font-bold text-slate-800">${item.dueDate}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">제출 방식:</span>
-                            <span class="text-slate-700">${item.method}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">담당 교관:</span>
-                            <span class="text-slate-700">${item.instructor}</span>
-                        </div>
-                        <div class="flex justify-between items-center pt-1">
-                            <span class="font-medium">제출 완료:</span>
-                            <span class="font-extrabold ${item.submittedCount === 30 ? 'text-emerald-600' : 'text-orange-600'} bg-white px-2 py-0.5 rounded-lg border border-slate-200">
-                                ${item.submittedCount} / 30 명
-                            </span>
+                        <div class="pt-2 border-t border-slate-100 text-[11px] space-y-1 text-slate-500">
+                            <div class="flex justify-between"><span>제출 기한:</span><span class="font-semibold text-slate-700">${a.dueDate}</span></div>
+                            <div class="flex justify-between"><span>제출 방식:</span><span class="font-semibold text-slate-700">${a.method}</span></div>
+                            <div class="flex justify-between"><span>담당 교관:</span><span class="font-semibold text-slate-700">${a.instructor}</span></div>
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
-            });
-            if (window.lucide) lucide.createIcons();
-        };
-
-        window.toggleChecklistItem = function(assignId, idx) {
-            const assign = assignmentsData.find(a => a.id === assignId);
-            if (assign && assign.checklistItems && assign.checklistItems[idx] !== undefined) {
-                assign.checklistItems[idx].done = !assign.checklistItems[idx].done;
-                renderAssignmentsGrid();
-            }
+            }).join('');
         };
 
         window.openAssignmentModal = function() {
@@ -1395,15 +1980,17 @@
         };
 
         window.addAssignment = function() {
-            const cat = document.getElementById('assignCategory').value;
-            const subject = document.getElementById('assignSubject').value.trim() || '과목 미지정';
-            const title = document.getElementById('assignTitle').value.trim() || '과제';
-            const dueDate = document.getElementById('assignDueDate').value.trim() || '상시 제출';
-            const method = document.getElementById('assignMethod').value.trim() || '태블릿 제출';
-            const instructor = document.getElementById('assignInstructor').value.trim() || '담당교관';
-            const detail = document.getElementById('assignDetail').value.trim() || '세부 설명 없음';
+            const cat = document.getElementById('assignCategory')?.value || '기타';
+            const subject = document.getElementById('assignSubject')?.value || '일반';
+            const title = document.getElementById('assignTitle')?.value || '새 과제';
+            const dueDate = document.getElementById('assignDueDate')?.value || '기한 미정';
+            const method = document.getElementById('assignMethod')?.value || '서면 제출';
+            const instructor = document.getElementById('assignInstructor')?.value || '담당 교관';
+            const detail = document.getElementById('assignDetail')?.value || '';
 
-            assignmentsData.push({
+            const items = detail ? detail.split('\n').filter(line => line.trim().length > 0).map(line => ({ text: line.replace(/^[•\-\*]\s*/, ''), done: false })) : [{ text: title, done: false }];
+
+            assignmentsData.unshift({
                 id: Date.now(),
                 cat: cat,
                 subject: subject,
@@ -1412,76 +1999,101 @@
                 method: method,
                 instructor: instructor,
                 detail: detail,
-                submittedCount: 0
+                checklistItems: items
             });
 
-            closeAssignmentModal();
-            renderAssignmentsGrid();
+            window.renderAssignmentsGrid();
+            window.closeAssignmentModal();
         };
 
-        window.openNoteModal = function(empId) {
-            currentSelectedNoteEmp = empId;
-            const trainee = trainees.find(t => t.empId === empId);
-            document.getElementById('modalTraineeTitle').textContent = `특이사항 편집 (사번: ${empId})`;
-            document.getElementById('modalNoteInput').value = trainee?.note || '';
-            document.getElementById('noteModal')?.classList.remove('hidden');
+        window.handleExcelUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    jsonData.forEach((row, idx) => {
+                        const cat = row['구분'] || row['카테고리'] || '기타';
+                        const subject = row['과목명'] || row['과목'] || '일반';
+                        const title = row['과제명'] || row['과제'] || row['숙제'] || `엑셀 과제 ${idx + 1}`;
+                        const dueDate = row['제출기한'] || row['숙제 시점'] || row['기한'] || '기한 미정';
+                        const method = row['제출방식'] || row['TEST'] || '태블릿 제출';
+                        const instructor = row['담당교관'] || row['교관'] || '담당 교관';
+                        const detail = row['세부내용'] || row['설명'] || row['상세설명'] || '';
+
+                        const checklistItems = detail ? detail.split('\n').filter(l => l.trim().length > 0).map(l => ({ text: l.replace(/^[•\-\*]\s*/, ''), done: false })) : [{ text: title, done: false }];
+
+                        assignmentsData.push({
+                            id: Date.now() + idx,
+                            cat: cat,
+                            subject: subject,
+                            title: title,
+                            dueDate: dueDate,
+                            method: method,
+                            instructor: instructor,
+                            detail: detail,
+                            checklistItems: checklistItems
+                        });
+                    });
+
+                    window.renderAssignmentsGrid();
+                    alert(`총 ${jsonData.length}건의 과제 목록이 정상 업로드 되었습니다.`);
+                } catch (err) {
+                    alert('엑셀 파일을 파싱하는 도중 오류가 발생했습니다.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
         };
 
-        window.closeNoteModal = function() {
-            document.getElementById('noteModal')?.classList.add('hidden');
-        };
-
-        window.saveTraineeNote = function() {
-            if (!currentSelectedNoteEmp) return;
-            const val = document.getElementById('modalNoteInput').value;
-            const trainee = trainees.find(t => t.empId === currentSelectedNoteEmp);
-            if (trainee) trainee.note = val;
-            closeNoteModal();
-            renderTraineesTable();
-        };
-
-        window.openDemeritModal = function() {
-            const select = document.getElementById('demeritSelectEmp');
-            if (select) {
-                select.innerHTML = '';
-                trainees.forEach(t => {
-                    const opt = document.createElement('option');
-                    opt.value = t.empId;
-                    opt.textContent = `사번 ${t.empId}`;
-                    select.appendChild(opt);
-                });
+        window.exportTraineeDataToExcel = function() {
+            if (typeof XLSX === 'undefined') {
+                alert('XLSX 라이브러리가 로드되지 않았습니다.');
+                return;
             }
-            document.getElementById('demeritModal')?.classList.remove('hidden');
-        };
 
-        window.closeDemeritModal = function() {
-            document.getElementById('demeritModal')?.classList.add('hidden');
-        };
+            const wb = XLSX.utils.book_new();
 
-        window.addDemeritRecord = function() {
-            const empId = document.getElementById('demeritSelectEmp').value;
-            const category = document.getElementById('demeritCategory').value;
-            const detail = document.getElementById('demeritDetail').value || '규정 위반';
-            const points = parseInt(document.getElementById('demeritPoints').value || '1', 10);
-
-            const todayStr = new Date().toISOString().split('T')[0];
-            demerits.push({
-                date: todayStr,
-                empId: empId,
-                category: category,
-                detail: detail,
-                points: points,
-                instructor: '담당교관'
+            // Sheet 1: Trainee Roster
+            const traineeRows = trainees.map(t => {
+                const empDemerits = demerits.filter(d => d.empId === t.empId);
+                const points = empDemerits.reduce((acc, c) => acc + c.points, 0);
+                return {
+                    '사번': t.empId,
+                    '상태': t.status,
+                    '누적 벌점': points,
+                    '지적 횟수': empDemerits.length,
+                    '특이사항': t.note
+                };
             });
+            const ws1 = XLSX.utils.json_to_sheet(traineeRows);
+            XLSX.utils.book_append_sheet(wb, ws1, '훈련생 명부');
 
-            closeDemeritModal();
-            renderDemeritsTable();
-            renderDashboard();
+            // Sheet 2: Demerit Logs
+            const demeritRows = demerits.map(d => ({
+                '일자': d.date,
+                '사번': d.empId,
+                '위반 항목': d.category,
+                '세부 내용': d.detail,
+                '부과 벌점': d.points,
+                '담당 교관': d.instructor
+            }));
+            const ws2 = XLSX.utils.json_to_sheet(demeritRows);
+            XLSX.utils.book_append_sheet(wb, ws2, '벌점 내역');
+
+            XLSX.writeFile(wb, `객실훈련생_통합관리_데이터_${new Date().toISOString().split('T')[0]}.xlsx`);
         };
 
         window.openNoticeModal = function() {
-            const currentNotice = document.getElementById('noticeContent').innerText;
-            document.getElementById('modalNoticeInput').value = currentNotice.replace('📌 ', '').trim();
+            const content = document.getElementById('noticeContent')?.innerText || '';
+            const inputEl = document.getElementById('modalNoticeInput');
+            if (inputEl) inputEl.value = content.replace('📌 ', '');
             document.getElementById('noticeModal')?.classList.remove('hidden');
         };
 
@@ -1490,40 +2102,16 @@
         };
 
         window.saveNotice = function() {
-            const text = document.getElementById('modalNoticeInput').value.trim();
-            if (text) {
-                document.getElementById('noticeContent').innerHTML = `📌 ${text}`;
-            }
-            closeNoticeModal();
-        };
-
-        window.openFeedbackModal = function(empId) {
-            currentSelectedFeedbackEmp = empId;
-            const currentFb = feedbackData[empId]?.[currentTestCategory] || '';
-            document.getElementById('feedbackModalTitle').textContent = `피드백 작성 (사번 ${empId})`;
-            document.getElementById('modalFeedbackInput').value = currentFb;
-            document.getElementById('feedbackModal')?.classList.remove('hidden');
-        };
-
-        window.closeFeedbackModal = function() {
-            document.getElementById('feedbackModal')?.classList.add('hidden');
-        };
-
-        window.saveFeedback = function() {
-            if (!currentSelectedFeedbackEmp) return;
-            const val = document.getElementById('modalFeedbackInput').value.trim();
-            if (!feedbackData[currentSelectedFeedbackEmp]) feedbackData[currentSelectedFeedbackEmp] = {};
-            feedbackData[currentSelectedFeedbackEmp][currentTestCategory] = val;
-            closeFeedbackModal();
-            renderTestsTable();
+            const val = document.getElementById('modalNoticeInput')?.value || '';
+            const contentEl = document.getElementById('noticeContent');
+            if (contentEl) contentEl.innerText = `📌 ${val}`;
+            window.closeNoticeModal();
         };
 
         window.onload = function() {
-            if (window.lucide) lucide.createIcons();
-            updateGraduationDDay();
-            renderDashboard();
-            renderDayButtons();
-            renderScheduleTable();
+            window.updateGraduationDDay();
+            window.switchTab('dashboard');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         };
     </script>
 </body>
