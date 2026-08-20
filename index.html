@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>객실훈련팀 교관용 초기 훈련생 통합 관리 대시보드</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -82,6 +82,10 @@
                     <i data-lucide="file-check-2" class="w-4 h-4"></i>
                     <span>TEST 평가 현황</span>
                 </button>
+                <button onclick="switchTab('assignment')" id="tab-assignment" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-2">
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                    <span>과제 안내</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -116,8 +120,8 @@
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                     <div>
-                        <p class="text-xs font-semibold text-slate-500">재시험 / 주의 대상</p>
-                        <h3 class="text-2xl font-bold text-red-600 mt-1" id="dashRiskCount">2 <span class="text-sm font-normal text-slate-500">명</span></h3>
+                        <p class="text-xs font-semibold text-slate-500">집중 관리 대상자</p>
+                        <h3 class="text-2xl font-bold text-red-600 mt-1" id="dashRiskCount">0 <span class="text-sm font-normal text-slate-500">명</span></h3>
                         <p class="text-xs text-red-500 mt-1 font-medium"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>집중 케어 필요</p>
                     </div>
                     <div class="p-3 bg-red-50 text-red-600 rounded-xl">
@@ -139,7 +143,6 @@
                 </div>
             </div>
 
-            <!-- Dashboard Grid: Charts & Details -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Today's Schedule Overview -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm lg:col-span-1 flex flex-col justify-between">
@@ -234,8 +237,21 @@
                 <!-- Schedule Controls -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900">커리큘럼 & 훈련 시간표</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">안전 및 서비스 상세 교시별 과목 및 담당 교관 현황</p>
+                        <div class="flex items-center space-x-3">
+                            <h2 class="text-lg font-bold text-slate-900">커리큘럼 & 훈련 시간표</h2>
+                            <!-- View Switcher Toggle -->
+                            <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-medium">
+                                <button onclick="setScheduleViewMode('calendar')" id="btn-view-calendar" class="px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                    <span>달력 보기</span>
+                                </button>
+                                <button onclick="setScheduleViewMode('list')" id="btn-view-list" class="px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+                                    <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                                    <span>리스트 보기</span>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">안전 및 서비스 상세 교시별 과목 및 담당 교관 현황</p>
                     </div>
 
                     <!-- Week Tabs -->
@@ -254,8 +270,13 @@
                     <!-- Dynamic Render Day Filter Buttons -->
                 </div>
 
+                <!-- Calendar View Container -->
+                <div id="scheduleCalendarContainer" class="mb-4">
+                    <!-- Dynamic Render Weekly Calendar Grid -->
+                </div>
+
                 <!-- Schedule Table -->
-                <div class="overflow-x-auto custom-scrollbar">
+                <div id="scheduleTableWrapper" class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left border-collapse min-w-[700px]">
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
@@ -372,7 +393,7 @@
 
                 <!-- Test Evaluation Table -->
                 <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse min-w-[700px]">
+                    <table class="w-full text-left border-collapse min-w-[750px]">
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
                                 <th class="p-3">No</th>
@@ -381,12 +402,44 @@
                                 <th class="p-3">판정 변경</th>
                                 <th class="p-3">취득 점수</th>
                                 <th class="p-3">교관 평가 피드백</th>
+                                <th class="p-3 text-center">피드백 작성</th>
                             </tr>
                         </thead>
                         <tbody id="testTableBody" class="divide-y divide-slate-100 text-xs">
                             <!-- JS Dynamic Render -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. TAB: 과제 안내 (Assignment) -->
+        <section id="content-assignment" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">과목별 과제 안내 및 제출 현황</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">안전, 서비스, 기내 방송 등 훈련 과정별 과제 가이던스 및 제출 내역</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Category Sub Tabs -->
+                        <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
+                            <button onclick="filterAssignmentCat('ALL')" id="btn-assign-all" class="assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">전체</button>
+                            <button onclick="filterAssignmentCat('기타')" id="btn-assign-etc" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기타</button>
+                            <button onclick="filterAssignmentCat('안전')" id="btn-assign-safety" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">안전</button>
+                            <button onclick="filterAssignmentCat('서비스')" id="btn-assign-service" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스</button>
+                            <button onclick="filterAssignmentCat('기내 방송')" id="btn-assign-broadcast" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
+                        </div>
+                        <button onclick="openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>신규 과제 등록</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Assignment Grid -->
+                <div id="assignmentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- JS Dynamic Render -->
                 </div>
             </div>
         </section>
@@ -483,6 +536,55 @@
             <div class="flex justify-end space-x-2">
                 <button onclick="closeFeedbackModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
                 <button onclick="saveFeedback()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Assignment Modal -->
+    <div id="assignmentModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900">신규 과제 등록</h3>
+                <button onclick="closeAssignmentModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">구분</label>
+                    <select id="assignCategory" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="안전">안전</option>
+                        <option value="서비스">서비스</option>
+                        <option value="기내 방송">기내 방송</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과목명</label>
+                    <input type="text" id="assignSubject" placeholder="예: 비상장비 개론" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과제명</label>
+                    <input type="text" id="assignTitle" placeholder="예: 비상장비 위치 점검표 작성" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">제출 기한</label>
+                    <input type="text" id="assignDueDate" placeholder="예: 2026-09-08 18:00" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">제출 방식</label>
+                    <input type="text" id="assignMethod" placeholder="예: 태블릿 LMS 업로드 / 실습실 직접 제출" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">담당 교관</label>
+                    <input type="text" id="assignInstructor" placeholder="예: 오아현 교관" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과제 세부 설명 및 가이드</label>
+                    <textarea id="assignDetail" rows="3" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="과제 작성 요령 및 참고 사항..."></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeAssignmentModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="addAssignment()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">등록하기</button>
             </div>
         </div>
     </div>
@@ -602,7 +704,6 @@
             { week: 5, date: '10월 02일', dayName: '10월 02일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임' }
         ];
 
-        // TEST evaluation subjects definition
         const categorySubjectMap = {
             safety: [
                 { value: 'test_safety_k1', label: '[지식심사] 항공사 절차기본' },
@@ -634,7 +735,7 @@
                 { value: 'test_service_aircafe_practice', label: '에어카페 실습 TEST' }
             ],
             broadcast: [
-                { value: 'test_announce_test', label: '[기내 방송] 방송 TEST' }
+                { value: 'test_announce_test', label: '방송 TEST' }
             ]
         };
 
@@ -656,7 +757,7 @@
             };
         });
 
-        // Set initial test data examples
+        // Initial test data examples
         testResults['260802']['test_safety_s5'] = 'PASS';
         testScores['260802']['test_safety_s5'] = 90;
         testResults['260802']['test_safety_k1'] = 'RETEST';
@@ -666,14 +767,69 @@
 
         let currentActiveWeek = 1;
         let currentActiveDay = 'ALL';
+        let scheduleViewMode = 'calendar'; // 'calendar' or 'list'
         let currentTestCategory = 'safety';
+        let currentAssignmentCat = 'ALL';
         let currentSelectedNoteEmp = null;
         let currentSelectedFeedbackEmp = null;
         let chartInstance = null;
 
-        // --- 2. Application Logic Functions ---
+        // Assignments Sample Initial Data
+        const assignmentsData = [
+            {
+                id: 0,
+                cat: '기타',
+                subject: '입과 행정 및 준비사항',
+                title: '입과 서류 제출 및 필수 APP 설치 체크리스트',
+                dueDate: '2026-09-01 18:00',
+                method: '서면 제출 & 개인/태블릿 설치',
+                instructor: '담임 / 행정교관',
+                detail: '',
+                checklistItems: [
+                    { text: '여권', done: false },
+                    { text: '증명사진', done: false },
+                    { text: '승무원등록증', done: false },
+                    { text: '미국비자(단체) 신청가이드', done: false },
+                    { text: '신원진술서 작성 안내', done: false },
+                    { text: '객실승무원 초기훈련 입과서약서', done: false },
+                    { text: '초기훈련 배포금지동의서', done: false },
+                    { text: '객실승무원 윤리행동 준수 서약서', done: false },
+                    { text: '개인정보 제3자 동의서', done: false },
+                    { text: 'PAD 지급대장 서약서', done: false },
+                    { text: 'PAYCO APP 설치', done: false },
+                    { text: '고용노동부 HRD APP 설치', done: false },
+                    { text: 'J-ONE/MDM APP 설치', done: false },
+                    { text: '그룹웨어/Naver Works APP 설치', done: false },
+                    { text: 'Crew Connex APP 설치', done: false },
+                    { text: '지급용 태블릿 WIFI 연결 가이드', done: false }
+                ],
+                submittedCount: 30
+            },
+            { id: 1, cat: '안전', subject: '비상장비 개론', title: 'B737-800 비상장비 점검 및 위치 암기표 작성', dueDate: '2026-09-04 18:00', method: '태블릿 LMS 제출', instructor: '임청 교관', detail: '비상구별 배치 장비 수량 및 비상탈출 슬라이드 점검 항목 자필 요약 작성', submittedCount: 30 },
+            { id: 2, cat: '서비스', subject: 'IMAGE MAKING 1', title: '어피어런스 셀프 체크리스트 & 가이던스 작성', dueDate: '2026-09-07 09:00', method: '실습실 서면 제출', instructor: '조연진, 오아현 교관', detail: '헤어, 메이크업, 유니폼 착용 규정 준수 항목 self-check 및 보완점 기록', submittedCount: 29 },
+            { id: 3, cat: '기내 방송', subject: '기내방송 1', title: '한국어/영어 필수 안내문 방송 음성 녹음 제출', dueDate: '2026-09-18 23:59', method: '음성 파일 음원 업로드', instructor: '한재민 교관', detail: '웰컴 방송 및 터뷸런스 안내문 표준 억양, 속도 준수하여 녹음 파일 업로드', submittedCount: 25 },
+            { id: 4, cat: '서비스', subject: '사전기내식', title: '사전기내식 메뉴 구성 및 특수식 응대 롤플레잉 대본 작성', dueDate: '2026-09-20 18:00', method: '태블릿 LMS 제출', instructor: '오아현 교관', detail: '승객 응대 표준 멘트 작성 및 주요 특수식(베지테리언/키즈밀) 응대 요령 정리', submittedCount: 18 }
+        ];
 
-        // Tab Switching
+        window.updateGraduationDDay = function() {
+            const gradDate = new Date('2026-11-10');
+            const today = new Date();
+            gradDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            const diffTime = gradDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const badge = document.getElementById('dDayBadge');
+            if (badge) {
+                if (diffDays > 0) {
+                    badge.textContent = `D-${diffDays}`;
+                } else if (diffDays === 0) {
+                    badge.textContent = 'D-Day';
+                } else {
+                    badge.textContent = `D+${Math.abs(diffDays)}`;
+                }
+            }
+        };
+
         window.switchTab = function(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-button').forEach(el => {
@@ -697,208 +853,312 @@
             }
             if (tabId === 'trainees') renderTraineesTable();
             if (tabId === 'demerit') renderDemeritsTable();
-            if (tabId === 'evaluation') {
-                switchTestCategory('safety');
-            }
+            if (tabId === 'evaluation') switchTestCategory('safety');
+            if (tabId === 'assignment') renderAssignmentsGrid();
         };
 
-        // Graduation D-Day Calculation
-        window.updateGraduationDDay = function() {
-            const today = new Date();
-            const gradDate = new Date('2026-11-10T00:00:00');
-            const diffTime = gradDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            const badge = document.getElementById('dDayBadge');
-            if (badge) {
-                if (diffDays > 0) badge.textContent = `D-${diffDays}`;
-                else if (diffDays === 0) badge.textContent = `D-Day!`;
-                else badge.textContent = `수료 완료`;
-            }
-        };
-
-        // Dashboard Rendering & Chart
         window.renderDashboard = function() {
-            // Risk Trainee List Logic
-            const riskContainer = document.getElementById('riskTraineeList');
-            if (!riskContainer) return;
-            riskContainer.innerHTML = '';
+            const riskListEl = document.getElementById('riskTraineeList');
+            if (!riskListEl) return;
+            riskListEl.innerHTML = '';
 
-            let riskCount = 0;
+            const riskTraineesMap = new Map();
+
+            // 1. Demerit >= 10 OR Infractions >= 3
             trainees.forEach(t => {
-                const traineeDemerits = demerits.filter(d => d.empId === t.empId);
-                const totalPoints = traineeDemerits.reduce((sum, item) => sum + item.points, 0);
-                const demeritCount = traineeDemerits.length; // 지적/근태 횟수
+                const empDemerits = demerits.filter(d => d.empId === t.empId);
+                const totalPts = empDemerits.reduce((acc, curr) => acc + curr.points, 0);
+                const infractionCount = empDemerits.length;
 
-                const resultsObj = testResults[t.empId] || {};
-                const retestCount = Object.values(resultsObj).filter(status => status === 'RETEST').length;
-                const failCount = Object.values(resultsObj).filter(status => status === 'FAIL').length;
+                let reasons = [];
+                if (totalPts >= 10) reasons.push(`벌점 ${totalPts}점`);
+                if (infractionCount >= 3) reasons.push(`지적 ${infractionCount}회`);
 
-                // 조건: 1) 벌점 10점 이상, 2) 재시험 2개 이상, 3) Fail 1개 이상, 4) 용모/복장/태도/지각 등 지적 3회 이상
-                const isRisk = (totalPoints >= 10) || (retestCount >= 2) || (failCount >= 1) || (demeritCount >= 3);
-
-                if (isRisk) {
-                    riskCount++;
-                    const div = document.createElement('div');
-                    div.className = "p-2.5 bg-red-50/70 border border-red-100 rounded-xl flex justify-between items-center text-xs";
-                    
-                    let tags = '';
-                    if (totalPoints >= 10) tags += `<span class="bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold mr-1">벌점 ${totalPoints}점</span>`;
-                    if (retestCount >= 2) tags += `<span class="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold mr-1">재시험 ${retestCount}건</span>`;
-                    if (failCount >= 1) tags += `<span class="bg-red-200 text-red-800 px-1.5 py-0.5 rounded font-bold mr-1">FAIL ${failCount}건</span>`;
-                    if (demeritCount >= 3) tags += `<span class="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold">지적 ${demeritCount}회</span>`;
-
-                    div.innerHTML = `
-                        <div class="font-bold text-slate-800">사번 ${t.empId}</div>
-                        <div class="flex flex-wrap gap-1">${tags}</div>
-                    `;
-                    riskContainer.appendChild(div);
+                if (reasons.length > 0) {
+                    riskTraineesMap.set(t.empId, { empId: t.empId, reasons: reasons });
                 }
             });
 
-            if (riskCount === 0) {
-                riskContainer.innerHTML = '<p class="text-xs text-slate-400 py-2 text-center">현재 집중 관리 대상이 없습니다.</p>';
-            }
+            // 2. Retests >= 2 OR Fail >= 1
+            trainees.forEach(t => {
+                const results = testResults[t.empId] || {};
+                const values = Object.values(results);
+                const retestCount = values.filter(v => v === 'RETEST').length;
+                const failCount = values.filter(v => v === 'FAIL').length;
 
-            const riskBadge = document.getElementById('dashRiskCount');
-            if (riskBadge) riskBadge.innerHTML = `${riskCount} <span class="text-sm font-normal text-slate-500">명</span>`;
+                let reasons = riskTraineesMap.get(t.empId)?.reasons || [];
+                if (retestCount >= 2) reasons.push(`재시험 ${retestCount}건`);
+                if (failCount >= 1) reasons.push(`FAIL ${failCount}건`);
 
-            // Chart Render
-            const ctx = document.getElementById('testResultChart');
-            if (ctx && typeof Chart !== 'undefined') {
-                if (chartInstance) chartInstance.destroy();
-                chartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['안전(Safety)', '서비스(Service)', '기내 방송'],
-                        datasets: [
-                            { label: 'PASS', data: [28, 27, 29], backgroundColor: '#10b981' },
-                            { label: '재시험', data: [2, 3, 1], backgroundColor: '#f59e0b' },
-                            { label: 'FAIL', data: [0, 0, 0], backgroundColor: '#ef4444' }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
-                        scales: { x: { stacked: true }, y: { stacked: true, max: 30 } }
-                    }
+                if (reasons.length > 0) {
+                    riskTraineesMap.set(t.empId, { empId: t.empId, reasons: reasons });
+                }
+            });
+
+            const riskArray = Array.from(riskTraineesMap.values());
+            document.getElementById('dashRiskCount').innerHTML = `${riskArray.length} <span class="text-sm font-normal text-slate-500">명</span>`;
+
+            if (riskArray.length === 0) {
+                riskListEl.innerHTML = '<p class="text-xs text-slate-400 py-2 text-center">집중 관리 대상자가 없습니다.</p>';
+            } else {
+                riskArray.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "flex justify-between items-center bg-red-50/70 p-2 rounded-xl border border-red-100 text-xs";
+                    div.innerHTML = `
+                        <span class="font-bold text-red-900">사번 ${item.empId}</span>
+                        <div class="flex space-x-1">
+                            ${item.reasons.map(r => `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">${r}</span>`).join('')}
+                        </div>
+                    `;
+                    riskListEl.appendChild(div);
                 });
             }
+
+            renderChart();
         };
 
-        // Schedule Filter & Render
+        function renderChart() {
+            const canvas = document.getElementById('testResultChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['안전 지식', '안전 기량', '서비스', '기내 방송'],
+                    datasets: [
+                        { label: 'PASS', data: [28, 27, 26, 29], backgroundColor: '#10b981' },
+                        { label: '재시험', data: [2, 3, 3, 1], backgroundColor: '#f59e0b' },
+                        { label: 'FAIL', data: [0, 0, 1, 0], backgroundColor: '#ef4444' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, max: 30, ticks: { stepSize: 5 } }
+                    }
+                }
+            });
+        }
+
         window.filterScheduleWeek = function(weekNum) {
             currentActiveWeek = weekNum;
             currentActiveDay = 'ALL';
+
             document.querySelectorAll('.week-btn').forEach(btn => {
                 btn.className = "week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap";
             });
+
             const activeBtn = document.getElementById(`btn-week-${weekNum}`);
             if (activeBtn) {
                 activeBtn.className = "week-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs whitespace-nowrap";
             }
+
             renderDayButtons();
             renderScheduleTable();
         };
 
-        window.renderDayButtons = function() {
-            const dayContainer = document.getElementById('dayFilterContainer');
-            if (!dayContainer) return;
-            dayContainer.innerHTML = '';
-
-            if (currentActiveWeek === 'future') {
-                dayContainer.innerHTML = '<span class="text-xs text-slate-400">Future schedule not yet released.</span>';
-                return;
+        window.setScheduleViewMode = function(mode) {
+            scheduleViewMode = mode;
+            const calBtn = document.getElementById('btn-view-calendar');
+            const listBtn = document.getElementById('btn-view-list');
+            if (calBtn && listBtn) {
+                if (mode === 'calendar') {
+                    calBtn.className = "px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1";
+                    listBtn.className = "px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1";
+                } else {
+                    listBtn.className = "px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1";
+                    calBtn.className = "px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1";
+                }
             }
-
-            const weekItems = scheduleData.filter(s => s.week === currentActiveWeek);
-            const days = Array.from(new Set(weekItems.map(s => s.dayName)));
-
-            let allBtn = document.createElement('button');
-            allBtn.onclick = () => filterScheduleDay('ALL');
-            allBtn.className = `px-2.5 py-1 rounded-lg text-xs font-semibold ${currentActiveDay === 'ALL' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
-            allBtn.textContent = '전체 일자';
-            dayContainer.appendChild(allBtn);
-
-            days.forEach(dayStr => {
-                let btn = document.createElement('button');
-                btn.onclick = () => filterScheduleDay(dayStr);
-                btn.className = `px-2.5 py-1 rounded-lg text-xs font-semibold ${currentActiveDay === dayStr ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
-                btn.textContent = dayStr;
-                dayContainer.appendChild(btn);
-            });
+            renderScheduleTable();
         };
 
         window.filterScheduleDay = function(dayStr) {
             currentActiveDay = dayStr;
-            renderDayButtons();
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.className = "day-btn text-slate-600 hover:text-slate-900 bg-slate-50 px-2.5 py-1 rounded-lg text-xs";
+            });
+
+            const activeBtn = document.getElementById(`btn-day-${encodeURIComponent(dayStr)}`);
+            if (activeBtn) {
+                activeBtn.className = "day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm";
+            }
+
             renderScheduleTable();
+        };
+
+        window.renderDayButtons = function() {
+            const container = document.getElementById('dayFilterContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (currentActiveWeek === 'future') {
+                container.innerHTML = '<span class="text-xs text-slate-400">6주차 이후 커리큘럼 확정 후 날짜 세부 버튼이 업데이트됩니다.</span>';
+                return;
+            }
+
+            const weekSchedules = scheduleData.filter(s => s.week === currentActiveWeek);
+            const days = Array.from(new Set(weekSchedules.map(s => s.dayName)));
+
+            const allBtn = document.createElement('button');
+            allBtn.onclick = () => filterScheduleDay('ALL');
+            allBtn.id = 'btn-day-ALL';
+            allBtn.className = currentActiveDay === 'ALL'
+                ? "day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm"
+                : "day-btn text-slate-600 hover:text-slate-900 bg-slate-50 px-2.5 py-1 rounded-lg text-xs";
+            allBtn.textContent = '전체 일자';
+            container.appendChild(allBtn);
+
+            days.forEach(dayStr => {
+                const btn = document.createElement('button');
+                btn.onclick = () => filterScheduleDay(dayStr);
+                btn.id = `btn-day-${encodeURIComponent(dayStr)}`;
+                btn.className = currentActiveDay === dayStr
+                    ? "day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm"
+                    : "day-btn text-slate-600 hover:text-slate-900 bg-slate-50 px-2.5 py-1 rounded-lg text-xs";
+                btn.textContent = dayStr;
+                container.appendChild(btn);
+            });
         };
 
         window.renderScheduleTable = function() {
             const tbody = document.getElementById('scheduleTableBody');
-            if (!tbody) return;
+            const calContainer = document.getElementById('scheduleCalendarContainer');
+            const tableWrapper = document.getElementById('scheduleTableWrapper');
+            if (!tbody || !calContainer || !tableWrapper) return;
+
             tbody.innerHTML = '';
+            calContainer.innerHTML = '';
 
             if (currentActiveWeek === 'future') {
+                calContainer.classList.add('hidden');
+                tableWrapper.classList.remove('hidden');
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" class="p-8 text-center text-slate-400">
-                            <i data-lucide="info" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-                            <p class="font-bold text-sm text-slate-600">6주차 이후 (10월 05일~) 커리큘럼 업데이트 예정</p>
-                            <p class="text-xs mt-1">확정된 커리큘럼 전달 시 즉시 업데이트 예정입니다.</p>
+                            📌 6주차 이후 세부 커리큘럼은 확정되는 대로 업데이트될 예정입니다.
                         </td>
                     </tr>
                 `;
+                return;
+            }
+
+            // Calendar mode rendering when ALL days or calendar mode active
+            if (scheduleViewMode === 'calendar' && currentActiveDay === 'ALL') {
+                calContainer.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+
+                const weekSchedules = scheduleData.filter(s => s.week === currentActiveWeek);
+                const uniqueDays = Array.from(new Set(weekSchedules.map(s => s.dayName)));
+
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-3.5";
+
+                uniqueDays.forEach(dayName => {
+                    const dayItems = weekSchedules.filter(s => s.dayName === dayName);
+                    const dayCard = document.createElement('div');
+                    dayCard.className = "bg-slate-50 border border-slate-200 rounded-2xl p-3 flex flex-col space-y-2.5 hover:shadow-sm transition";
+
+                    dayCard.innerHTML = `
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+                            <span class="text-xs font-bold text-slate-900 flex items-center space-x-1">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-orange-500"></i>
+                                <span>${dayName}</span>
+                            </span>
+                            <button onclick="filterScheduleDay('${dayName}')" class="text-[11px] font-semibold text-orange-600 hover:underline">상세보기</button>
+                        </div>
+                        <div class="space-y-2 flex-1">
+                            ${dayItems.map(item => {
+                                let bgStyle = "bg-white border-slate-200 text-slate-800";
+                                let badgeStyle = "bg-slate-100 text-slate-600";
+                                if (item.cat === '안전') { bgStyle = "bg-amber-50/80 border-amber-200 text-amber-950"; badgeStyle = "bg-amber-100 text-amber-800"; }
+                                if (item.cat === '서비스') { bgStyle = "bg-emerald-50/80 border-emerald-200 text-emerald-950"; badgeStyle = "bg-emerald-100 text-emerald-800"; }
+                                if (item.cat === 'TEST/평가') { bgStyle = "bg-blue-50/80 border-blue-200 text-blue-950"; badgeStyle = "bg-blue-100 text-blue-800"; }
+                                if (item.cat === '기내 방송') { bgStyle = "bg-purple-50/80 border-purple-200 text-purple-950"; badgeStyle = "bg-purple-100 text-purple-800"; }
+                                if (item.cat === '휴무') { bgStyle = "bg-red-50/80 border-red-200 text-red-950"; badgeStyle = "bg-red-100 text-red-800"; }
+
+                                return `
+                                    <div class="p-2.5 rounded-xl border text-xs ${bgStyle} space-y-1">
+                                        <div class="flex justify-between items-center text-[10px]">
+                                            <span class="font-bold text-slate-500">${item.period.split(' ')[0]}</span>
+                                            <span class="px-1.5 py-0.5 rounded font-bold ${badgeStyle}">${item.cat}</span>
+                                        </div>
+                                        <div class="font-bold leading-snug">${item.name}</div>
+                                        <div class="text-[10px] text-slate-500 truncate">👤 ${item.instructor}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    grid.appendChild(dayCard);
+                });
+
+                calContainer.appendChild(grid);
                 if (window.lucide) lucide.createIcons();
                 return;
             }
+
+            // List view rendering
+            calContainer.classList.add('hidden');
+            tableWrapper.classList.remove('hidden');
 
             let filtered = scheduleData.filter(s => s.week === currentActiveWeek);
             if (currentActiveDay !== 'ALL') {
                 filtered = filtered.filter(s => s.dayName === currentActiveDay);
             }
 
-            filtered.forEach(item => {
-                let badgeClass = 'bg-slate-100 text-slate-700';
-                if (item.cat === '안전') badgeClass = 'bg-red-50 text-red-700 border border-red-200';
-                if (item.cat === '서비스') badgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-                if (item.cat === '기내 방송') badgeClass = 'bg-purple-50 text-purple-700 border border-purple-200';
-                if (item.cat === 'TEST/평가') badgeClass = 'bg-blue-50 text-blue-700 border border-blue-200 font-bold';
-                if (item.cat === '휴무') badgeClass = 'bg-red-100 text-red-800 font-bold';
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">해당 일자의 시간표가 없습니다.</td></tr>';
+                return;
+            }
+
+            filtered.forEach(s => {
+                let badgeStyle = 'bg-slate-100 text-slate-600';
+                if (s.cat === '안전') badgeStyle = 'bg-amber-100 text-amber-800 font-bold';
+                if (s.cat === '서비스') badgeStyle = 'bg-emerald-100 text-emerald-800 font-bold';
+                if (s.cat === 'TEST/평가') badgeStyle = 'bg-blue-100 text-blue-800 font-bold';
+                if (s.cat === '기내 방송') badgeStyle = 'bg-purple-100 text-purple-800 font-bold';
+                if (s.cat === '휴무') badgeStyle = 'bg-red-100 text-red-800 font-bold';
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="p-3 font-semibold text-slate-700">${item.period}</td>
-                    <td class="p-3 text-slate-600">${item.dayName}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded-md text-[11px] font-medium ${badgeClass}">${item.cat}</span></td>
-                    <td class="p-3 font-bold text-slate-800">${item.name}</td>
-                    <td class="p-3 text-slate-600"><span class="bg-slate-100 px-2 py-0.5 rounded text-[11px]">${item.instructor}</span></td>
+                    <td class="p-3 font-medium text-slate-700">${s.period}</td>
+                    <td class="p-3 text-slate-600">${s.dayName}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded-md text-[11px] ${badgeStyle}">${s.cat}</span></td>
+                    <td class="p-3 font-semibold text-slate-900">${s.name}</td>
+                    <td class="p-3 text-slate-600">${s.instructor}</td>
                 `;
                 tbody.appendChild(tr);
             });
         };
 
-        // Trainees Table Render
         window.renderTraineesTable = function() {
             const tbody = document.getElementById('traineesTableBody');
+            const searchVal = document.getElementById('searchTraineeInput')?.value.trim() || '';
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const query = (document.getElementById('searchTraineeInput')?.value || '').trim();
+            let filtered = trainees;
+            if (searchVal) {
+                filtered = filtered.filter(t => t.empId.includes(searchVal));
+            }
 
-            trainees.filter(t => t.empId.includes(query)).forEach((t, index) => {
+            filtered.forEach((t, index) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="p-3 text-slate-400 font-medium">${index + 1}</td>
+                    <td class="p-3 font-medium text-slate-400">${index + 1}</td>
                     <td class="p-3 font-bold text-slate-900">${t.empId}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-100 text-emerald-700 font-bold">${t.status}</span></td>
-                    <td class="p-3 text-slate-600 max-w-md">${t.note}</td>
+                    <td class="p-3"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-semibold text-[11px]">${t.status}</span></td>
+                    <td class="p-3 text-slate-700 max-w-md">${t.note}</td>
                     <td class="p-3 text-center">
-                        <button onclick="openNoteModal('${t.empId}')" class="text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold transition">
+                        <button onclick="openNoteModal('${t.empId}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">
                             메모 수정
                         </button>
                     </td>
@@ -907,125 +1167,268 @@
             });
         };
 
-        // Demerits Table Render
         window.renderDemeritsTable = function() {
             const tbody = document.getElementById('demeritTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
 
             demerits.forEach(d => {
-                const total = demerits.filter(x => x.empId === d.empId).reduce((s, i) => s + i.points, 0);
+                const empDemerits = demerits.filter(item => item.empId === d.empId);
+                const totalPts = empDemerits.reduce((acc, curr) => acc + curr.points, 0);
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="p-3 text-slate-600">${d.date}</td>
+                    <td class="p-3 text-slate-500">${d.date}</td>
                     <td class="p-3 font-bold text-slate-900">${d.empId}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-red-50 text-red-600 border border-red-100">${d.category}</span></td>
+                    <td class="p-3"><span class="bg-red-50 text-red-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">${d.category}</span></td>
                     <td class="p-3 text-slate-700">${d.detail}</td>
-                    <td class="p-3 font-bold text-red-600">+${d.points}점</td>
-                    <td class="p-3"><span class="font-bold ${total >= 3 ? 'text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200' : 'text-slate-700'}">${total}점</span></td>
-                    <td class="p-3 text-slate-500">${d.instructor}</td>
+                    <td class="p-3 font-bold text-red-600">+${d.points}</td>
+                    <td class="p-3 font-bold ${totalPts >= 3 ? 'text-red-600' : 'text-slate-800'}">${totalPts}점</td>
+                    <td class="p-3 text-slate-600">${d.instructor}</td>
                 `;
                 tbody.appendChild(tr);
             });
         };
 
-        // TEST Category Switch & Table Render
         window.switchTestCategory = function(cat) {
             currentTestCategory = cat;
             document.querySelectorAll('.test-cat-btn').forEach(btn => {
                 btn.className = "test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs";
             });
+
             const activeBtn = document.getElementById(`btn-test-${cat}`);
             if (activeBtn) {
                 activeBtn.className = "test-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs";
             }
 
-            // Populate Dropdown
-            const select = document.getElementById('testSubjectSelect');
-            if (select) {
-                select.innerHTML = '';
-                const subjects = categorySubjectMap[cat] || [];
-                subjects.forEach(sub => {
-                    const opt = document.createElement('option');
-                    opt.value = sub.value;
-                    opt.textContent = sub.label;
-                    select.appendChild(opt);
-                });
-            }
+            populateTestSubjectSelect();
             renderTestsTable();
         };
 
+        function populateTestSubjectSelect() {
+            const select = document.getElementById('testSubjectSelect');
+            if (!select) return;
+            select.innerHTML = '';
+
+            const subjects = categorySubjectMap[currentTestCategory] || [];
+            subjects.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.value;
+                opt.textContent = s.label;
+                select.appendChild(opt);
+            });
+        }
+
         window.renderTestsTable = function() {
             const tbody = document.getElementById('testTableBody');
-            if (!tbody) return;
+            const select = document.getElementById('testSubjectSelect');
+            if (!tbody || !select) return;
             tbody.innerHTML = '';
 
-            const testCode = document.getElementById('testSubjectSelect')?.value;
+            const testCode = select.value || categorySubjectMap[currentTestCategory]?.[0]?.value;
+            if (!testCode) return;
 
-            trainees.forEach((t, index) => {
-                const currentStatus = (testCode && testResults[t.empId]?.[testCode]) || '미응시';
-                const currentScore = (testCode && testScores[t.empId]?.[testCode] !== undefined) ? testScores[t.empId][testCode] : '';
-                const currentFb = feedbackData[t.empId]?.[currentTestCategory] || '피드백 없음';
+            trainees.forEach((t, idx) => {
+                const status = testResults[t.empId]?.[testCode] || '미응시';
+                const score = testScores[t.empId]?.[testCode] !== undefined ? testScores[t.empId][testCode] : '';
+                const feedback = feedbackData[t.empId]?.[currentTestCategory] || '-';
 
-                let statusBadge = '<span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold">미응시</span>';
-                if (currentStatus === 'PASS') statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">PASS</span>';
-                if (currentStatus === 'RETEST') statusBadge = '<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-bold">재시험</span>';
-                if (currentStatus === 'FAIL') statusBadge = '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">FAIL</span>';
+                let statusBadge = 'bg-slate-100 text-slate-600';
+                if (status === 'PASS') statusBadge = 'bg-emerald-100 text-emerald-800 font-bold';
+                if (status === 'RETEST') statusBadge = 'bg-amber-100 text-amber-800 font-bold';
+                if (status === 'FAIL') statusBadge = 'bg-red-100 text-red-800 font-bold';
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="p-3 text-slate-400 font-medium">${index + 1}</td>
+                    <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
                     <td class="p-3 font-bold text-slate-900">${t.empId}</td>
-                    <td class="p-3">${statusBadge}</td>
-                    <td class="p-3 space-x-1">
-                        <button onclick="updateTestStatus('${t.empId}', '${testCode}', 'PASS')" class="px-2 py-1 text-[11px] font-bold rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">PASS</button>
-                        <button onclick="updateTestStatus('${t.empId}', '${testCode}', 'RETEST')" class="px-2 py-1 text-[11px] font-bold rounded bg-amber-50 text-amber-600 hover:bg-amber-100">재시험</button>
-                        <button onclick="updateTestStatus('${t.empId}', '${testCode}', 'FAIL')" class="px-2 py-1 text-[11px] font-bold rounded bg-red-50 text-red-600 hover:bg-red-100">FAIL</button>
-                    </td>
+                    <td class="p-3"><span class="px-2.5 py-1 rounded-lg text-xs ${statusBadge}">${status}</span></td>
                     <td class="p-3">
-                        <div class="flex items-center space-x-1">
-                            <input type="number" min="0" max="100" value="${currentScore}" placeholder="점수" onchange="updateTestScore('${t.empId}', '${testCode}', this.value)" class="w-16 p-1 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 text-center focus:outline-none focus:ring-2 focus:ring-orange-500">
-                            <span class="text-slate-400 text-xs">점</span>
+                        <div class="flex space-x-1">
+                            <button onclick="changeTestResult('${t.empId}', '${testCode}', 'PASS')" class="px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded text-[11px] font-bold">PASS</button>
+                            <button onclick="changeTestResult('${t.empId}', '${testCode}', 'RETEST')" class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded text-[11px] font-bold">재시험</button>
+                            <button onclick="changeTestResult('${t.empId}', '${testCode}', 'FAIL')" class="px-2 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded text-[11px] font-bold">FAIL</button>
                         </div>
                     </td>
                     <td class="p-3">
-                        <div class="flex items-center justify-between space-x-2">
-                            <span class="text-slate-600 truncate max-w-[180px]" title="${currentFb}">${currentFb}</span>
-                            <button onclick="openFeedbackModal('${t.empId}')" class="px-2 py-1 text-[11px] font-bold rounded bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap flex-shrink-0">피드백 작성</button>
-                        </div>
+                        <input type="number" min="0" max="100" value="${score}" onchange="updateTestScore('${t.empId}', '${testCode}', this.value)" placeholder="점수" class="w-16 p-1 border border-slate-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-orange-500">
+                    </td>
+                    <td class="p-3 text-slate-600 max-w-xs truncate">${feedback}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="openFeedbackModal('${t.empId}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
+                            피드백 작성
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         };
 
-        window.updateTestScore = function(empId, testCode, score) {
-            if (!testCode) return;
-            if (!testScores[empId]) testScores[empId] = {};
-            testScores[empId][testCode] = score !== '' ? Number(score) : '';
-        };
-
-        window.updateTestStatus = function(empId, testCode, status) {
-            if (!testCode) return;
+        window.changeTestResult = function(empId, testCode, newStatus) {
             if (!testResults[empId]) testResults[empId] = {};
-            testResults[empId][testCode] = status;
+            testResults[empId][testCode] = newStatus;
             renderTestsTable();
             renderDashboard();
         };
 
-        // Modal Controls
+        window.updateTestScore = function(empId, testCode, scoreVal) {
+            if (!testScores[empId]) testScores[empId] = {};
+            testScores[empId][testCode] = scoreVal ? parseInt(scoreVal, 10) : '';
+        };
+
+        window.filterAssignmentCat = function(cat) {
+            currentAssignmentCat = cat;
+            document.querySelectorAll('.assign-cat-btn').forEach(btn => {
+                btn.className = "assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs";
+            });
+            const btnIdMap = { 'ALL': 'btn-assign-all', '기타': 'btn-assign-etc', '안전': 'btn-assign-safety', '서비스': 'btn-assign-service', '기내 방송': 'btn-assign-broadcast' };
+            if (btnIdMap[cat]) {
+                const activeBtn = document.getElementById(btnIdMap[cat]);
+                if (activeBtn) activeBtn.className = "assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs";
+            }
+            renderAssignmentsGrid();
+        };
+
+        window.renderAssignmentsGrid = function() {
+            const grid = document.getElementById('assignmentGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            let filtered = assignmentsData;
+            if (currentAssignmentCat !== 'ALL') {
+                filtered = assignmentsData.filter(a => a.cat === currentAssignmentCat);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 text-xs">등록된 과제가 없습니다.</div>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                let catColor = 'bg-slate-100 text-slate-700';
+                if (item.cat === '기타') catColor = 'bg-blue-50 text-blue-700 border border-blue-200';
+                if (item.cat === '안전') catColor = 'bg-red-50 text-red-700 border border-red-200';
+                if (item.cat === '서비스') catColor = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+                if (item.cat === '기내 방송') catColor = 'bg-purple-50 text-purple-700 border border-purple-200';
+
+                let detailHTML = '';
+                if (item.checklistItems && item.checklistItems.length > 0) {
+                    const completedCount = item.checklistItems.filter(c => c.done).length;
+                    const totalCount = item.checklistItems.length;
+                    const percent = Math.round((completedCount / totalCount) * 100);
+
+                    detailHTML = `
+                        <div class="mb-2 flex items-center justify-between text-[11px] font-bold text-slate-500">
+                            <span>진행 상황 (${completedCount}/${totalCount})</span>
+                            <span class="text-orange-600 font-extrabold">${percent}%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-1.5 mb-3">
+                            <div class="bg-orange-500 h-1.5 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
+                        </div>
+                        <div class="space-y-1">
+                            ${item.checklistItems.map((chk, idx) => `
+                                <label class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer transition select-none ${chk.done ? 'bg-orange-50/50' : ''}">
+                                    <input type="checkbox" ${chk.done ? 'checked' : ''} onchange="toggleChecklistItem(${item.id}, ${idx})" class="rounded text-orange-500 focus:ring-orange-400 w-4 h-4 cursor-pointer accent-orange-500">
+                                    <span class="${chk.done ? 'line-through text-slate-400 font-normal' : 'text-slate-800 font-semibold'}">${chk.text}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    detailHTML = item.detail ? item.detail.replace(/\n/g, '<br>') : '';
+                }
+
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-50/80 rounded-2xl border border-slate-200 hover:border-orange-300 transition flex flex-col justify-between space-y-3";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md ${catColor}">${item.cat}</span>
+                            <span class="text-[11px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200">${item.subject}</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-900 leading-snug mb-1">${item.title}</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-xl border border-slate-100 my-2 max-h-60 overflow-y-auto custom-scrollbar">${detailHTML}</div>
+                    </div>
+
+                    <div class="space-y-1.5 pt-2 border-t border-slate-200/60 text-xs text-slate-500">
+                        <div class="flex justify-between">
+                            <span class="font-medium">제출 기한:</span>
+                            <span class="font-bold text-slate-800">${item.dueDate}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">제출 방식:</span>
+                            <span class="text-slate-700">${item.method}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">담당 교관:</span>
+                            <span class="text-slate-700">${item.instructor}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="font-medium">제출 완료:</span>
+                            <span class="font-extrabold ${item.submittedCount === 30 ? 'text-emerald-600' : 'text-orange-600'} bg-white px-2 py-0.5 rounded-lg border border-slate-200">
+                                ${item.submittedCount} / 30 명
+                            </span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.toggleChecklistItem = function(assignId, idx) {
+            const assign = assignmentsData.find(a => a.id === assignId);
+            if (assign && assign.checklistItems && assign.checklistItems[idx] !== undefined) {
+                assign.checklistItems[idx].done = !assign.checklistItems[idx].done;
+                renderAssignmentsGrid();
+            }
+        };
+
+        window.openAssignmentModal = function() {
+            document.getElementById('assignmentModal')?.classList.remove('hidden');
+        };
+
+        window.closeAssignmentModal = function() {
+            document.getElementById('assignmentModal')?.classList.add('hidden');
+        };
+
+        window.addAssignment = function() {
+            const cat = document.getElementById('assignCategory').value;
+            const subject = document.getElementById('assignSubject').value.trim() || '과목 미지정';
+            const title = document.getElementById('assignTitle').value.trim() || '과제';
+            const dueDate = document.getElementById('assignDueDate').value.trim() || '상시 제출';
+            const method = document.getElementById('assignMethod').value.trim() || '태블릿 제출';
+            const instructor = document.getElementById('assignInstructor').value.trim() || '담당교관';
+            const detail = document.getElementById('assignDetail').value.trim() || '세부 설명 없음';
+
+            assignmentsData.push({
+                id: Date.now(),
+                cat: cat,
+                subject: subject,
+                title: title,
+                dueDate: dueDate,
+                method: method,
+                instructor: instructor,
+                detail: detail,
+                submittedCount: 0
+            });
+
+            closeAssignmentModal();
+            renderAssignmentsGrid();
+        };
+
         window.openNoteModal = function(empId) {
             currentSelectedNoteEmp = empId;
             const trainee = trainees.find(t => t.empId === empId);
             document.getElementById('modalTraineeTitle').textContent = `특이사항 편집 (사번: ${empId})`;
             document.getElementById('modalNoteInput').value = trainee?.note || '';
-            document.getElementById('noteModal').classList.remove('hidden');
+            document.getElementById('noteModal')?.classList.remove('hidden');
         };
 
         window.closeNoteModal = function() {
-            document.getElementById('noteModal').classList.add('hidden');
+            document.getElementById('noteModal')?.classList.add('hidden');
         };
 
         window.saveTraineeNote = function() {
@@ -1048,11 +1451,11 @@
                     select.appendChild(opt);
                 });
             }
-            document.getElementById('demeritModal').classList.remove('hidden');
+            document.getElementById('demeritModal')?.classList.remove('hidden');
         };
 
         window.closeDemeritModal = function() {
-            document.getElementById('demeritModal').classList.add('hidden');
+            document.getElementById('demeritModal')?.classList.add('hidden');
         };
 
         window.addDemeritRecord = function() {
@@ -1079,11 +1482,11 @@
         window.openNoticeModal = function() {
             const currentNotice = document.getElementById('noticeContent').innerText;
             document.getElementById('modalNoticeInput').value = currentNotice.replace('📌 ', '').trim();
-            document.getElementById('noticeModal').classList.remove('hidden');
+            document.getElementById('noticeModal')?.classList.remove('hidden');
         };
 
         window.closeNoticeModal = function() {
-            document.getElementById('noticeModal').classList.add('hidden');
+            document.getElementById('noticeModal')?.classList.add('hidden');
         };
 
         window.saveNotice = function() {
@@ -1099,11 +1502,11 @@
             const currentFb = feedbackData[empId]?.[currentTestCategory] || '';
             document.getElementById('feedbackModalTitle').textContent = `피드백 작성 (사번 ${empId})`;
             document.getElementById('modalFeedbackInput').value = currentFb;
-            document.getElementById('feedbackModal').classList.remove('hidden');
+            document.getElementById('feedbackModal')?.classList.remove('hidden');
         };
 
         window.closeFeedbackModal = function() {
-            document.getElementById('feedbackModal').classList.add('hidden');
+            document.getElementById('feedbackModal')?.classList.add('hidden');
         };
 
         window.saveFeedback = function() {
@@ -1115,7 +1518,6 @@
             renderTestsTable();
         };
 
-        // Global Window Init
         window.onload = function() {
             if (window.lucide) lucide.createIcons();
             updateGraduationDDay();
