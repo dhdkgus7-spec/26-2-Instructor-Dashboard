@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>객실훈련팀 교관용 초기 훈련생 통합 관리 대시보드</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons UMD Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (XLSX) CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+        }
+        .tab-active {
+            border-bottom: 3px solid #f97316;
+            color: #ea580c;
+            font-weight: 700;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- 보안 인증 오버레이 (비밀번호: Jeju@ir262) -->
+    <div id="authOverlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center border border-slate-100">
+            <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="w-8 h-8 text-orange-500"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 mb-1">교관 대시보드 보안 인증</h2>
+            <p class="text-slate-500 text-xs mb-6">훈련생 민감 정보 보호를 위해 접근 암호를 입력하세요.</p>
+            
+            <form id="authForm" onsubmit="window.handleInstructorAuth(event)">
+                <input type="password" id="authPassword" placeholder="비밀번호 입력" autofocus
+                       class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 text-center font-mono">
+                <div id="authError" class="text-red-500 text-xs font-semibold mb-3 hidden flex items-center justify-center space-x-1">
+                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                    <span>비밀번호가 일치하지 않습니다.</span>
+                </div>
+                <button type="submit" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition duration-200 shadow-md text-xs">
+                    대시보드 잠금 해제
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-orange-500 p-2 rounded-xl text-white shadow-md">
+                        <i data-lucide="plane-takeoff" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h1 class="text-lg font-bold text-slate-900 leading-none">객실훈련팀 교관 대시보드</h1>
+                            <span id="traineeCountBadge" class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-semibold">초기 훈련생 30명</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">훈련 기간: 2026.08.31 ~ 2026.11.10 (11주 과정)</p>
+                    </div>
+                </div>
+
+                <!-- Graduation D-Day Badge & Lock Button -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm flex items-center space-x-2">
+                        <i data-lucide="award" class="w-4 h-4"></i>
+                        <span>수료식 (11/10)</span>
+                        <span id="dDayBadge" class="bg-white text-orange-600 px-2 py-0.5 rounded-md font-extrabold ml-1">D-Day</span>
+                    </div>
+                    <button onclick="window.lockDashboard()" title="대시보드 화면 잠금" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
+                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        <span>잠금</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Buttons -->
+            <nav class="flex space-x-6 overflow-x-auto custom-scrollbar pt-2 text-sm font-medium">
+                <button onclick="window.switchTab('dashboard')" id="tab-dashboard" class="tab-button tab-active pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>종합 현황</span>
+                </button>
+                <button onclick="window.switchTab('schedule')" id="tab-schedule" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span>훈련 시간표 (11주)</span>
+                </button>
+                <button onclick="window.switchTab('trainees')" id="tab-trainees" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>훈련생 정보</span>
+                </button>
+                <button onclick="window.switchTab('demerit')" id="tab-demerit" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
+                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                    <span>벌점/근태 현황</span>
+                </button>
+                <button onclick="window.switchTab('evaluation')" id="tab-evaluation" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
+                    <i data-lucide="file-check-2" class="w-4 h-4"></i>
+                    <span>TEST 평가 현황</span>
+                </button>
+                <button onclick="window.switchTab('assignment')" id="tab-assignment" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                    <span>과제 안내</span>
+                </button>
+                <button onclick="window.switchTab('manage')" id="tab-manage" class="tab-button text-orange-600 hover:text-orange-700 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5 font-bold">
+                    <i data-lucide="edit-3" class="w-4 h-4 text-orange-500"></i>
+                    <span>데이터 관리/수정 ⚙️</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- Toast Notification Alert Banner -->
+        <div id="toastNotification" class="hidden fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs font-semibold">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+            <span id="toastMessage">처리가 완료되었습니다.</span>
+        </div>
+
+        <!-- 1. TAB: 종합 현황 (Dashboard) -->
+        <section id="content-dashboard" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500">입과 훈련생</p>
+                        <h3 class="text-2xl font-bold text-slate-900 mt-1" id="dashTraineeCount">30 <span class="text-sm font-normal text-slate-500">명</span></h3>
+                        <p class="text-xs text-emerald-600 mt-1 font-medium"><i data-lucide="check-circle" class="w-3 h-3 inline mr-1"></i>정상 재학 중</p>
+                    </div>
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500">현재 과정 진행률</p>
+                        <h3 class="text-2xl font-bold text-slate-900 mt-1">1주차 <span class="text-sm font-normal text-slate-500">/ 11주</span></h3>
+                        <p class="text-xs text-orange-600 mt-1 font-medium"><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>정상 진행 중</p>
+                    </div>
+                    <div class="p-3 bg-orange-50 text-orange-600 rounded-xl">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500">집중 관리 대상자</p>
+                        <h3 class="text-2xl font-bold text-red-600 mt-1" id="dashRiskCount">0 <span class="text-sm font-normal text-slate-500">명</span></h3>
+                        <p class="text-xs text-red-500 mt-1 font-medium"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>집중 케어 필요</p>
+                    </div>
+                    <div class="p-3 bg-red-50 text-red-600 rounded-xl">
+                        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500">LEADER</p>
+                        <div class="mt-1">
+                            <p class="text-xs font-bold text-slate-800">반장: <span class="text-slate-500 font-normal">미정</span> / 부반장: <span class="text-slate-500 font-normal">미정</span></p>
+                            <p class="text-xs font-bold text-slate-800 mt-0.5">서비스리더: <span class="text-slate-500 font-normal">미정</span> / 안전리더: <span class="text-slate-500 font-normal">미정</span></p>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                        <i data-lucide="crown" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Today's Schedule Overview -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                                <i data-lucide="calendar-days" class="w-5 h-5 text-orange-500"></i>
+                                <span>오늘의 시간표 (09월 01일)</span>
+                            </h2>
+                            <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">1주차 2일차</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-purple-50 rounded-xl border border-purple-100">
+                                <div class="flex justify-between text-xs font-bold text-purple-800">
+                                    <span>1교시 (09:00~09:50)</span>
+                                    <span>오리엔테이션</span>
+                                </div>
+                                <p class="text-xs text-purple-600 mt-1">담당: 유재진, 오아현 교관</p>
+                            </div>
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                                <div class="flex justify-between text-xs font-bold text-amber-800">
+                                    <span>2교시 (10:00~10:50)</span>
+                                    <span>본부장님 간담회</span>
+                                </div>
+                                <p class="text-xs text-amber-600 mt-1">담당: 본부장님</p>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                <div class="flex justify-between text-xs font-bold text-blue-800">
+                                    <span>3~4교시 (11:00~12:50)</span>
+                                    <span>입과서약서 작성</span>
+                                </div>
+                                <p class="text-xs text-blue-600 mt-1">담당: 유재진, 오아현 교관</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="window.switchTab('schedule')" class="mt-4 w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition text-center border border-slate-200">
+                        전체 11주 시간표 상세보기 &rarr;
+                    </button>
+                </div>
+
+                <!-- Test Status Chart -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm lg:col-span-1">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                            <i data-lucide="bar-chart-2" class="w-5 h-5 text-orange-500"></i>
+                            <span>과목별 TEST 통계</span>
+                        </h2>
+                    </div>
+                    <div class="h-60 relative flex items-center justify-center">
+                        <canvas id="testResultChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Focus Trainees & Notice -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                                <i data-lucide="alert-octagon" class="w-5 h-5 text-red-500"></i>
+                                <span>집중 관리 대상자</span>
+                            </h2>
+                            <span class="text-xs text-red-600 font-semibold bg-red-50 px-2 py-0.5 rounded-full">벌점3점 이상</span>
+                        </div>
+                        <div class="space-y-2 mb-4" id="riskTraineeList">
+                            <!-- JS Dynamic Render -->
+                        </div>
+
+                        <!-- Instructor Notice Board -->
+                        <div class="pt-3 border-t border-slate-100">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-xs font-bold text-slate-700 flex items-center space-x-1">
+                                    <i data-lucide="megaphone" class="w-3.5 h-3.5 text-orange-500"></i>
+                                    <span>교관 전달사항 공유</span>
+                                </h3>
+                                <button onclick="window.openNoticeModal()" class="text-xs text-orange-600 font-bold hover:underline">수정</button>
+                            </div>
+                            <div id="noticeContent" class="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 leading-relaxed min-h-[70px]">
+                                📌 09/01 입과 첫날 OT 서약서 제출 상태 점검 및 유니폼 체촌 사이즈 재확인 필요.
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="window.openNoticeModal()" class="mt-3 w-full py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold rounded-xl transition text-center border border-orange-200">
+                        교관 전달사항 작성 / 수정
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. TAB: 훈련 시간표 (Schedule) -->
+        <section id="content-schedule" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <!-- Top Header Block -->
+                <div class="border-b border-slate-100 pb-3">
+                    <h2 class="text-lg font-bold text-slate-900">전체 커리큘럼 & 훈련 시간표 (11주 과정)</h2>
+                    <p class="text-xs text-slate-500 mt-1">안전, 서비스, 기내방송, 실습 및 평가 종합 시간표 (이 탭에서 바로 등록/수정/삭제 가능)</p>
+                </div>
+
+                <!-- Row 1: View Mode Switcher & Add Schedule Button -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold text-slate-600">보기 방식:</span>
+                        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-medium">
+                            <button onclick="window.setScheduleViewMode('calendar')" id="btn-view-calendar" class="px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                <span>달력 보기</span>
+                            </button>
+                            <button onclick="window.setScheduleViewMode('list')" id="btn-view-list" class="px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+                                <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                                <span>리스트 보기</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="window.openAddScheduleModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm whitespace-nowrap">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>➕ 시간표 등록</span>
+                    </button>
+                </div>
+
+                <!-- Row 2: 11 Weeks Filter Buttons -->
+                <div class="pt-2 border-t border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <span class="text-xs font-bold text-slate-600 whitespace-nowrap min-w-[60px]">주차 선택:</span>
+                        <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-xl w-full">
+                            <button onclick="window.filterScheduleWeek(1)" id="btn-week-1" class="week-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">1주차 (08/31~)</button>
+                            <button onclick="window.filterScheduleWeek(2)" id="btn-week-2" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">2주차 (09/07~)</button>
+                            <button onclick="window.filterScheduleWeek(3)" id="btn-week-3" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">3주차 (09/14~)</button>
+                            <button onclick="window.filterScheduleWeek(4)" id="btn-week-4" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">4주차 (09/21~)</button>
+                            <button onclick="window.filterScheduleWeek(5)" id="btn-week-5" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">5주차 (09/28~)</button>
+                            <button onclick="window.filterScheduleWeek(6)" id="btn-week-6" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">6주차 (10/05~)</button>
+                            <button onclick="window.filterScheduleWeek(7)" id="btn-week-7" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">7주차 (10/12~)</button>
+                            <button onclick="window.filterScheduleWeek(8)" id="btn-week-8" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">8주차 (10/19~)</button>
+                            <button onclick="window.filterScheduleWeek(9)" id="btn-week-9" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">9주차 (10/26~)</button>
+                            <button onclick="window.filterScheduleWeek(10)" id="btn-week-10" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">10주차 (11/02~)</button>
+                            <button onclick="window.filterScheduleWeek(11)" id="btn-week-11" class="week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">11주차 (11/09~)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dayFilterContainer" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+                    <!-- Dynamic Render Day Filter Buttons -->
+                </div>
+
+                <div id="scheduleCalendarContainer" class="mb-4">
+                    <!-- Dynamic Render Weekly Calendar Grid -->
+                </div>
+
+                <div id="scheduleTableWrapper" class="overflow-x-auto custom-scrollbar hidden">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                <th class="p-3">교시 (시간)</th>
+                                <th class="p-3">일자</th>
+                                <th class="p-3">구분</th>
+                                <th class="p-3">과목명</th>
+                                <th class="p-3">담당 교관</th>
+                                <th class="p-3 text-center">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- JS Dynamic Render -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TAB: 훈련생 정보 (Trainees) -->
+        <section id="content-trainees" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">초기 훈련생 명부</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">관찰 및 개인 면담 메모를 엑셀로 한 번에 추출하실 수 있습니다.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="relative min-w-[200px]">
+                            <input type="text" id="searchTraineeInput" oninput="window.renderTraineesTable()" placeholder="사번 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                        </div>
+                        <button onclick="window.exportTraineeDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm whitespace-nowrap">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>엑셀 내보내기</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[650px]">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                <th class="p-3 w-12">No</th>
+                                <th class="p-3 w-28">사번</th>
+                                <th class="p-3">교관 공유 특이사항 & 메모</th>
+                                <th class="p-3 text-center w-28">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="traineesTableBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- JS Dynamic Render -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 26-2차 정성평가표 테이블 -->
+                <div class="mt-8 pt-6 border-t border-slate-200 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                                <i data-lucide="award" class="w-5 h-5 text-orange-500"></i>
+                                <span>26-2차 정성평가표</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">[안전], [저비용], [신뢰], [팀워크], [도전] 5대 역량 점수(1~5점) 및 서술형 강점/약점을 기록/평가합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar bg-white rounded-2xl border border-slate-200 shadow-sm">
+                        <table class="w-full text-left border-collapse min-w-[900px] text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                                    <th class="p-3 w-12 text-center">No</th>
+                                    <th class="p-3 w-24">사번</th>
+                                    <th class="p-3 text-center w-20 bg-blue-50/50 text-blue-900">[안전]</th>
+                                    <th class="p-3 text-center w-20 bg-emerald-50/50 text-emerald-900">[저비용]</th>
+                                    <th class="p-3 text-center w-20 bg-amber-50/50 text-amber-900">[신뢰]</th>
+                                    <th class="p-3 text-center w-20 bg-purple-50/50 text-purple-900">[팀워크]</th>
+                                    <th class="p-3 text-center w-20 bg-rose-50/50 text-rose-900">[도전]</th>
+                                    <th class="p-3">[서술형 강점 & 약점 기록]</th>
+                                    <th class="p-3 text-center w-24">역량 평가</th>
+                                </tr>
+                            </thead>
+                            <tbody id="competencyTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- JS Dynamic Render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 훈련생 관찰 및 역량 평가 지표 가이드라인 표 -->
+                <div class="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 text-orange-500"></i>
+                        <h3 class="text-sm font-bold text-slate-900">훈련생 관찰 및 역량 평가 지표 가이드</h3>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar bg-white rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse min-w-[650px] text-xs">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                    <th class="p-3 w-32 text-center bg-slate-100">평가 항목</th>
+                                    <th class="p-3">관찰 및 세부 평가 지표 내용</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50 text-center">[안전]</td>
+                                    <td class="p-3 font-medium">안전 규정과 절차를 정확히 숙지하고, 이를 성실하게 이행하려는 태도를 보였습니까?</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50 text-center">[저비용]</td>
+                                    <td class="p-3 font-medium">Air café 및 Duty free 판매서비스에 대한 이해도가 높으며 적극적인 태도를 보였습니까?</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50 text-center">[신뢰]</td>
+                                    <td class="p-3 font-medium">정직하고 신뢰할 수 있는 언행을 지속적으로 유지하며, 주어진 업무를 성실히 수행하고 책임감 있는 태도를 보였습니까?</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50 text-center">[팀워크]</td>
+                                    <td class="p-3 font-medium">동료들과 원활하게 소통하고 협력적인 태도를 보였습니까?</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50 text-center">[도전]</td>
+                                    <td class="p-3 font-medium">새로운 과제나 어려움에 적극적으로 도전하려는 자세를 보이며, 피드백을 긍정적으로 수용하고 개선하려는 노력이 있었습니까?</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-orange-600 bg-orange-50/50 text-center">[서술형_강점]</td>
+                                    <td class="p-3 font-medium text-slate-800">승무원이 위 항목들과 연계하여 유지하고 강화해야 할 강점을 구체적으로 작성해주세요.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-red-600 bg-red-50/50 text-center">[서술형_약점]</td>
+                                    <td class="p-3 font-medium text-slate-800">해당 승무원이 위 항목들과 연계하여 유지하고 강화해야 할 약점을 구체적으로 작성해주세요.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. TAB: 벌점/근태 현황 (Demerit) -->
+        <section id="content-demerit" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">벌점 & 근태 관리</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">근태 불량, 복장 규정 미준수, 심사 Fail 등 항목별 벌점 내역</p>
+                    </div>
+                    <button onclick="window.openDemeritModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm self-start sm:self-auto">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>벌점 등록</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                <th class="p-3">일자</th>
+                                <th class="p-3">사번</th>
+                                <th class="p-3">위반 항목</th>
+                                <th class="p-3">세부 위반 내용</th>
+                                <th class="p-3">부과 벌점</th>
+                                <th class="p-3">담당 교관</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demeritTableBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- JS Dynamic Render -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. TAB: TEST 평가 현황 (Evaluation) -->
+        <section id="content-evaluation" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">TEST 평가 & PASS/FAIL 현황</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">안전, 서비스, 기내 방송 세부 평가 항목별 상태 및 피드백</p>
+                    </div>
+
+                    <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
+                        <button onclick="window.switchTestCategory('safety')" id="btn-test-safety" class="test-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">안전 (Safety)</button>
+                        <button onclick="window.switchTestCategory('service')" id="btn-test-service" class="test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스 (Service)</button>
+                        <button onclick="window.switchTestCategory('broadcast')" id="btn-test-broadcast" class="test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
+                    </div>
+                </div>
+
+                <div class="mb-4 flex items-center space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="text-xs font-bold text-slate-700 whitespace-nowrap">세부 평가 과목 선택:</label>
+                    <select id="testSubjectSelect" onchange="window.renderTestsTable()" class="text-xs border border-slate-200 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 w-full max-w-md">
+                        <!-- JS Dyn Populate -->
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[850px]">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                <th class="p-3">No</th>
+                                <th class="p-3">사번</th>
+                                <th class="p-3">현재 선택 과목 결과</th>
+                                <th class="p-3">판정 변경 (1차/2차/최종)</th>
+                                <th class="p-3">취득 점수</th>
+                                <th class="p-3">교관 평가 피드백</th>
+                                <th class="p-3 text-center">피드백 작성</th>
+                            </tr>
+                        </thead>
+                        <tbody id="testTableBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- JS Dynamic Render -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. TAB: 과제 안내 (Assignment) -->
+        <section id="content-assignment" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">과목별 과제 안내 및 제출 현황</h2>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
+                            <button onclick="window.filterAssignmentCat('ALL')" id="btn-assign-all" class="assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">전체</button>
+                            <button onclick="window.filterAssignmentCat('기타')" id="btn-assign-etc" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기타</button>
+                            <button onclick="window.filterAssignmentCat('안전')" id="btn-assign-safety" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">안전</button>
+                            <button onclick="window.filterAssignmentCat('서비스')" id="btn-assign-service" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스</button>
+                            <button onclick="window.filterAssignmentCat('기내 방송')" id="btn-assign-broadcast" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
+                        </div>
+                        <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="window.handleExcelUpload(event)" class="hidden">
+                        <button onclick="document.getElementById('excelFileInput').click()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                            <span>엑셀 파일 파싱/업로드</span>
+                        </button>
+                        <button onclick="window.openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>신규 과제 등록</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reference Notice Banner -->
+                <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-xl mb-4 text-xs text-amber-900 space-y-1">
+                    <div class="flex items-center space-x-1.5 font-bold text-amber-800">
+                        <i data-lucide="info" class="w-4 h-4 text-amber-600"></i>
+                        <span>📌 [아침 조회시간 참고 사항]</span>
+                    </div>
+                    <p class="pl-5 text-amber-800 font-medium">· <strong>[인사와 표정]</strong> 수업 이후 조회 시 한국어로 인사 연습</p>
+                    <p class="pl-5 text-amber-800 font-medium">· <strong>[승객 응대 화법(일본어, 중국어)]</strong> 수업 이후 아침 조회 시 아래 2가지 중 택1하여 진행:</p>
+                    <div class="pl-9 space-y-0.5 text-amber-700">
+                        <p>1) 일본어(심사지 1-7번, 13, 15번 항목), 중국어로 인사 연습</p>
+                        <p>2) 일본어, 중국어 음성 듣고 직접 말하는 연습 진행</p>
+                    </div>
+                </div>
+
+                <div id="assignmentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- JS Dynamic Render -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. TAB: 데이터 관리 / 수정 (Manage) -->
+        <section id="content-manage" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="border-b border-slate-100 pb-4 mb-6 space-y-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                            <i data-lucide="settings" class="w-5 h-5 text-orange-500"></i>
+                            <span>대시보드 전체 데이터 편집 및 관리</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">시간표, 훈련생 명부, 벌점 내역, 과제 정보를 직접 등록/수정/삭제하고 JSON 백업 및 복원을 진행합니다.</p>
+                    </div>
+
+                    <!-- 서브탭 버튼 메뉴: 상단 배치 -->
+                    <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-xl w-full">
+                        <button onclick="window.switchManageSubTab('schedule')" id="mbtn-schedule" class="manage-subtab-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            <span>시간표 수정</span>
+                        </button>
+                        <button onclick="window.switchManageSubTab('trainees')" id="mbtn-trainees" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                            <span>훈련생 관리</span>
+                        </button>
+                        <button onclick="window.switchManageSubTab('demerits')" id="mbtn-demerits" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                            <span>벌점 삭제/수정</span>
+                        </button>
+                        <button onclick="window.switchManageSubTab('assignments')" id="mbtn-assignments" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
+                            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+                            <span>과제 삭제/수정</span>
+                        </button>
+                        <button onclick="window.switchManageSubTab('backup')" id="mbtn-backup" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
+                            <i data-lucide="database" class="w-3.5 h-3.5"></i>
+                            <span>데이터 백업/복원</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 1: Schedule Management -->
+                <div id="manage-sec-schedule" class="manage-sec space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-800">시간표 항목 추가 / 기존 시간표 수정</h3>
+                        <button onclick="window.openAddScheduleModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>새 시간표 등록</span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs font-bold text-slate-600">주차 필터:</label>
+                        <select id="manageScheduleWeekSelect" onchange="window.renderManageScheduleTable()" class="text-xs border border-slate-200 rounded-lg p-2 bg-white">
+                            <option value="1">1주차 (08/31~)</option>
+                            <option value="2">2주차 (09/07~)</option>
+                            <option value="3">3주차 (09/14~)</option>
+                            <option value="4">4주차 (09/21~)</option>
+                            <option value="5">5주차 (09/28~)</option>
+                            <option value="6">6주차 (10/05~)</option>
+                            <option value="7">7주차 (10/12~)</option>
+                            <option value="8">8주차 (10/19~)</option>
+                            <option value="9">9주차 (10/26~)</option>
+                            <option value="10">10주차 (11/02~)</option>
+                            <option value="11">11주차 (11/09~)</option>
+                        </select>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                    <th class="p-3">주차</th>
+                                    <th class="p-3">날짜</th>
+                                    <th class="p-3">일자명</th>
+                                    <th class="p-3">교시 (시간)</th>
+                                    <th class="p-3">구분</th>
+                                    <th class="p-3">과목명</th>
+                                    <th class="p-3">담당 교관</th>
+                                    <th class="p-3 text-center">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageScheduleTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- JS Dynamic Render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 2: Trainee Roster Management -->
+                <div id="manage-sec-trainees" class="manage-sec hidden space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-800">훈련생 등록 및 관리</h3>
+                        <button onclick="window.openAddTraineeModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i>
+                            <span>신규 훈련생 등록</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                    <th class="p-3">No</th>
+                                    <th class="p-3">사번</th>
+                                    <th class="p-3 text-center">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageTraineesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- JS Dynamic Render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 3: Demerits Management -->
+                <div id="manage-sec-demerits" class="manage-sec hidden space-y-4">
+                    <h3 class="text-sm font-bold text-slate-800">벌점/근태 내역 수정 및 삭제</h3>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[650px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
+                                    <th class="p-3">일자</th>
+                                    <th class="p-3">사번</th>
+                                    <th class="p-3">위반 항목</th>
+                                    <th class="p-3">세부 내용</th>
+                                    <th class="p-3">벌점</th>
+                                    <th class="p-3">담당 교관</th>
+                                    <th class="p-3 text-center">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageDemeritsTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- JS Dynamic Render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 4: Assignments Management -->
+                <div id="manage-sec-assignments" class="manage-sec hidden space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-800">과제 수정 및 삭제</h3>
+                        <button onclick="window.openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>신규 과제 추가</span>
+                        </button>
+                    </div>
+                    <div id="manageAssignmentsList" class="space-y-3">
+                        <!-- JS Dynamic Render -->
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 5: Backup & Restore -->
+                <div id="manage-sec-backup" class="manage-sec hidden space-y-6">
+                    <div class="p-5 bg-orange-50/60 rounded-2xl border border-orange-100 space-y-3">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                            <i data-lucide="database" class="w-5 h-5 text-orange-500"></i>
+                            <span>전체 데이터 JSON 백업 및 복원</span>
+                        </h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            수정한 시간표, 훈련생 명단, 벌점 기록, TEST 결과 및 과제 데이터를 파일 형태(.json)로 저장해두고, 필요할 때 언제든지 파일 복원을 통해 원래 상태로 불러올 수 있습니다.
+                        </p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button onclick="window.exportFullDataJSON()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>JSON 백업 파일 다운로드</span>
+                            </button>
+                            <input type="file" id="jsonFileInput" accept=".json" onchange="window.importFullDataJSON(event)" class="hidden">
+                            <button onclick="document.getElementById('jsonFileInput').click()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm">
+                                <i data-lucide="upload" class="w-4 h-4"></i>
+                                <span>JSON 백업 파일 불러오기</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modals Section -->
+    <!-- Modal 1: Note Edit Modal -->
+    <div id="noteModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900" id="modalTraineeTitle">특이사항 & 메모 편집</h3>
+                <button onclick="window.closeNoteModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">🔍 관찰 / 기록 카테고리</label>
+                    <textarea id="modalObservationInput" rows="3" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="훈련 과정 중 행동, 실습 태도, 특이사항 관찰 및 기록..."></textarea>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">💬 개인 면담 카테고리</label>
+                    <textarea id="modalCounselingInput" rows="3" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="1:1 면담 내역, 고충 사항, 면담 지도 기록..."></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="window.closeNoteModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveTraineeNote()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1-2: Competency Evaluation Modal -->
+    <div id="competencyModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900" id="compModalTitle">26-2차 정성평가</h3>
+                <button onclick="window.closeCompetencyModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+                <div>
+                    <p class="font-bold text-slate-800 mb-2">📊 5대 핵심 역량 평점 (1점:미흡 ~ 5점:우수)</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div class="bg-blue-50/70 p-2.5 rounded-xl border border-blue-100">
+                            <label class="font-bold text-blue-900 block mb-1">[안전]</label>
+                            <select id="compSafetySelect" class="w-full p-1.5 bg-white border border-blue-200 rounded-lg text-xs font-bold text-blue-800">
+                                <option value="5">5점 (매우우수)</option>
+                                <option value="4">4점 (우수)</option>
+                                <option value="3">3점 (보통)</option>
+                                <option value="2">2점 (미흡)</option>
+                                <option value="1">1점 (매우미흡)</option>
+                            </select>
+                        </div>
+                        <div class="bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100">
+                            <label class="font-bold text-emerald-900 block mb-1">[저비용]</label>
+                            <select id="compLowCostSelect" class="w-full p-1.5 bg-white border border-emerald-200 rounded-lg text-xs font-bold text-emerald-800">
+                                <option value="5">5점 (매우우수)</option>
+                                <option value="4">4점 (우수)</option>
+                                <option value="3">3점 (보통)</option>
+                                <option value="2">2점 (미흡)</option>
+                                <option value="1">1점 (매우미흡)</option>
+                            </select>
+                        </div>
+                        <div class="bg-amber-50/70 p-2.5 rounded-xl border border-amber-100">
+                            <label class="font-bold text-amber-900 block mb-1">[신뢰]</label>
+                            <select id="compTrustSelect" class="w-full p-1.5 bg-white border border-amber-200 rounded-lg text-xs font-bold text-amber-800">
+                                <option value="5">5점 (매우우수)</option>
+                                <option value="4">4점 (우수)</option>
+                                <option value="3">3점 (보통)</option>
+                                <option value="2">2점 (미흡)</option>
+                                <option value="1">1점 (매우미흡)</option>
+                            </select>
+                        </div>
+                        <div class="bg-purple-50/70 p-2.5 rounded-xl border border-purple-100">
+                            <label class="font-bold text-purple-900 block mb-1">[팀워크]</label>
+                            <select id="compTeamworkSelect" class="w-full p-1.5 bg-white border border-purple-200 rounded-lg text-xs font-bold text-purple-800">
+                                <option value="5">5점 (매우우수)</option>
+                                <option value="4">4점 (우수)</option>
+                                <option value="3">3점 (보통)</option>
+                                <option value="2">2점 (미흡)</option>
+                                <option value="1">1점 (매우미흡)</option>
+                            </select>
+                        </div>
+                        <div class="bg-rose-50/70 p-2.5 rounded-xl border border-rose-100 col-span-2 sm:col-span-1">
+                            <label class="font-bold text-rose-900 block mb-1">[도전]</label>
+                            <select id="compChallengeSelect" class="w-full p-1.5 bg-white border border-rose-200 rounded-lg text-xs font-bold text-rose-800">
+                                <option value="5">5점 (매우우수)</option>
+                                <option value="4">4점 (우수)</option>
+                                <option value="3">3점 (보통)</option>
+                                <option value="2">2점 (미흡)</option>
+                                <option value="1">1점 (매우미흡)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2 border-t border-slate-100">
+                    <div>
+                        <label class="text-xs font-bold text-orange-700 block mb-1">✍️ [서술형 강점]</label>
+                        <textarea id="compStrengthsInput" rows="2" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="승무원이 위 항목들과 연계하여 유지하고 강화해야 할 강점 작성..."></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-red-700 block mb-1">✍️ [서술형 약점]</label>
+                        <textarea id="compWeaknessesInput" rows="2" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="해당 승무원이 위 항목들과 연계하여 유지하고 강화해야 할 약점 작성..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+                <button onclick="window.closeCompetencyModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveCompetencyData()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Demerit Modal -->
+    <div id="demeritModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900">벌점 내역 추가</h3>
+                <button onclick="window.closeDemeritModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 block mb-1">훈련생 선택</label>
+                    <select id="demeritSelectEmp" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <!-- JS Populated -->
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 block mb-1">위반 항목</label>
+                    <select id="demeritCategory" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="근태불량A">근태불량A</option>
+                        <option value="근태불량B">근태불량B</option>
+                        <option value="이론/실습 심사 1차 Fail">이론/실습 심사 1차 Fail</option>
+                        <option value="이론/실습 심사 2차 Fail">이론/실습 심사 2차 Fail</option>
+                        <option value="규정 위반 및 지시 불이행">규정 위반 및 지시 불이행</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 block mb-1">세부 내용</label>
+                    <input type="text" id="demeritDetail" placeholder="예: 5분 지각" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 block mb-1">부과 벌점</label>
+                    <input type="number" id="demeritPoints" value="1" min="1" max="10" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="window.closeDemeritModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.addDemeritRecord()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Notice Edit Modal -->
+    <div id="noticeModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900">교관 전달사항 작성 / 수정</h3>
+                <button onclick="window.closeNoticeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-600 block mb-1">전달사항 내용</label>
+                <textarea id="modalNoticeInput" rows="5" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="교관 간 공유할 공지사항을 입력하세요..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button onclick="window.closeNoticeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveNotice()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Feedback Modal -->
+    <div id="feedbackModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900" id="feedbackModalTitle">교관 평가 피드백</h3>
+                <button onclick="window.closeFeedbackModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-600 block mb-1">피드백 메모</label>
+                <textarea id="modalFeedbackInput" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="해당 과목에 대한 세부 평가 피드백 입력..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button onclick="window.closeFeedbackModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveFeedback()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Assignment Modal -->
+    <div id="assignmentModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900" id="assignModalTitle">과제 등록 / 수정</h3>
+                <button onclick="window.closeAssignmentModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <input type="hidden" id="editAssignmentId" value="">
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">구분</label>
+                    <select id="assignCategory" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="안전">안전</option>
+                        <option value="서비스">서비스</option>
+                        <option value="기내 방송">기내 방송</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과목명</label>
+                    <input type="text" id="assignSubject" placeholder="예: 비상장비 개론" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과제명</label>
+                    <input type="text" id="assignTitle" placeholder="예: 비상장비 위치 점검표 작성" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">제출 기한</label>
+                    <input type="text" id="assignDueDate" placeholder="예: 2026-09-08 18:00" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">제출 방식</label>
+                    <input type="text" id="assignMethod" placeholder="예: 태블릿 LMS 업로드 / 실습실 직접 제출" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">담당 교관</label>
+                    <input type="text" id="assignInstructor" placeholder="예: 오아현 교관" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과제 세부 설명 및 체크리스트 (줄바꿈 구분)</label>
+                    <textarea id="assignDetail" rows="3" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="과제 작성 요령 및 세부 수행 항목..."></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="window.closeAssignmentModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.addAssignment()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6: Schedule Add/Edit Modal -->
+    <div id="scheduleModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900" id="scheduleModalTitle">시간표 등록 / 수정</h3>
+                <button onclick="window.closeScheduleModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <input type="hidden" id="editScheduleIdx" value="-1">
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">주차 (1~11)</label>
+                    <input type="number" id="schedWeekInput" min="1" max="11" value="1" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">일자 코드 (MM/DD)</label>
+                    <input type="text" id="schedDateInput" placeholder="예: 09/01" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">일자 표시명</label>
+                    <input type="text" id="schedDayNameInput" placeholder="예: 09월 01일 (화)" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">교시 (시간)</label>
+                    <input type="text" id="schedPeriodInput" placeholder="예: 1교시 (09:00~09:50)" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">구분</label>
+                    <select id="schedCatInput" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="안전">안전</option>
+                        <option value="서비스">서비스</option>
+                        <option value="기내 방송">기내 방송</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">과목명</label>
+                    <input type="text" id="schedNameInput" placeholder="과목 제목 입력" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">담당 교관</label>
+                    <input type="text" id="schedInstructorInput" placeholder="예: 유재진, 오아현 교관" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="window.closeScheduleModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveScheduleItem()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 7: Add Trainee Modal -->
+    <div id="traineeAddModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-900">신규 훈련생 추가</h3>
+                <button onclick="window.closeAddTraineeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">사번</label>
+                    <input type="text" id="newTraineeEmpId" placeholder="예: 260831" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="window.closeAddTraineeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.addNewTrainee()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">추가</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Password Security Gatekeeper
+        const INSTRUCTOR_SECRET = "Jeju@ir262";
+
+        window.checkAuthStatus = function () {
+            const isAuth = sessionStorage.getItem("isInstructorAuthed");
+            const overlay = document.getElementById("authOverlay");
+            if (overlay) {
+                if (isAuth === "true") {
+                    overlay.classList.add("hidden");
+                } else {
+                    overlay.classList.remove("hidden");
+                }
+            }
+        };
+
+        window.handleInstructorAuth = function (e) {
+            if (e) e.preventDefault();
+            const inputPw = document.getElementById("authPassword").value;
+            const errorMsg = document.getElementById("authError");
+            
+            if (inputPw === INSTRUCTOR_SECRET) {
+                sessionStorage.setItem("isInstructorAuthed", "true");
+                const overlay = document.getElementById("authOverlay");
+                if (overlay) overlay.classList.add("hidden");
+                if (errorMsg) errorMsg.classList.add("hidden");
+                document.getElementById("authPassword").value = "";
+            } else {
+                if (errorMsg) errorMsg.classList.remove("hidden");
+                document.getElementById("authPassword").value = "";
+                document.getElementById("authPassword").focus();
+            }
+        };
+
+        window.lockDashboard = function () {
+            sessionStorage.removeItem("isInstructorAuthed");
+            const overlay = document.getElementById("authOverlay");
+            if (overlay) overlay.classList.remove("hidden");
+            const pwdInput = document.getElementById("authPassword");
+            if (pwdInput) {
+                pwdInput.value = "";
+                pwdInput.focus();
+            }
+        };
+
+        // Category Map for Evaluations
+        const categorySubjectMap = {
+            safety: [
+                { value: 'test_safety_k_proc', label: '항공사 절차기본' },
+                { value: 'test_safety_k_sms', label: '제주항공의 안전정책 및 절차(SMS)' },
+                { value: 'test_safety_k_crm', label: '승무원 자원관리(CRM)' },
+                { value: 'test_safety_k_sec', label: '항공보안 (지식)' },
+                { value: 'test_safety_k_fa', label: '응급처치 (지식)' },
+                { value: 'test_safety_k_ground1', label: '항공기 지상훈련 TEST1' },
+                { value: 'test_safety_k_ground2', label: '항공기 지상훈련 TEST2' },
+                { value: 'test_safety_k_dg', label: '위험물' },
+                { value: 'test_safety_s_brief', label: '비상구 열 브리핑 & Safety DEMO' },
+                { value: 'test_safety_s_sec', label: '항공보안 (기량)' },
+                { value: 'test_safety_s_fa', label: '응급처치 (기량)' },
+                { value: 'test_safety_s_eq', label: '비상장비 구술심사' },
+                { value: 'test_safety_s_door', label: 'Door Operation & Escape Slide' },
+                { value: 'test_safety_s_evac', label: '비상탈출 (Role-play & 명령어)' },
+                { value: 'test_safety_s_fire', label: '화재' },
+                { value: 'test_safety_s_decomp', label: '감압' },
+                { value: 'test_safety_s_ditch', label: '착수' },
+                { value: 'test_safety_s_oe', label: '운항경험(OE)' }
+            ],
+            service: [
+                { value: 'test_service_int_speech', label: '국제선 승객응대 화법 TEST' },
+                { value: 'test_service_theory', label: '국내&국제 이론 TEST' },
+                { value: 'test_service_ciq', label: 'CIQ TEST' },
+                { value: 'test_service_meal', label: '사전 기내식 TEST' },
+                { value: 'test_service_aircafe_duty_theory', label: '에어카페&기내 면세 이론 TEST' },
+                { value: 'test_service_dutyfree', label: '기내 면세 TEST' },
+                { value: 'test_service_aircafe_practice', label: '에어카페 실습 TEST' }
+            ],
+            broadcast: [
+                { value: 'test_broadcast_main', label: '방송 TEST' }
+            ]
+        };
+
+        // Trainees initial array (30) with Competency scores
+        let trainees = Array.from({ length: 30 }, (_, i) => {
+            const empId = (260801 + i).toString();
+            return {
+                empId: empId,
+                observationNote: i === 1 ? '비상탈출 훈련 시 리더십 우수, 필기 보완 필요' :
+                                 i === 4 ? '롤플레잉 시 긴장도가 높아 억양 조절 연습 필요' : '특이사항 없음',
+                counselingNote: i === 1 ? '09/03 1차 면담: 기숙사 생활 적응 완료, 과제 스케줄 관리 독려' :
+                                i === 4 ? '09/05 1차 면담: 발음/어조에 대한 불안감 토로, 개별 피드백 요청' : '면담 내역 없음',
+                competency: {
+                    safety: i === 1 ? 5 : i === 4 ? 3 : 4,
+                    lowCost: 4,
+                    trust: 5,
+                    teamwork: i === 1 ? 5 : 4,
+                    challenge: i === 4 ? 3 : 4,
+                    strengths: i === 1 ? '비상 절차 이행력 및 팀 리딩 능력 매우 탁월함' : '책임감이 강하고 실습 태도가 매우 성실함',
+                    weaknesses: i === 4 ? '실습 롤플레이 시 발음 및 어조 조절 연습 필요' : '보완점 지속 관찰 중'
+                }
+            };
+        });
+
+        // Demerits initial array
+        let demerits = [
+            { date: '2026-09-03', empId: '260802', category: '근태불량A', detail: '5분 지각', points: 1, instructor: '담당교관' },
+            { date: '2026-09-05', empId: '260805', category: '규정 위반 및 지시 불이행', detail: '어피어런스 규정 미준수', points: 1, instructor: '담당교관' },
+            { date: '2026-09-07', empId: '260805', category: '근태불량A', detail: '복장 불량 지적', points: 1, instructor: '담당교관' },
+            { date: '2026-09-08', empId: '260805', category: '근태불량B', detail: '수업 중 무단 이탈', points: 2, instructor: '담당교관' }
+        ];
+
+        // 11-Week Schedule Data
+        let scheduleData = [
+            // Week 1 (08/31 ~ 09/04)
+            { week: 1, date: '08/31', dayName: '08월 31일 (월)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '온보딩', instructor: '담임교관' },
+            { week: 1, date: '09/01', dayName: '09월 01일 (화)', period: '1교시 (09:00~09:50)', cat: '기타', name: '오리엔테이션 (입과 및 생활 안내)', instructor: '유재진, 오아현 교관' },
+            { week: 1, date: '09/01', dayName: '09월 01일 (화)', period: '2교시 (10:00~10:50)', cat: '기타', name: '본부장님 간담회', instructor: '본부장님' },
+            { week: 1, date: '09/01', dayName: '09월 01일 (화)', period: '3~4교시 (11:00~12:50)', cat: '기타', name: '입과서약서 작성', instructor: '유재진, 오아현 교관' },
+            { week: 1, date: '09/01', dayName: '09월 01일 (화)', period: '5교시 (14:00~14:50)', cat: '기타', name: '태블릿 배포', instructor: '유재진, 오아현 교관' },
+            { week: 1, date: '09/01', dayName: '09월 01일 (화)', period: '6교시 (15:00~15:50)', cat: '서비스', name: 'SNS의 이해', instructor: '오아현 교관' },
+            { week: 1, date: '09/01', dayName: '09월 01일 (화)', period: '7~8교시 (16:00~17:50)', cat: '기타', name: '유니폼 체촌', instructor: '이지애 교관' },
+            { week: 1, date: '09/02', dayName: '09월 02일 (수)', period: '1교시 (09:00~09:50)', cat: '서비스', name: 'IMAGE MAKING1', instructor: '조연진, 오아현 교관' },
+            { week: 1, date: '09/02', dayName: '09월 02일 (수)', period: '2~3교시 (10:00~11:50)', cat: '서비스', name: 'IMAGE MAKING2', instructor: '조연진, 오아현, 박민지A, 유재진 교관' },
+            { week: 1, date: '09/02', dayName: '09월 02일 (수)', period: '5~6교시 (14:00~15:50)', cat: '서비스', name: '인사와 표정', instructor: '조연진 교관' },
+            { week: 1, date: '09/02', dayName: '09월 02일 (수)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공용어 및 비행정보 지식 습득', instructor: '임청 교관' },
+            { week: 1, date: '09/03', dayName: '09월 03일 (목)', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '제주항공의 조직, 운영범위 및 행정절차', instructor: '조제민 교관' },
+            { week: 1, date: '09/03', dayName: '09월 03일 (목)', period: '4~6교시 (12:00~15:50)', cat: '안전', name: '항공용어 및 비행정보 지식 습득', instructor: '정동신 교관' },
+            { week: 1, date: '09/03', dayName: '09월 03일 (목)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '법규정의 적용 및 기타 관련안고자료', instructor: '정동신 교관' },
+            { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '말씨와 동작', instructor: '최미정 교관' },
+            { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '2~4교시 (10:00~12:50)', cat: '서비스', name: '기초 서비스 이론 및 실습 (SVC BASIC)', instructor: '최미정, 박민지A 교관' },
+            { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '5~7교시 (14:00~16:50)', cat: '서비스', name: '서비스 마인드', instructor: '박민지A 교관' },
+            { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+
+            // Week 2 (09/07 ~ 09/11)
+            { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장 1', instructor: '오아현, 박민지A, 김연희, 현윤선 교관' },
+            { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '2~3교시 (10:00~11:50)', cat: '서비스', name: '국제선 승객응대 화법(대양주)', instructor: '김연희 교관' },
+            { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '4~6교시 (12:00~15:50)', cat: '서비스', name: '기내서비스 용어', instructor: '박민지A, 현윤선, 오아현 교관' },
+            { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '기본응대화법(실습)', instructor: '오아현, 김연희 교관' },
+            { week: 2, date: '09/08', dayName: '09월 08일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '다정함이 살아남는다.', instructor: '김연희 교관' },
+            { week: 2, date: '09/08', dayName: '09월 08일 (화)', period: '2교시 (10:00~10:50)', cat: '서비스', name: '달라진 승객, 달라져야 할 다정함', instructor: '김연희 교관' },
+            { week: 2, date: '09/08', dayName: '09월 08일 (화)', period: '3~5교시 (11:00~14:50)', cat: '서비스', name: '국내선 이론1', instructor: '박혜린 교관' },
+            { week: 2, date: '09/08', dayName: '09월 08일 (화)', period: '6~8교시 (15:00~17:50)', cat: '서비스', name: '승객 응대 롤플레이', instructor: '오아현 교관' },
+            { week: 2, date: '09/09', dayName: '09월 09일 (수)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '국제선 승객응대 화법(대양주) TEST', instructor: '김연희, 이은비, 현윤선 교관' },
+            { week: 2, date: '09/09', dayName: '09월 09일 (수)', period: '2~5교시 (10:00~14:50)', cat: '서비스', name: '국내선 이론2', instructor: '박민지A 교관' },
+            { week: 2, date: '09/09', dayName: '09월 09일 (수)', period: '6교시 (15:00~15:50)', cat: '서비스', name: 'J-LOG의 이해', instructor: '김연희 교관' },
+            { week: 2, date: '09/09', dayName: '09월 09일 (수)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '국내선 에어카페 이론1', instructor: '김연희 교관' },
+            { week: 2, date: '09/10', dayName: '09월 10일 (목)', period: '1~3교시 (09:00~11:50)', cat: '서비스', name: '국제선 승객응대 화법(중국)', instructor: '박민지A 교관' },
+            { week: 2, date: '09/10', dayName: '09월 10일 (목)', period: '4~5교시 (12:00~14:50)', cat: '서비스', name: '국내선 에어카페 이론2', instructor: '이주희 교관' },
+            { week: 2, date: '09/10', dayName: '09월 10일 (목)', period: '6교시 (15:00~15:50)', cat: '서비스', name: '판매서비스 화법1 (국내선)', instructor: '이주희 교관' },
+            { week: 2, date: '09/10', dayName: '09월 10일 (목)', period: '7교시 (16:00~16:50)', cat: '서비스', name: '표현의 뉘앙스', instructor: '이주희 교관' },
+            { week: 2, date: '09/10', dayName: '09월 10일 (목)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '1~3교시 (09:00~11:50)', cat: '서비스', name: '국내선 에어카페 판매 서비스', instructor: '김연희, 현윤선 교관' },
+            { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '4~6교시 (12:00~15:50)', cat: '서비스', name: '국내선 FLIGHT 실습', instructor: '오아현, 이은비 교관' },
+            { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '국내선 에어카페 실습 1-1_설렘배송', instructor: '김연희, 현윤선, 오아현, 이은비 교관' },
+
+            // Week 3 (09/14 ~ 09/18)
+            { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '국제선 승객응대 화법(중국) TEST', instructor: '박민지A, 현윤선, 이은비 교관' },
+            { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '2~4교시 (10:00~12:50)', cat: '서비스', name: '국내선 에어카페 실습 2', instructor: '이은비, 김연희, 현윤선, 박민지A 교관' },
+            { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '5교시 (14:00~14:50)', cat: '서비스', name: '국내선 에어카페 실습 3', instructor: '최수연, 김연희, 이은비, 박민지A 교관' },
+            { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '6~7교시 (15:00~16:50)', cat: '서비스', name: '국제선 승객응대 화법(일본)', instructor: '최수연 교관' },
+            { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 3, date: '09/15', dayName: '09월 15일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장 2', instructor: '오아현, 이은비, 현윤선 교관' },
+            { week: 3, date: '09/15', dayName: '09월 15일 (화)', period: '2~4교시 (10:00~12:50)', cat: '서비스', name: '국내선 에어카페 실습 4', instructor: '최슬기, 현윤선, 오아현, 이은비 교관' },
+            { week: 3, date: '09/15', dayName: '09월 15일 (화)', period: '5~6교시 (14:00~15:50)', cat: '서비스', name: '국제선이론1', instructor: '최슬기 교관' },
+            { week: 3, date: '09/15', dayName: '09월 15일 (화)', period: '7교시 (16:00~16:50)', cat: '서비스', name: 'VOC', instructor: '정진영B 교관' },
+            { week: 3, date: '09/15', dayName: '09월 15일 (화)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 3, date: '09/16', dayName: '09월 16일 (수)', period: '1~3교시 (09:00~11:50)', cat: '기내 방송', name: '기내방송1', instructor: '한재민 교관' },
+            { week: 3, date: '09/16', dayName: '09월 16일 (수)', period: '4~6교시 (12:00~15:50)', cat: '서비스', name: '국제선이론2', instructor: '정진영B 교관' },
+            { week: 3, date: '09/16', dayName: '09월 16일 (수)', period: '7교시 (16:00~16:50)', cat: '서비스', name: 'VOC', instructor: '정진영B 교관' },
+            { week: 3, date: '09/16', dayName: '09월 16일 (수)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 3, date: '09/17', dayName: '09월 17일 (목)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '국제선 승객응대 화법(일본) TEST', instructor: '이은비, 김연희, 박민지A 교관' },
+            { week: 3, date: '09/17', dayName: '09월 17일 (목)', period: '2~4교시 (10:00~12:50)', cat: '서비스', name: '사전기내식', instructor: '오아현 교관' },
+            { week: 3, date: '09/17', dayName: '09월 17일 (목)', period: '5~7교시 (14:00~16:50)', cat: '서비스', name: '사전기내식_실습', instructor: '오아현, 이은비, 김연희, 박민지A 교관' },
+            { week: 3, date: '09/17', dayName: '09월 17일 (목)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '1~3교시 (09:00~11:50)', cat: '서비스', name: 'CIQ이론1,2', instructor: '현윤선 교관' },
+            { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '4~5교시 (12:00~14:50)', cat: '서비스', name: '승무원 CIQ', instructor: '현윤선 교관' },
+            { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '6~7교시 (15:00~16:50)', cat: '기내 방송', name: '기내방송2', instructor: '한재민 교관' },
+            { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+
+            // Week 4 (09/21 ~ 09/25)
+            { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '1~2교시 (09:00~10:50)', cat: '서비스', name: '사전기내식 TEST', instructor: '오아현, 이은비, 김연희 교관' },
+            { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '3교시 (11:00~11:50)', cat: '서비스', name: '용모와 복장 3', instructor: '박민지A, 이은비, 김연희 교관' },
+            { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '4~5교시 (12:00~14:50)', cat: '기내 방송', name: '기내방송3(중국어)', instructor: '정혜윤 교관' },
+            { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '6교시 (15:00~15:50)', cat: '서비스', name: '유니폼의 이해 1', instructor: '박민지A 교관' },
+            { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '유니폼의 이해 2', instructor: '박민지A, 김연희 교관' },
+            { week: 4, date: '09/22', dayName: '09월 22일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '국내&국제선이론 TEST', instructor: '이은비 교관' },
+            { week: 4, date: '09/22', dayName: '09월 22일 (화)', period: '2~3교시 (10:00~11:50)', cat: '서비스', name: 'CIQ 롤플레이', instructor: '오아현, 박민지A 교관' },
+            { week: 4, date: '09/22', dayName: '09월 22일 (화)', period: '4~5교시 (12:00~14:50)', cat: '서비스', name: 'CIQ실습', instructor: '이은비, 김연희 교관' },
+            { week: 4, date: '09/22', dayName: '09월 22일 (화)', period: '6~8교시 (15:00~17:50)', cat: '서비스', name: '기내 면세 이론1 (상품의 이해)', instructor: '오아현, 박민지A, 김연희 교관' },
+            { week: 4, date: '09/23', dayName: '09월 23일 (수)', period: '1~3교시 (09:00~11:50)', cat: '서비스', name: '기내 면세 이론2 (절차)', instructor: '박민지A 교관' },
+            { week: 4, date: '09/23', dayName: '09월 23일 (수)', period: '4~6교시 (12:00~15:50)', cat: '서비스', name: '기내 면세 PDA', instructor: '현윤선, 박민지A 교관' },
+            { week: 4, date: '09/23', dayName: '09월 23일 (수)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '기내 면세 실습1_예약주문서', instructor: '현윤선, 이은비, 오아현, 김연희 교관' },
+            { week: 4, date: '09/24', dayName: '09월 24일 (목)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '추석 연휴', instructor: '-' },
+            { week: 4, date: '09/25', dayName: '09월 25일 (금)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '추석 연휴', instructor: '-' },
+
+            // Week 5 (09/28 ~ 10/02)
+            { week: 5, date: '09/28', dayName: '09월 28일 (월)', period: '1~4교시 (09:00~12:50)', cat: '서비스', name: 'CIQ TEST', instructor: '현윤선, 이은비, 박민지A, 김연희 교관' },
+            { week: 5, date: '09/28', dayName: '09월 28일 (월)', period: '5~8교시 (14:00~17:50)', cat: '서비스', name: '기내 면세 실습2', instructor: '현윤선, 이은비, 오아현, 김연희 교관' },
+            { week: 5, date: '09/29', dayName: '09월 29일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장4', instructor: '오아현, 이은비, 현윤선 교관' },
+            { week: 5, date: '09/29', dayName: '09월 29일 (화)', period: '2~5교시 (10:00~14:50)', cat: '서비스', name: '기내 면세 실습 3', instructor: '현윤선, 박민지A, 이은비, 오아현 교관' },
+            { week: 5, date: '09/29', dayName: '09월 29일 (화)', period: '6~7교시 (15:00~16:50)', cat: '기내 방송', name: '기내방송4 일본어', instructor: '조상현 교관' },
+            { week: 5, date: '09/29', dayName: '09월 29일 (화)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 5, date: '09/30', dayName: '09월 30일 (수)', period: '1~2교시 (09:00~10:50)', cat: '서비스', name: '국제선 에어카페 이론1 (상품의 이해)', instructor: '김연희 교관' },
+            { week: 5, date: '09/30', dayName: '09월 30일 (수)', period: '3~4교시 (11:00~12:50)', cat: '서비스', name: '국제선 에어카페 이론2', instructor: '이은비 교관' },
+            { week: 5, date: '09/30', dayName: '09월 30일 (수)', period: '5~6교시 (14:00~15:50)', cat: '서비스', name: '판매서비스 화법2 (국제선)', instructor: '박민지A 교관' },
+            { week: 5, date: '09/30', dayName: '09월 30일 (수)', period: '7교시 (16:00~16:50)', cat: '서비스', name: '국제선 에어카페 판매 서비스', instructor: '박민지A, 김연희 교관' },
+            { week: 5, date: '09/30', dayName: '09월 30일 (수)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 5, date: '10/01', dayName: '10월 01일 (목)', period: '1~5교시 (09:00~14:50)', cat: '서비스', name: '기내 면세 TEST', instructor: '평가교관' },
+            { week: 5, date: '10/01', dayName: '10월 01일 (목)', period: '6~7교시 (15:00~16:50)', cat: '서비스', name: '국제선 에어카페 실습1', instructor: '실습교관' },
+            { week: 5, date: '10/01', dayName: '10월 01일 (목)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '1교시 (09:00~09:50)', cat: '기내 방송', name: '방송TEST (터블런스)', instructor: '방송교관' },
+            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '2~5교시 (10:00~14:50)', cat: '서비스', name: '국제선 에어카페 실습2', instructor: '실습교관' },
+            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '6~7교시 (15:00~16:50)', cat: '서비스', name: 'FUN SVC', instructor: '서비스 파트' },
+            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+
+            // Weeks 6-11 Placeholder/Overview
+            { week: 6, date: '10/05', dayName: '10월 05일 (월)', period: '1~8교시', cat: '안전', name: '비상장비 점검 및 실습 모의훈련 (Mockup)', instructor: '안전교관' },
+            { week: 7, date: '10/12', dayName: '10월 12일 (월)', period: '1~8교시', cat: '안전', name: '비상탈출/화재/감압 종합 실습', instructor: '안전교관' },
+            { week: 8, date: '10/19', dayName: '10월 19일 (월)', period: '1~8교시', cat: '안전', name: '1차 종합 이론 및 기량 평가', instructor: '평가교관' },
+            { week: 9, date: '10/26', dayName: '10월 26일 (월)', period: '1~8교시', cat: '서비스', name: '운항경험(OE) 비행 관찰 및 실습', instructor: 'Line 교관' },
+            { week: 10, date: '11/02', dayName: '11월 02일 (월)', period: '1~8교시', cat: '안전', name: '재시험 및 최종 보충 지도', instructor: '담임교관' },
+            { week: 11, date: '11/09', dayName: '11월 09일 (월)', period: '1~8교시', cat: '기타', name: '수료식 리허설 및 수료식 (11/10)', instructor: '훈련팀 전체' }
+        ];
+
+        // Complete Assignments Data matching images
+        let assignmentsData = [
+            // 기타
+            {
+                id: 'etc-checklist-01',
+                category: '기타',
+                subject: '입과 행정 서류 및 앱 체크리스트',
+                title: '입과 준비 서류 및 필수 애플리케이션 설치',
+                dueDate: '2026-09-01 18:00',
+                method: '직접 지참 및 태블릿 설치 확인',
+                instructor: '담임교관',
+                items: [
+                    { id: 'item1', text: '여권 및 증명사진 제출', done: true },
+                    { id: 'item2', text: '승무원등록증 및 신원진술서', done: true },
+                    { id: 'item3', text: '초기훈련 입과서약서 및 보안동의서', done: true },
+                    { id: 'item4', text: 'PAYCO / HRD / J-ONE / Crew Connex 앱 설치', done: true }
+                ]
+            },
+            // Image 1: Image Making
+            {
+                id: 'svc-0902-1',
+                category: '서비스',
+                subject: 'Image Making',
+                title: 'Hair-do 영상 시청 및 준비물 지참',
+                dueDate: '수업 전날',
+                method: '실습 수업 참여 점검',
+                instructor: '조연진, 오아현 교관',
+                items: [
+                    { id: 'im1', text: '러닝플랫폼 내 Hair-do 영상 시청 (*여자: 단발, 중단발, 포니테일, 쪽머리 / *남자: 숏컷 1,2)', done: false },
+                    { id: 'im2', text: '[수업 준비물] 메이크업, 헤어 연출을 위한 전체 도구 지참', done: false },
+                    { id: 'im3', text: '*메이크업 도구: 평소 메이크업 시 사용하는 모든 도구', done: false },
+                    { id: 'im4', text: '*헤어 연출 도구: 스프레이, 젤크림, U핀, 미세망, 머리끈, 고정핀 등 (헤어 스타일링기는 선택 지참)', done: false }
+                ]
+            },
+            // 기내 서비스 용어
+            {
+                id: 'svc-0907-1',
+                category: '서비스',
+                subject: '기내 서비스 용어',
+                title: '용어 암기 및 러닝플랫폼 영상 학습',
+                dueDate: '수업 전날',
+                method: '당일 수업 시 랜덤 구두 TEST',
+                instructor: '박민지A, 현윤선, 오아현 교관',
+                items: [
+                    { id: 'sy1', text: '각 기내 서비스 용어 사전 암기해오기', done: false },
+                    { id: 'sy2', text: '러닝플랫폼 내 [처음 만난 기내 서비스 용어] 영상 시청', done: false }
+                ]
+            },
+            // 국내선 이론 1
+            {
+                id: 'svc-0908-1',
+                category: '서비스',
+                subject: '국내선 이론',
+                title: '전체적인 국내선 절차 암기',
+                dueDate: '수업 전날',
+                method: '수업 시 확인',
+                instructor: '박혜린 교관',
+                items: [
+                    { id: 'dt1', text: '러닝플랫폼 내 [진짜 첫비행] 영상 시청', done: false },
+                    { id: 'dt2', text: '국내선 기본 절차 흐름 숙지', done: false }
+                ]
+            },
+            // 승객 응대 롤플레이
+            {
+                id: 'svc-0908-2',
+                category: '서비스',
+                subject: '승객 응대 롤플레이',
+                title: '상황별 멘트 암기',
+                dueDate: '수업 전날',
+                method: '당일 수업 시 랜덤 구두 TEST',
+                instructor: '오아현 교관',
+                items: [
+                    { id: 'rp1', text: '교재 내 롤플레이 상황별 멘트 암기해오기', done: false }
+                ]
+            },
+            // 국내선 이론 2 (워크시트)
+            {
+                id: 'svc-0909-1',
+                category: '서비스',
+                subject: '국내선 이론',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '수업 직후',
+                method: 'NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)',
+                instructor: '박민지A 교관',
+                items: [
+                    { id: 'ws1', text: '국내선 이론2 항목까지 배우고 나서 패드 내 워크시트 작성', done: false },
+                    { id: 'ws2', text: '국내선 교육 종료 후 국제선으로 전환되는 시점에 취합', done: false }
+                ]
+            },
+            // 국내선 에어카페 이론
+            {
+                id: 'svc-0909-2',
+                category: '서비스',
+                subject: '국내선 에어카페 이론',
+                title: '브로셔 내용 숙지 (브로셔 PDF 배포)',
+                dueDate: '수업 전날',
+                method: '당일 수업 시 쪽지 TEST (10문제 중 3문제 오답 시 재시험)',
+                instructor: '김연희 교관',
+                items: [
+                    { id: 'ac1', text: '에어카페 책자 숙독 및 암기', done: false }
+                ]
+            },
+            // 국제선 승객응대화법(중국어)
+            {
+                id: 'svc-0910-1',
+                category: '서비스',
+                subject: '국제선 승객응대화법(중국어)',
+                title: '(전공자 대상) 기내방송 청취 및 녹음 제출',
+                dueDate: '수업 1주 전 주말',
+                method: '수업 시간 이후 녹음하여 숙제로 러닝플랫폼 내 제출',
+                instructor: '박민지A 교관',
+                items: [
+                    { id: 'cn1', text: '전공자만 기내방송 모델보이스 듣고 따라해오기', done: false }
+                ]
+            },
+            // 국내선 에어카페 실습
+            {
+                id: 'svc-0911-1',
+                category: '서비스',
+                subject: '국내선 에어카페 실습',
+                title: '동영상보기 (실습 영상 공유)',
+                dueDate: '수업 전날',
+                method: '공용드라이브에 영상 보안 설정 후 제공',
+                instructor: '김연희, 현윤선 교관',
+                items: [
+                    { id: 'ac2', text: '에어카페 실습 동영상 공유 및 학습', done: false }
+                ]
+            },
+            // 국내선 에어카페 판매 서비스 (J-LOG App)
+            {
+                id: 'svc-0911-2',
+                category: '서비스',
+                subject: '국내선 에어카페 판매 서비스',
+                title: 'J-LOG 훈련센터용 애플리케이션 다운로드하기',
+                dueDate: '태블릿 배포 이후 (09/04~09/10)',
+                method: '실습 진행 전 직접 설치 점검',
+                instructor: '김연희, 현윤선 교관',
+                items: [
+                    { id: 'jl1', text: '태블릿 배포시 WiFi(refresh_wind, girl) 설치와 함께 PPT 참고해 다운로드 진행', done: false },
+                    { id: 'jl2', text: '*다운로드 가이드 저장 경로: \\10.11.20.60\\객실훈련팀\\13_2026년\\03_서비스\\09_서비스 교육 자료\\J-LOG', done: false },
+                    { id: 'jl3', text: '다운로드는 refresh_girl 환경에서만 가능하며 한명씩 접속(훈련센터 내 설치 가능)', done: false },
+                    { id: 'jl4', text: '해당 어플이 없으면 실습 진행이 불가하므로 수업 전 반드시 다운로드 완료', done: false }
+                ]
+            },
+            // 국제선 승객응대화법(일본어) - 숫자쓰기
+            {
+                id: 'svc-0914-1',
+                category: '서비스',
+                subject: '국제선 승객응대화법(일본어)',
+                title: '숫자쓰기',
+                dueDate: '수업 직후',
+                method: '담당 교관 판단 하에 진행',
+                instructor: '최수연 교관',
+                items: [
+                    { id: 'jp1', text: 'A4용지에 해당수업 교관 안내한 숫자 써오기 (A4용지 준비)', done: false }
+                ]
+            },
+            // 국제선 승객응대화법(일본어) - 히라가나 암기
+            {
+                id: 'svc-0914-2',
+                category: '서비스',
+                subject: '국제선 승객응대화법(일본어)',
+                title: '히라가나 암기',
+                dueDate: '수업 1주 전 안내',
+                method: '당일 수업 시간 쪽지 TEST',
+                instructor: '최수연 교관',
+                items: [
+                    { id: 'jp2', text: '히라가나 암기 (p.5)', done: false }
+                ]
+            },
+            // 국제선 이론 - 워크시트
+            {
+                id: 'svc-0915-1',
+                category: '서비스',
+                subject: '국제선 이론',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '수업 직후',
+                method: 'NAVER WORKS 공용 드라이브 내 업로드 (SVC 훈련 마지막 주 취합)',
+                instructor: '최슬기 교관',
+                items: [
+                    { id: 'fr1', text: '워크시트에 FR DUTY의 시간흐름별 업무 내용 상세히 기입 후 제출', done: false }
+                ]
+            },
+            // 국제선 이론 - 동영상
+            {
+                id: 'svc-0915-2',
+                category: '서비스',
+                subject: '국제선 이론',
+                title: '동영상보기',
+                dueDate: '수업 전날',
+                method: '수업 전 시청 점검',
+                instructor: '최슬기 교관',
+                items: [
+                    { id: 'fr2', text: '러닝플랫폼 내 [진짜 첫 비행] 시청', done: false }
+                ]
+            },
+
+            // Image 2: 기내방송1
+            {
+                id: 'bc-0916-1',
+                category: '기내 방송',
+                subject: '기내방송1',
+                title: 'CAM 다운로드 및 방송문안 끊어읽기',
+                dueDate: '수업 전날',
+                method: '수업 시 육안 확인',
+                instructor: '한재민 교관',
+                items: [
+                    { id: 'bc1', text: '(교육일 이전) CAM 최신상태 저장 (개인 Device)', done: false },
+                    { id: 'bc2', text: '(교육일 이전) 총론 읽기', done: false },
+                    { id: 'bc3', text: '(교육일 이전) WELCOME, FAREWELL, TURBULENCE, SAFETY DEMO 한/영 끊어읽기 표시 및 연습', done: false },
+                    { id: 'bc4', text: '(교육 이후) Turbulence 심사 대비 안내 숙지 (한/영/일/중 TEST)', done: false }
+                ]
+            },
+            // 기내방송 1-2
+            {
+                id: 'bc-0916-2',
+                category: '기내 방송',
+                subject: '기내방송 1-2',
+                title: '동영상보기 (Shadowing 학습)',
+                dueDate: '수업 전날',
+                method: '러닝플랫폼 자습',
+                instructor: '한재민 교관',
+                items: [
+                    { id: 'bc5', text: '러닝플랫폼 Shadowing 영상 시청하며 학습 (Farewell/Turbulence/Safety Demo)', done: false }
+                ]
+            },
+            // 사전 기내식
+            {
+                id: 'sft-0917-1',
+                category: '안전',
+                subject: '사전 기내식',
+                title: 'Meal Code, 구성품 및 갤리브리핑 내용 암기',
+                dueDate: '수업 1주 전 주말',
+                method: '당일 수업 시간 쪽지 TEST',
+                instructor: '오아현 교관',
+                items: [
+                    { id: 'mc1', text: 'SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기', done: false },
+                    { id: 'mc2', text: '사전 기내식 서비스 절차 암기해오기', done: false }
+                ]
+            },
+
+            // 사전 기내식 실습
+            {
+                id: 'sft-0917-2',
+                category: '안전',
+                subject: '사전 기내식 실습',
+                title: '동영상보기',
+                dueDate: '수업 전날',
+                method: '공용드라이브에 영상 보안 설정 후 제공',
+                instructor: '오아현 교관',
+                items: [
+                    { id: 'mc3', text: '사전기내식 실습 영상 공유하기', done: false }
+                ]
+            },
+            // 사전 기내식 실습 상황 공유
+            {
+                id: 'sft-0917-3',
+                category: '안전',
+                subject: '사전 기내식',
+                title: '실습 상황 공유',
+                dueDate: '시험 2일 전',
+                method: 'TEST 2일 전 공유',
+                instructor: '오아현 교관',
+                items: [
+                    { id: 'mc4', text: '실습상황 6가지 공유 숙지', done: false },
+                    { id: 'mc5', text: '노선별 기타 추가질문 안내 숙지', done: false }
+                ]
+            },
+            // C.I.Q 면세허용량 암기
+            {
+                id: 'svc-0918-1',
+                category: '서비스',
+                subject: 'C.I.Q',
+                title: '국가별 면세허용량 암기',
+                dueDate: '수업 1주 전 안내',
+                method: '당일 조회시간 구두 TEST',
+                instructor: '현윤선 교관',
+                items: [
+                    { id: 'ciq1', text: '스테이션인포 공지사항 내 모든 노선의 공지사항 다운로드', done: false },
+                    { id: 'ciq2', text: '면세 허용량 암기해오기 (면세 관련 상세 특이사항 포함)', done: false }
+                ]
+            },
+            // C.I.Q 워크시트
+            {
+                id: 'svc-0918-2',
+                category: '서비스',
+                subject: 'C.I.Q',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '수업 1주 전 안내',
+                method: 'NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)',
+                instructor: '현윤선 교관',
+                items: [
+                    { id: 'ciq3', text: '스테이션인포 공지사항 다운 내역 보면서 워크시트에 정리 후 제출', done: false },
+                    { id: 'ciq4', text: '워크시트 정리내용 암기', done: false }
+                ]
+            },
+            // C.I.Q 실습 상황 공유
+            {
+                id: 'svc-0918-3',
+                category: '서비스',
+                subject: 'C.I.Q',
+                title: '실습 상황 공유',
+                dueDate: '시험 2일 전',
+                method: 'TEST 2일 전 공유',
+                instructor: '현윤선 교관',
+                items: [
+                    { id: 'ciq5', text: '실습상황 2가지 공유(대한민국, 라오스)', done: false },
+                    { id: 'ciq6', text: '노선별 기타 추가질문 안내 숙지', done: false }
+                ]
+            },
+            // C.I.Q 실습 동영상
+            {
+                id: 'svc-0918-4',
+                category: '서비스',
+                subject: 'C.I.Q 실습',
+                title: '동영상보기',
+                dueDate: '수업 전날',
+                method: '공용드라이브에 영상 보안 설정 후 제공',
+                instructor: '현윤선 교관',
+                items: [
+                    { id: 'ciq7', text: 'C.I.Q 실습 영상 공유하기', done: false }
+                ]
+            },
+            // 기내 방송2
+            {
+                id: 'bc-0918-5',
+                category: '기내 방송',
+                subject: '기내 방송2',
+                title: 'Farewell:Normal & DEMO 녹음 제출',
+                dueDate: '수업 시 해당 교관 안내 (기내방송 1~2 사이)',
+                method: '기내방송 2-2수업 전까지 러닝플랫폼 내 제출',
+                instructor: '한재민 교관',
+                items: [
+                    { id: 'bc6', text: '(교육일 이전) Farewell:Normal 녹음 및 제출 확인', done: false },
+                    { id: 'bc7', text: '(교육 이후) DEMO 녹음 및 제출 안내 (기내방송 2-2 전까지 제출)', done: false }
+                ]
+            },
+            // 기내방송 2-1
+            {
+                id: 'bc-0918-6',
+                category: '기내 방송',
+                subject: '기내방송2-1',
+                title: '심사 대비 안내',
+                dueDate: '수업 시 해당 교관 안내 (기내방송2 후 5일내)',
+                method: '수업 진행 후 안내',
+                instructor: '한재민 교관',
+                items: [
+                    { id: 'bc8', text: '수업 진행 후, Turbulence 한/영/일/중 TEST 관련 안내 숙지', done: false }
+                ]
+            },
+            // 기내방송 2-2
+            {
+                id: 'bc-0918-7',
+                category: '기내 방송',
+                subject: '기내방송2-2',
+                title: 'DEMO 녹음 및 제출',
+                dueDate: '수업 시 해당 교관 안내',
+                method: 'SVC 훈련 마지막 주까지 러닝플랫폼 내 제출',
+                instructor: '한재민 교관',
+                items: [
+                    { id: 'bc9', text: '2-2수업 이후 ~ SVC 훈련 마지막주에 러닝플랫폼 내 제출 (기한 별도 안내)', done: false }
+                ]
+            },
+            // 유니폼의 이해
+            {
+                id: 'svc-0921-1',
+                category: '서비스',
+                subject: '유니폼의 이해',
+                title: '동영상보기',
+                dueDate: '수업 전날',
+                method: '러닝플랫폼 자습',
+                instructor: '박민지A 교관',
+                items: [
+                    { id: 'uf1', text: '러닝플랫폼 Scarf 착용방법 시청하며 학습', done: false }
+                ]
+            },
+            // 기내방송4 중국어
+            {
+                id: 'bc-0921-2',
+                category: '기내 방송',
+                subject: '기내방송4 중국어',
+                title: 'Approach 문안 해석 및 워크시트 독음 작성',
+                dueDate: '수업 전날',
+                method: 'NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)',
+                instructor: '정혜윤 교관',
+                items: [
+                    { id: 'bc10', text: 'Approach 문안 해석 이해하고 오기 (교재 보면서 표시해오기)', done: false },
+                    { id: 'bc11', text: '워크시트에 독음 써오기 (패드 내 삽입)', done: false }
+                ]
+            },
+            // 기내방송4 중국어 (전공자 추가)
+            {
+                id: 'bc-0921-3',
+                category: '기내 방송',
+                subject: '기내방송4 중국어',
+                title: '[전공자 추가 숙제] 녹음',
+                dueDate: '수업 이후',
+                method: '러닝플랫폼 내 제출 (기한 별도 안내)',
+                instructor: '정혜윤 교관',
+                items: [
+                    { id: 'bc12', text: 'Welcome, Demo 문안 녹음 제출 (문안 논의 예정)', done: false }
+                ]
+            },
+            // 기내 면세 이론 - 쇼핑인포메이션
+            {
+                id: 'svc-0922-1',
+                category: '서비스',
+                subject: '기내 면세 이론',
+                title: '쇼핑인포메이션, 면세 월별공지사항 숙독',
+                dueDate: '수업 전날',
+                method: '당일 수업 시간 쪽지 TEST (범위: 쇼핑인포메이션+면세 월별 공지사항)',
+                instructor: '오아현, 박민지A, 김연희 교관',
+                items: [
+                    { id: 'df1', text: "'쇼핑인포메이션', 면세 월별 공지사항 숙독 (책자 PDF 배포)", done: false }
+                ]
+            },
+            // 기내 면세 이론 - 워크시트
+            {
+                id: 'svc-0922-2',
+                category: '서비스',
+                subject: '기내 면세 이론',
+                title: '워크시트 작성 (패드 내 삽입)',
+                dueDate: '수업 1주 전 안내',
+                method: 'NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)',
+                instructor: '오아현, 박민지A, 김연희 교관',
+                items: [
+                    { id: 'df2', text: 'PDF 버전의 면세 책자에 나만의 정리 내용 작성', done: false }
+                ]
+            },
+            // 기내 면세 이론 - 실습 상황 공유
+            {
+                id: 'svc-0922-3',
+                category: '서비스',
+                subject: '기내 면세 이론',
+                title: '실습 상황 공유',
+                dueDate: '시험 2일 전',
+                method: 'TEST 2일 전 공유',
+                instructor: '오아현, 박민지A, 김연희 교관',
+                items: [
+                    { id: 'df3', text: '실습상황 6가지 공유 숙지', done: false },
+                    { id: 'df4', text: '노선별 기타 추가질문 안내 숙지', done: false }
+                ]
+            },
+
+            // Image 3: 기내 면세 이론 - 주류 공지사항
+            {
+                id: 'svc-0922-4',
+                category: '서비스',
+                subject: '기내 면세 이론',
+                title: '주류 공지사항 숙독',
+                dueDate: '수업 전날',
+                method: '수업 시 랜덤 구두 TEST',
+                instructor: '오아현, 박민지A, 김연희 교관',
+                items: [
+                    { id: 'df5', text: '기내 면세 주류 판매 서비스 자료 공지사항 내 다운로드 후 숙독', done: false }
+                ]
+            },
+            // 기내 면세 실습
+            {
+                id: 'svc-0923-1',
+                category: '서비스',
+                subject: '기내 면세 실습',
+                title: '동영상보기',
+                dueDate: '수업 전날',
+                method: '공용드라이브에 영상 보안 설정 후 제공',
+                instructor: '현윤선, 이은비 교관',
+                items: [
+                    { id: 'df6', text: '기내면세 실습 영상 공유하기', done: false }
+                ]
+            },
+            // 기내방송3 일본어
+            {
+                id: 'bc-0929-1',
+                category: '기내 방송',
+                subject: '기내방송3 일본어',
+                title: 'Approach 문안 해석 및 워크시트 작성',
+                dueDate: '수업 전날',
+                method: 'NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)',
+                instructor: '조상현 교관',
+                items: [
+                    { id: 'bc13', text: 'Approach 문안 해석 이해하고 오기 (교재 보면서 표시해오기)', done: false },
+                    { id: 'bc14', text: '워크시트에 억양/끊어읽기 써오기 (패드 내 삽입)', done: false }
+                ]
+            },
+            // 국제선 에어카페 이론1,2 - 실습 상황 공유
+            {
+                id: 'svc-0930-1',
+                category: '서비스',
+                subject: '국제선 에어카페 이론1,2',
+                title: '실습 상황 공유',
+                dueDate: '시험 2일 전',
+                method: 'TEST 2일 전 공유',
+                instructor: '김연희, 이은비 교관',
+                items: [
+                    { id: 'ac3', text: '실습상황 6가지 공유 숙지', done: false },
+                    { id: 'ac4', text: '노선별 기타 추가질문 안내 숙지', done: false }
+                ]
+            },
+            // 국제선 에어카페 이론1,2 - 절차 암기
+            {
+                id: 'svc-0930-2',
+                category: '서비스',
+                subject: '국제선 에어카페 이론1,2',
+                title: '절차 암기',
+                dueDate: '수업 전날',
+                method: '수업 시 랜덤 구두 TEST',
+                instructor: '김연희, 이은비 교관',
+                items: [
+                    { id: 'ac5', text: '국제선 에어카페 이론1 (페이지 수정중) 숙지', done: false },
+                    { id: 'ac6', text: '국제선 에어카페 이론2 (페이지 수정중) 숙지', done: false }
+                ]
+            },
+            // 국제선 에어카페 판매 서비스
+            {
+                id: 'svc-0930-3',
+                category: '서비스',
+                subject: '국제선 에어카페 판매 서비스',
+                title: '국내선 에어카페 판매 서비스 복습해오기',
+                dueDate: '수업 1주 전 (연휴 이용)',
+                method: '수업 시 랜덤 구두 TEST',
+                instructor: '박민지A, 김연희 교관',
+                items: [
+                    { id: 'ac7', text: '국내선 에어카페 판매 서비스 교재 참고해 복습', done: false }
+                ]
+            },
+            // 국제선 에어카페 실습
+            {
+                id: 'svc-1001-1',
+                category: '서비스',
+                subject: '국제선 에어카페 실습',
+                title: '동영상보기',
+                dueDate: '수업 전날',
+                method: '공용드라이브에 영상 보안 설정 후 제공',
+                instructor: '실습교관',
+                items: [
+                    { id: 'ac8', text: '에어카페 실습 동영상 공유하기', done: false }
+                ]
+            },
+            // 안전보건교육
+            {
+                id: 'sft-1002-1',
+                category: '안전',
+                subject: '안전보건교육',
+                title: '동영상보기',
+                dueDate: '교육 생성 후 안내',
+                method: '훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고',
+                instructor: '안전보건 파트',
+                items: [
+                    { id: 'sh1', text: '신규채용자 안전보건교육 수료 완료', done: false }
+                ]
+            }
+        ];
+
+        let evaluationResults = {};
+
+        // Window load initialization
+        window.onload = function () {
+            window.checkAuthStatus();
+            updateGraduationDDay();
+            window.renderDashboard();
+            window.renderScheduleTable();
+            window.renderTraineesTable();
+            window.renderCompetencyTable();
+            window.renderDemeritsTable();
+            window.populateTestSubjectOptions();
+            window.renderTestsTable();
+            window.renderAssignmentsGrid();
+            
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        };
+
+        function updateGraduationDDay() {
+            const today = new Date();
+            const gradDate = new Date('2026-11-10');
+            const diffTime = gradDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const badge = document.getElementById('dDayBadge');
+            if (badge) {
+                badge.innerText = diffDays > 0 ? `D-${diffDays}` : (diffDays === 0 ? 'D-Day' : `D+${Math.abs(diffDays)}`);
+            }
+        }
+
+        window.switchTab = function (tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('tab-active'));
+
+            const contentEl = document.getElementById(`content-${tabName}`);
+            const tabBtnEl = document.getElementById(`tab-${tabName}`);
+
+            if (contentEl) contentEl.classList.remove('hidden');
+            if (tabBtnEl) tabBtnEl.classList.add('tab-active');
+
+            if (tabName === 'dashboard') window.renderDashboard();
+            if (tabName === 'schedule') window.renderScheduleTable();
+            if (tabName === 'trainees') {
+                window.renderTraineesTable();
+                window.renderCompetencyTable();
+            }
+            if (tabName === 'demerit') window.renderDemeritsTable();
+            if (tabName === 'evaluation') window.renderTestsTable();
+            if (tabName === 'assignment') window.renderAssignmentsGrid();
+            if (tabName === 'manage') window.switchManageSubTab('schedule');
+
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        window.showToast = function (msg) {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            if (toast && toastMsg) {
+                toastMsg.innerText = msg;
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 2500);
+            }
+        };
+
+        window.renderDashboard = function () {
+            const countBadge = document.getElementById('traineeCountBadge');
+            const dashCount = document.getElementById('dashTraineeCount');
+            if (countBadge) countBadge.innerText = `초기 훈련생 ${trainees.length}명`;
+            if (dashCount) dashCount.innerHTML = `${trainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
+
+            // Identify focus trainees
+            const riskList = document.getElementById('riskTraineeList');
+            if (riskList) {
+                const demeritMap = {};
+                demerits.forEach(d => {
+                    demeritMap[d.empId] = (demeritMap[d.empId] || 0) + Number(d.points);
+                });
+
+                const riskTrainees = trainees.filter(t => (demeritMap[t.empId] || 0) >= 3);
+                const dashRiskCount = document.getElementById('dashRiskCount');
+                if (dashRiskCount) dashRiskCount.innerHTML = `${riskTrainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
+
+                if (riskTrainees.length === 0) {
+                    riskList.innerHTML = `<p class="text-xs text-slate-400 italic p-2">현재 집중 관리 대상자가 없습니다.</p>`;
+                } else {
+                    riskList.innerHTML = riskTrainees.map(t => `
+                        <div class="p-2.5 bg-red-50 border border-red-100 rounded-xl flex justify-between items-center text-xs">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-red-700">사번 ${t.empId}</span>
+                                <span class="bg-red-200 text-red-800 text-[10px] px-1.5 py-0.5 rounded font-bold">누적 벌점: ${demeritMap[t.empId] || 0}점</span>
+                            </div>
+                            <button onclick="window.switchTab('trainees')" class="text-[11px] text-red-600 font-bold hover:underline">상세보기</button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Test Chart rendering
+            const ctx = document.getElementById('testResultChart');
+            if (ctx && window.Chart) {
+                if (window.dashboardChart) window.dashboardChart.destroy();
+                window.dashboardChart = new window.Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['안전 (Pass)', '서비스 (Pass)', '방송 (Pass)', '재시험/Fail'],
+                        datasets: [{
+                            data: [25, 27, 28, 2],
+                            backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#ef4444'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+                        }
+                    }
+                });
+            }
+        };
+
+        let currentScheduleWeek = 1;
+        let currentScheduleDay = 'ALL';
+        let currentScheduleViewMode = 'calendar';
+
+        window.setScheduleViewMode = function (mode) {
+            currentScheduleViewMode = mode;
+            const btnCal = document.getElementById('btn-view-calendar');
+            const btnList = document.getElementById('btn-view-list');
+            const calCont = document.getElementById('scheduleCalendarContainer');
+            const tblWrap = document.getElementById('scheduleTableWrapper');
+
+            if (mode === 'calendar') {
+                btnCal.className = 'px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1';
+                btnList.className = 'px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1';
+                calCont?.classList.remove('hidden');
+                tblWrap?.classList.add('hidden');
+            } else {
+                btnList.className = 'px-3 py-1 rounded-lg transition bg-white text-orange-600 font-bold shadow-sm flex items-center space-x-1';
+                btnCal.className = 'px-3 py-1 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center space-x-1';
+                calCont?.classList.add('hidden');
+                tblWrap?.classList.remove('hidden');
+            }
+            window.renderScheduleTable();
+        };
+
+        window.filterScheduleWeek = function (weekNum) {
+            currentScheduleWeek = weekNum;
+            currentScheduleDay = 'ALL';
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.className = 'week-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap';
+            });
+            const activeBtn = document.getElementById(`btn-week-${weekNum}`);
+            if (activeBtn) activeBtn.className = 'week-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs whitespace-nowrap';
+            window.renderScheduleTable();
+        };
+
+        window.filterScheduleDay = function (dateCode) {
+            currentScheduleDay = dateCode;
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.className = 'day-btn text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg text-xs border border-slate-200 bg-white';
+            });
+            const activeBtn = document.getElementById(`btn-day-${dateCode.replace('/', '-')}`);
+            if (activeBtn) activeBtn.className = 'day-btn bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg text-xs border border-orange-500 shadow-sm';
+            window.renderScheduleTable();
+        };
+
+        window.renderScheduleTable = function () {
+            const weekItems = scheduleData.filter(s => s.week === currentScheduleWeek);
+            
+            // Render day filter sub-buttons
+            const dayContainer = document.getElementById('dayFilterContainer');
+            if (dayContainer) {
+                const dates = Array.from(new Set(weekItems.map(s => s.date)));
+                dayContainer.innerHTML = `
+                    <button onclick="window.filterScheduleDay('ALL')" id="btn-day-ALL" class="day-btn ${currentScheduleDay === 'ALL' ? 'bg-orange-500 text-white font-bold' : 'bg-white text-slate-600'} px-2.5 py-1 rounded-lg text-xs border border-slate-200 shadow-sm">전체일자</button>
+                    ${dates.map(d => {
+                        const sample = weekItems.find(s => s.date === d);
+                        return `<button onclick="window.filterScheduleDay('${d}')" id="btn-day-${d.replace('/', '-')}" class="day-btn ${currentScheduleDay === d ? 'bg-orange-500 text-white font-bold' : 'bg-white text-slate-600'} px-2.5 py-1 rounded-lg text-xs border border-slate-200 shadow-sm">${sample ? sample.dayName : d}</button>`;
+                    }).join('')}
+                `;
+            }
+
+            const filtered = currentScheduleDay === 'ALL' ? weekItems : weekItems.filter(s => s.date === currentScheduleDay);
+
+            // Render Calendar Grid
+            const calContainer = document.getElementById('scheduleCalendarContainer');
+            if (calContainer) {
+                const dates = Array.from(new Set(weekItems.map(s => s.date)));
+                calContainer.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        ${dates.map(d => {
+                            const dayEvents = weekItems.filter(s => s.date === d);
+                            const firstEvent = dayEvents[0];
+                            return `
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between min-h-[220px]">
+                                    <div>
+                                        <div class="flex justify-between items-center border-b border-slate-200 pb-2 mb-2">
+                                            <span class="font-bold text-xs text-slate-800">${firstEvent ? firstEvent.dayName : d}</span>
+                                            <span class="text-[10px] bg-orange-100 text-orange-700 font-semibold px-1.5 py-0.5 rounded">${dayEvents.length}개 교시</span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            ${dayEvents.map(e => {
+                                                const globalIdx = scheduleData.indexOf(e);
+                                                return `
+                                                    <div class="p-2 bg-white rounded-lg border border-slate-100 shadow-2xs flex justify-between items-start">
+                                                        <div>
+                                                            <p class="text-[10px] font-semibold text-slate-400">${e.period}</p>
+                                                            <p class="text-xs font-bold text-slate-800 mt-0.5">${e.name}</p>
+                                                            <p class="text-[10px] text-slate-500 mt-0.5">${e.instructor}</p>
+                                                        </div>
+                                                        <div class="flex space-x-1 pl-1">
+                                                            <button onclick="window.openEditScheduleModal(${globalIdx})" title="시간표 수정" class="text-slate-400 hover:text-orange-600 p-0.5"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                                            <button onclick="window.deleteScheduleItem(${globalIdx})" title="시간표 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                    <button onclick="window.filterScheduleDay('${d}'); window.setScheduleViewMode('list');" class="mt-3 w-full py-1 bg-white hover:bg-slate-100 text-slate-600 text-[10px] font-bold rounded-lg border border-slate-200 text-center">
+                                        상세보기 &rarr;
+                                    </button>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            // Render List Table
+            const tbody = document.getElementById('scheduleTableBody');
+            if (tbody) {
+                tbody.innerHTML = filtered.map(s => {
+                    const globalIdx = scheduleData.indexOf(s);
+                    return `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-medium text-slate-500">${s.period}</td>
+                            <td class="p-3 font-semibold text-slate-800">${s.dayName}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 text-[10px] rounded-md font-bold ${s.cat === '안전' ? 'bg-red-50 text-red-600' : s.cat === '서비스' ? 'bg-blue-50 text-blue-600' : s.cat === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${s.cat}</span></td>
+                            <td class="p-3 font-bold text-slate-900">${s.name}</td>
+                            <td class="p-3 text-slate-600">${s.instructor}</td>
+                            <td class="p-3 text-center space-x-1">
+                                <button onclick="window.openEditScheduleModal(${globalIdx})" class="px-2 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-[11px] font-bold">수정</button>
+                                <button onclick="window.deleteScheduleItem(${globalIdx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        let currentEditTraineeIndex = -1;
+
+        // Render Trainees Roster Table
+        window.renderTraineesTable = function () {
+            const searchVal = document.getElementById('searchTraineeInput')?.value.trim() || '';
+            const tbody = document.getElementById('traineesTableBody');
+            if (!tbody) return;
+
+            const filtered = trainees.filter(t => t.empId.includes(searchVal));
+            tbody.innerHTML = filtered.map((t, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
+                    <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                    <td class="p-3 space-y-1">
+                        <p class="text-xs text-slate-700">🔍 <span class="font-semibold text-slate-900">관찰/기록:</span> ${t.observationNote || '특이사항 없음'}</p>
+                        <p class="text-xs text-slate-500">💬 <span class="font-semibold text-slate-700">개인 면담:</span> ${t.counselingNote || '면담 내역 없음'}</p>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="window.openNoteModal('${t.empId}')" class="px-3 py-1 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-bold rounded-lg transition border border-orange-200">메모 수정</button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        // Render 26-2 Qualitative Evaluation Table
+        window.renderCompetencyTable = function () {
+            const searchVal = document.getElementById('searchTraineeInput')?.value.trim() || '';
+            const tbody = document.getElementById('competencyTableBody');
+            if (!tbody) return;
+
+            const filtered = trainees.filter(t => t.empId.includes(searchVal));
+            tbody.innerHTML = filtered.map((t, idx) => {
+                const c = t.competency || { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '-', weaknesses: '-' };
+                return `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="p-3 text-center text-slate-400 font-medium">${idx + 1}</td>
+                        <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                        <td class="p-3 text-center font-bold text-blue-700 bg-blue-50/30">${c.safety || 4}점</td>
+                        <td class="p-3 text-center font-bold text-emerald-700 bg-emerald-50/30">${c.lowCost || 4}점</td>
+                        <td class="p-3 text-center font-bold text-amber-700 bg-amber-50/30">${c.trust || 4}점</td>
+                        <td class="p-3 text-center font-bold text-purple-700 bg-purple-50/30">${c.teamwork || 4}점</td>
+                        <td class="p-3 text-center font-bold text-rose-700 bg-rose-50/30">${c.challenge || 4}점</td>
+                        <td class="p-3 space-y-1">
+                            <p class="text-xs text-slate-800"><span class="font-bold text-orange-600">[강점]</span> ${c.strengths || '특이사항 없음'}</p>
+                            <p class="text-xs text-slate-600"><span class="font-bold text-red-600">[약점]</span> ${c.weaknesses || '특이사항 없음'}</p>
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.openCompetencyModal('${t.empId}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold rounded-lg transition shadow-sm">역량 평가</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.openNoteModal = function (empId) {
+            const idx = trainees.findIndex(t => t.empId === empId);
+            if (idx === -1) return;
+            currentEditTraineeIndex = idx;
+            document.getElementById('modalTraineeTitle').innerText = `사번 ${empId} 특이사항 & 메모`;
+            document.getElementById('modalObservationInput').value = trainees[idx].observationNote || '';
+            document.getElementById('modalCounselingInput').value = trainees[idx].counselingNote || '';
+            document.getElementById('noteModal').classList.remove('hidden');
+        };
+
+        window.closeNoteModal = function () {
+            document.getElementById('noteModal').classList.add('hidden');
+        };
+
+        window.saveTraineeNote = function () {
+            if (currentEditTraineeIndex >= 0 && currentEditTraineeIndex < trainees.length) {
+                trainees[currentEditTraineeIndex].observationNote = document.getElementById('modalObservationInput').value;
+                trainees[currentEditTraineeIndex].counselingNote = document.getElementById('modalCounselingInput').value;
+                window.renderTraineesTable();
+                window.closeNoteModal();
+                window.showToast('특이사항 메모가 저장되었습니다.');
+            }
+        };
+
+        // Competency Modal Handlers
+        let currentCompTraineeIndex = -1;
+        window.openCompetencyModal = function (empId) {
+            const idx = trainees.findIndex(t => t.empId === empId);
+            if (idx === -1) return;
+            currentCompTraineeIndex = idx;
+            const c = trainees[idx].competency || { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '', weaknesses: '' };
+
+            document.getElementById('compModalTitle').innerText = `사번 ${empId} 26-2차 정성평가`;
+            document.getElementById('compSafetySelect').value = c.safety || 4;
+            document.getElementById('compLowCostSelect').value = c.lowCost || 4;
+            document.getElementById('compTrustSelect').value = c.trust || 4;
+            document.getElementById('compTeamworkSelect').value = c.teamwork || 4;
+            document.getElementById('compChallengeSelect').value = c.challenge || 4;
+            document.getElementById('compStrengthsInput').value = c.strengths || '';
+            document.getElementById('compWeaknessesInput').value = c.weaknesses || '';
+
+            document.getElementById('competencyModal').classList.remove('hidden');
+        };
+
+        window.closeCompetencyModal = function () {
+            document.getElementById('competencyModal').classList.add('hidden');
+        };
+
+        window.saveCompetencyData = function () {
+            if (currentCompTraineeIndex >= 0 && currentCompTraineeIndex < trainees.length) {
+                trainees[currentCompTraineeIndex].competency = {
+                    safety: Number(document.getElementById('compSafetySelect').value),
+                    lowCost: Number(document.getElementById('compLowCostSelect').value),
+                    trust: Number(document.getElementById('compTrustSelect').value),
+                    teamwork: Number(document.getElementById('compTeamworkSelect').value),
+                    challenge: Number(document.getElementById('compChallengeSelect').value),
+                    strengths: document.getElementById('compStrengthsInput').value.trim() || '특이사항 없음',
+                    weaknesses: document.getElementById('compWeaknessesInput').value.trim() || '특이사항 없음'
+                };
+                window.renderCompetencyTable();
+                window.closeCompetencyModal();
+                window.showToast('훈련생 역량 평가 데이터가 저장되었습니다.');
+            }
+        };
+
+        window.exportTraineeDataToExcel = function () {
+            if (!window.XLSX) return;
+            const wb = window.XLSX.utils.book_new();
+
+            // 1. [종합] 시트
+            const demeritMap = {};
+            demerits.forEach(d => {
+                demeritMap[d.empId] = (demeritMap[d.empId] || 0) + Number(d.points);
+            });
+
+            const summaryData = trainees.map((t, idx) => {
+                const totalDemerits = demeritMap[t.empId] || 0;
+                
+                const safetySubjects = categorySubjectMap.safety || [];
+                let safetyPassCount = 0;
+                safetySubjects.forEach(s => {
+                    const res = evaluationResults[`${t.empId}_${s.value}`];
+                    if (res && res.finalPass === 'PASS') safetyPassCount++;
+                });
+
+                const serviceSubjects = categorySubjectMap.service || [];
+                let servicePassCount = 0;
+                serviceSubjects.forEach(s => {
+                    const res = evaluationResults[`${t.empId}_${s.value}`];
+                    if (res && res.finalPass === 'PASS') servicePassCount++;
+                });
+
+                const c = t.competency || {};
+
+                return {
+                    'No': idx + 1,
+                    '사번': t.empId,
+                    '누적 벌점': totalDemerits,
+                    '안전 과목 통과': `${safetyPassCount} / ${safetySubjects.length}`,
+                    '서비스 과목 통과': `${servicePassCount} / ${serviceSubjects.length}`,
+                    '[안전] 역량 점수': c.safety ? `${c.safety}점` : '미평가',
+                    '[저비용] 역량 점수': c.lowCost ? `${c.lowCost}점` : '미평가',
+                    '[신뢰] 역량 점수': c.trust ? `${c.trust}점` : '미평가',
+                    '[팀워크] 역량 점수': c.teamwork ? `${c.teamwork}점` : '미평가',
+                    '[도전] 역량 점수': c.challenge ? `${c.challenge}점` : '미평가',
+                    '집중 관리 대상': totalDemerits >= 3 ? '대상자 (벌점 3점이상)' : '일반'
+                };
+            });
+            const wsSummary = window.XLSX.utils.json_to_sheet(summaryData);
+            window.XLSX.utils.book_append_sheet(wb, wsSummary, '종합');
+
+            // 2. [안전 성적] 시트
+            const safetyData = [];
+            let safetyRowNo = 1;
+            trainees.forEach(t => {
+                (categorySubjectMap.safety || []).forEach(s => {
+                    const resKey = `${t.empId}_${s.value}`;
+                    const res = evaluationResults[resKey] || { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: 90, feedback: '' };
+                    safetyData.push({
+                        'No': safetyRowNo++,
+                        '사번': t.empId,
+                        '과목명': s.label,
+                        '1차 판정': res.pass1 || '-',
+                        '2차 판정': res.pass2 || '-',
+                        '최종 판정': res.finalPass || 'PASS',
+                        '취득 점수': res.score !== undefined ? res.score : 90,
+                        '교관 평가 피드백': res.feedback || ''
+                    });
+                });
+            });
+            const wsSafety = window.XLSX.utils.json_to_sheet(safetyData);
+            window.XLSX.utils.book_append_sheet(wb, wsSafety, '안전 성적');
+
+            // 3. [서비스 성적] 시트
+            const serviceData = [];
+            let serviceRowNo = 1;
+            trainees.forEach(t => {
+                (categorySubjectMap.service || []).forEach(s => {
+                    const resKey = `${t.empId}_${s.value}`;
+                    const res = evaluationResults[resKey] || { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: 90, feedback: '' };
+                    serviceData.push({
+                        'No': serviceRowNo++,
+                        '사번': t.empId,
+                        '과목명': s.label,
+                        '1차 판정': res.pass1 || '-',
+                        '2차 판정': res.pass2 || '-',
+                        '최종 판정': res.finalPass || 'PASS',
+                        '취득 점수': res.score !== undefined ? res.score : 90,
+                        '교관 평가 피드백': res.feedback || ''
+                    });
+                });
+            });
+            const wsService = window.XLSX.utils.json_to_sheet(serviceData);
+            window.XLSX.utils.book_append_sheet(wb, wsService, '서비스 성적');
+
+            // 4. [기본정보] 시트
+            const basicData = trainees.map((t, idx) => {
+                const c = t.competency || {};
+                return {
+                    'No': idx + 1,
+                    '사번': t.empId,
+                    '관찰/기록 메모': t.observationNote || '특이사항 없음',
+                    '개인 면담 메모': t.counselingNote || '면담 내역 없음',
+                    '[안전] 점수': c.safety || '-',
+                    '[저비용] 점수': c.lowCost || '-',
+                    '[신뢰] 점수': c.trust || '-',
+                    '[팀워크] 점수': c.teamwork || '-',
+                    '[도전] 점수': c.challenge || '-',
+                    '[서술형 강점]': c.strengths || '-',
+                    '[서술형 약점]': c.weaknesses || '-'
+                };
+            });
+            const wsBasic = window.XLSX.utils.json_to_sheet(basicData);
+            window.XLSX.utils.book_append_sheet(wb, wsBasic, '기본정보');
+
+            // 5. [벌점 정보] 시트
+            const demeritData = demerits.map((d, idx) => ({
+                'No': idx + 1,
+                '일자': d.date,
+                '사번': d.empId,
+                '위반 항목': d.category,
+                '세부 위반 내용': d.detail,
+                '부과 벌점': d.points,
+                '담당 교관': d.instructor
+            }));
+            const wsDemerit = window.XLSX.utils.json_to_sheet(demeritData);
+            window.XLSX.utils.book_append_sheet(wb, wsDemerit, '벌점 정보');
+
+            window.XLSX.writeFile(wb, '객실초기훈련생_통합관리_성적표.xlsx');
+            window.showToast('요청하신 엑셀 내보내기가 완료되었습니다.');
+        };
+
+        window.renderDemeritsTable = function () {
+            const tbody = document.getElementById('demeritTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = demerits.map(d => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 text-slate-500">${d.date}</td>
+                    <td class="p-3 font-bold text-slate-900">${d.empId}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded-md">${d.category}</span></td>
+                    <td class="p-3 text-slate-700">${d.detail}</td>
+                    <td class="p-3 font-extrabold text-red-600">${d.points}점</td>
+                    <td class="p-3 text-slate-600">${d.instructor}</td>
+                </tr>
+            `).join('');
+        };
+
+        window.openDemeritModal = function () {
+            const sel = document.getElementById('demeritSelectEmp');
+            if (sel) {
+                sel.innerHTML = trainees.map(t => `<option value="${t.empId}">${t.empId}</option>`).join('');
+            }
+            document.getElementById('demeritModal').classList.remove('hidden');
+        };
+
+        window.closeDemeritModal = function () {
+            document.getElementById('demeritModal').classList.add('hidden');
+        };
+
+        window.addDemeritRecord = function () {
+            const empId = document.getElementById('demeritSelectEmp').value;
+            const category = document.getElementById('demeritCategory').value;
+            const detail = document.getElementById('demeritDetail').value || '기타 위반';
+            const points = Number(document.getElementById('demeritPoints').value) || 1;
+            const dateStr = new Date().toISOString().split('T')[0];
+
+            demerits.unshift({ date: dateStr, empId, category, detail, points, instructor: '담당교관' });
+            window.renderDemeritsTable();
+            window.renderDashboard();
+            window.closeDemeritModal();
+            window.showToast('벌점 항목이 등록되었습니다.');
+        };
+
+        let currentTestCategory = 'safety';
+
+        window.switchTestCategory = function (cat) {
+            currentTestCategory = cat;
+            document.querySelectorAll('.test-cat-btn').forEach(btn => btn.className = 'test-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs');
+            const activeBtn = document.getElementById(`btn-test-${cat}`);
+            if (activeBtn) activeBtn.className = 'test-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs';
+            window.populateTestSubjectOptions();
+            window.renderTestsTable();
+        };
+
+        window.populateTestSubjectOptions = function () {
+            const sel = document.getElementById('testSubjectSelect');
+            if (!sel) return;
+            const subjects = categorySubjectMap[currentTestCategory] || [];
+            sel.innerHTML = subjects.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+        };
+
+        window.renderTestsTable = function () {
+            const selSubjectKey = document.getElementById('testSubjectSelect')?.value || 'test_safety_k_proc';
+            const tbody = document.getElementById('testTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = trainees.map((t, idx) => {
+                const resKey = `${t.empId}_${selSubjectKey}`;
+                const res = evaluationResults[resKey] || { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: 90, feedback: '' };
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
+                        <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md ${res.finalPass === 'PASS' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">${res.finalPass}</span></td>
+                        <td class="p-3 space-x-1">
+                            <button onclick="window.updateTestStatus('${resKey}', 'pass1')" class="px-2 py-0.5 text-[10px] font-bold rounded ${res.pass1 === 'PASS' ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'}">1차: ${res.pass1}</button>
+                            <button onclick="window.updateTestStatus('${resKey}', 'pass2')" class="px-2 py-0.5 text-[10px] font-bold rounded ${res.pass2 === 'PASS' ? 'bg-emerald-500 text-white' : res.pass2 === 'FAIL' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-600'}">2차: ${res.pass2}</button>
+                        </td>
+                        <td class="p-3">
+                            <input type="number" value="${res.score}" onchange="window.updateTestScore('${resKey}', this.value)" class="w-16 p-1 border border-slate-200 rounded text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500">
+                        </td>
+                        <td class="p-3 text-slate-600 text-xs">${res.feedback || '피드백 미작성'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.openFeedbackModal('${resKey}')" class="px-3 py-1 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-bold rounded-lg transition border border-orange-200">피드백 작성</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.updateTestStatus = function (resKey, stage) {
+            if (!evaluationResults[resKey]) {
+                evaluationResults[resKey] = { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: 90, feedback: '' };
+            }
+            const curr = evaluationResults[resKey];
+            if (stage === 'pass1') {
+                curr.pass1 = curr.pass1 === 'PASS' ? 'FAIL' : 'PASS';
+            } else if (stage === 'pass2') {
+                curr.pass2 = curr.pass2 === '-' ? 'PASS' : curr.pass2 === 'PASS' ? 'FAIL' : '-';
+            }
+            curr.finalPass = (curr.pass2 === 'PASS' || (curr.pass1 === 'PASS' && curr.pass2 !== 'FAIL')) ? 'PASS' : 'FAIL';
+            window.renderTestsTable();
+        };
+
+        window.updateTestScore = function (resKey, scoreVal) {
+            if (!evaluationResults[resKey]) {
+                evaluationResults[resKey] = { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: Number(scoreVal), feedback: '' };
+            } else {
+                evaluationResults[resKey].score = Number(scoreVal);
+            }
+        };
+
+        let currentFeedbackResKey = '';
+        window.openFeedbackModal = function (resKey) {
+            currentFeedbackResKey = resKey;
+            document.getElementById('modalFeedbackInput').value = evaluationResults[resKey]?.feedback || '';
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        };
+
+        window.closeFeedbackModal = function () {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        };
+
+        window.saveFeedback = function () {
+            if (currentFeedbackResKey) {
+                if (!evaluationResults[currentFeedbackResKey]) {
+                    evaluationResults[currentFeedbackResKey] = { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: 90, feedback: '' };
+                }
+                evaluationResults[currentFeedbackResKey].feedback = document.getElementById('modalFeedbackInput').value;
+                window.renderTestsTable();
+                window.closeFeedbackModal();
+                window.showToast('평가 피드백이 저장되었습니다.');
+            }
+        };
+
+        let currentAssignmentCat = 'ALL';
+
+        window.filterAssignmentCat = function (cat) {
+            currentAssignmentCat = cat;
+            document.querySelectorAll('.assign-cat-btn').forEach(btn => btn.className = 'assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs');
+            const activeBtn = document.getElementById(`btn-assign-${cat === 'ALL' ? 'all' : cat === '기타' ? 'etc' : cat === '안전' ? 'safety' : cat === '서비스' ? 'service' : 'broadcast'}`);
+            if (activeBtn) activeBtn.className = 'assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs';
+            window.renderAssignmentsGrid();
+        };
+
+        window.toggleChecklistItem = function (assignId, itemIdx) {
+            const assign = assignmentsData.find(a => a.id === assignId);
+            if (assign && assign.items && assign.items[itemIdx]) {
+                assign.items[itemIdx].done = !assign.items[itemIdx].done;
+                window.renderAssignmentsGrid();
+            }
+        };
+
+        window.renderAssignmentsGrid = function () {
+            const grid = document.getElementById('assignmentGrid');
+            if (!grid) return;
+
+            const filtered = currentAssignmentCat === 'ALL' ? assignmentsData : assignmentsData.filter(a => a.category === currentAssignmentCat);
+
+            grid.innerHTML = filtered.map(a => {
+                const totalItems = a.items ? a.items.length : 0;
+                const doneItems = a.items ? a.items.filter(i => i.done).length : 0;
+                const percent = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+
+                return `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md ${a.category === '안전' ? 'bg-red-50 text-red-600' : a.category === '서비스' ? 'bg-blue-50 text-blue-600' : a.category === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${a.category}</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-semibold text-slate-400">${a.subject}</span>
+                                    <button onclick="window.openEditAssignmentModal('${a.id}')" title="과제 수정" class="text-slate-400 hover:text-orange-600 p-0.5"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="window.deleteAssignmentById('${a.id}')" title="과제 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                </div>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-900 mb-2">${a.title}</h3>
+                            
+                            <!-- Progress Bar -->
+                            <div class="mb-3 bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-orange-500 h-2 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
+                            </div>
+
+                            <!-- Interactive Checklist Items -->
+                            <div class="space-y-1.5 mb-4 max-h-48 overflow-y-auto custom-scrollbar pr-1">
+                                ${a.items ? a.items.map((item, idx) => `
+                                    <div onclick="window.toggleChecklistItem('${a.id}', ${idx})" class="p-2 rounded-xl border text-xs cursor-pointer flex items-start space-x-2 transition ${item.done ? 'bg-orange-50/60 border-orange-200 text-slate-800' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">
+                                        <input type="checkbox" ${item.done ? 'checked' : ''} class="mt-0.5 text-orange-500 rounded focus:ring-orange-500">
+                                        <span class="${item.done ? 'line-through text-slate-400 font-medium' : 'font-semibold'}">${item.text}</span>
+                                    </div>
+                                `).join('') : '<p class="text-xs text-slate-400">세부 작성요령 참고</p>'}
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 text-xs text-slate-500 space-y-1">
+                            <div class="flex justify-between"><span>제출 기한:</span><span class="font-bold text-slate-800">${a.dueDate}</span></div>
+                            <div class="flex justify-between"><span>제출 방식:</span><span class="text-slate-700">${a.method}</span></div>
+                            <div class="flex justify-between"><span>담당 교관:</span><span class="text-slate-700">${a.instructor}</span></div>
+                            <div class="flex justify-between font-bold text-orange-600 pt-1">
+                                <span>체크 이행률:</span><span>${doneItems}/${totalItems} (${percent}%)</span>
+                            </div>
+                            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-50">
+                                <button onclick="window.openEditAssignmentModal('${a.id}')" class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold rounded-lg text-[11px]">수정</button>
+                                <button onclick="window.deleteAssignmentById('${a.id}')" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg text-[11px]">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        window.openEditAssignmentModal = function (assignId) {
+            const assign = assignmentsData.find(a => a.id === assignId);
+            if (!assign) return;
+            document.getElementById('assignModalTitle').innerText = '과제 수정';
+            document.getElementById('editAssignmentId').value = assign.id;
+            document.getElementById('assignCategory').value = assign.category || '안전';
+            document.getElementById('assignSubject').value = assign.subject || '';
+            document.getElementById('assignTitle').value = assign.title || '';
+            document.getElementById('assignDueDate').value = assign.dueDate || '';
+            document.getElementById('assignMethod').value = assign.method || '';
+            document.getElementById('assignInstructor').value = assign.instructor || '';
+            document.getElementById('assignDetail').value = assign.items ? assign.items.map(i => i.text).join('\n') : '';
+            document.getElementById('assignmentModal').classList.remove('hidden');
+        };
+
+        window.deleteAssignmentById = function (assignId) {
+            if (confirm('해당 과제를 삭제하시겠습니까?')) {
+                const idx = assignmentsData.findIndex(a => a.id === assignId);
+                if (idx !== -1) {
+                    assignmentsData.splice(idx, 1);
+                    window.renderAssignmentsGrid();
+                    window.renderManageAssignmentsList();
+                    window.showToast('과제가 삭제되었습니다.');
+                }
+            }
+        };
+
+        let currentManageSubTab = 'schedule';
+
+        window.switchManageSubTab = function (subTab) {
+            currentManageSubTab = subTab;
+            document.querySelectorAll('.manage-sec').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.manage-subtab-btn').forEach(btn => btn.className = 'manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1');
+
+            const sec = document.getElementById(`manage-sec-${subTab}`);
+            const btn = document.getElementById(`mbtn-${subTab}`);
+
+            if (sec) sec.classList.remove('hidden');
+            if (btn) btn.className = 'manage-subtab-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1';
+
+            if (subTab === 'schedule') window.renderManageScheduleTable();
+            if (subTab === 'trainees') window.renderManageTraineesTable();
+            if (subTab === 'demerits') window.renderManageDemeritsTable();
+            if (subTab === 'assignments') window.renderManageAssignmentsList();
+        };
+
+        window.renderManageScheduleTable = function () {
+            const weekVal = Number(document.getElementById('manageScheduleWeekSelect')?.value || 1);
+            const tbody = document.getElementById('manageScheduleTableBody');
+            if (!tbody) return;
+
+            const filtered = scheduleData.filter(s => s.week === weekVal);
+            tbody.innerHTML = filtered.map((s) => {
+                const globalIdx = scheduleData.indexOf(s);
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-bold text-slate-700">${s.week}주차</td>
+                        <td class="p-3 text-slate-600">${s.date}</td>
+                        <td class="p-3 font-bold text-slate-800">${s.dayName}</td>
+                        <td class="p-3 text-slate-600">${s.period}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-700 rounded">${s.cat}</span></td>
+                        <td class="p-3 font-bold text-slate-900">${s.name}</td>
+                        <td class="p-3 text-slate-600">${s.instructor}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="window.openEditScheduleModal(${globalIdx})" class="px-2 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-[11px] font-bold">수정</button>
+                            <button onclick="window.deleteScheduleItem(${globalIdx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.deleteScheduleItem = function (globalIdx) {
+            if (confirm('해당 시간표 항목을 삭제하시겠습니까?')) {
+                scheduleData.splice(globalIdx, 1);
+                window.renderScheduleTable();
+                window.renderManageScheduleTable();
+                window.showToast('시간표 항목이 삭제되었습니다.');
+            }
+        };
+
+        window.openAddScheduleModal = function () {
+            document.getElementById('scheduleModalTitle').innerText = '시간표 등록';
+            document.getElementById('editScheduleIdx').value = '-1';
+            document.getElementById('schedWeekInput').value = currentScheduleWeek || 1;
+            document.getElementById('schedDateInput').value = '';
+            document.getElementById('schedDayNameInput').value = '';
+            document.getElementById('schedPeriodInput').value = '';
+            document.getElementById('schedCatInput').value = '안전';
+            document.getElementById('schedNameInput').value = '';
+            document.getElementById('schedInstructorInput').value = '';
+            document.getElementById('scheduleModal').classList.remove('hidden');
+        };
+
+        window.openEditScheduleModal = function (globalIdx) {
+            const s = scheduleData[globalIdx];
+            if (!s) return;
+            document.getElementById('scheduleModalTitle').innerText = '시간표 수정';
+            document.getElementById('editScheduleIdx').value = globalIdx;
+            document.getElementById('schedWeekInput').value = s.week;
+            document.getElementById('schedDateInput').value = s.date;
+            document.getElementById('schedDayNameInput').value = s.dayName;
+            document.getElementById('schedPeriodInput').value = s.period;
+            document.getElementById('schedCatInput').value = s.cat;
+            document.getElementById('schedNameInput').value = s.name;
+            document.getElementById('schedInstructorInput').value = s.instructor;
+            document.getElementById('scheduleModal').classList.remove('hidden');
+        };
+
+        window.closeScheduleModal = function () {
+            document.getElementById('scheduleModal').classList.add('hidden');
+        };
+
+        window.saveScheduleItem = function () {
+            const editIdx = Number(document.getElementById('editScheduleIdx').value);
+            const week = Number(document.getElementById('schedWeekInput').value) || 1;
+            const date = document.getElementById('schedDateInput').value || '09/01';
+            const dayName = document.getElementById('schedDayNameInput').value || '09월 01일 (화)';
+            const period = document.getElementById('schedPeriodInput').value || '1교시 (09:00~09:50)';
+            const cat = document.getElementById('schedCatInput').value;
+            const name = document.getElementById('schedNameInput').value || '새 과목';
+            const instructor = document.getElementById('schedInstructorInput').value || '담당교관';
+
+            if (editIdx >= 0 && editIdx < scheduleData.length) {
+                scheduleData[editIdx] = { week, date, dayName, period, cat, name, instructor };
+                window.showToast('시간표 항목이 수정되었습니다.');
+            } else {
+                scheduleData.push({ week, date, dayName, period, cat, name, instructor });
+                window.showToast('새 시간표 항목이 저장되었습니다.');
+            }
+
+            window.renderScheduleTable();
+            window.renderManageScheduleTable();
+            window.closeScheduleModal();
+        };
+
+        window.renderManageTraineesTable = function () {
+            const tbody = document.getElementById('manageTraineesTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = trainees.map((t, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
+                    <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="window.deleteTrainee(${idx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        window.deleteTrainee = function (idx) {
+            if (confirm('해당 훈련생을 명부에서 삭제하시겠습니까?')) {
+                trainees.splice(idx, 1);
+                window.renderManageTraineesTable();
+                window.renderTraineesTable();
+                window.renderCompetencyTable();
+                window.renderDashboard();
+                window.showToast('훈련생 정보가 삭제되었습니다.');
+            }
+        };
+
+        window.openAddTraineeModal = function () {
+            document.getElementById('traineeAddModal').classList.remove('hidden');
+        };
+
+        window.closeAddTraineeModal = function () {
+            document.getElementById('traineeAddModal').classList.add('hidden');
+        };
+
+        window.addNewTrainee = function () {
+            const empId = document.getElementById('newTraineeEmpId').value.trim();
+            if (empId) {
+                trainees.push({
+                    empId,
+                    observationNote: '특이사항 없음',
+                    counselingNote: '면담 내역 없음',
+                    competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '특이사항 없음', weaknesses: '특이사항 없음' }
+                });
+                window.renderManageTraineesTable();
+                window.renderTraineesTable();
+                window.renderCompetencyTable();
+                window.renderDashboard();
+                window.closeAddTraineeModal();
+                window.showToast('신규 훈련생이 추가되었습니다.');
+            }
+        };
+
+        window.renderManageDemeritsTable = function () {
+            const tbody = document.getElementById('manageDemeritsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = demerits.map((d, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 text-slate-500">${d.date}</td>
+                    <td class="p-3 font-bold text-slate-900">${d.empId}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded">${d.category}</span></td>
+                    <td class="p-3 text-slate-700">${d.detail}</td>
+                    <td class="p-3 font-bold text-red-600">${d.points}점</td>
+                    <td class="p-3 text-slate-600">${d.instructor}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="window.deleteDemerit(${idx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        window.deleteDemerit = function (idx) {
+            if (confirm('해당 벌점 기록을 삭제하시겠습니까?')) {
+                demerits.splice(idx, 1);
+                window.renderManageDemeritsTable();
+                window.renderDemeritsTable();
+                window.renderDashboard();
+                window.showToast('벌점 기록이 삭제되었습니다.');
+            }
+        };
+
+        window.renderManageAssignmentsList = function () {
+            const list = document.getElementById('manageAssignmentsList');
+            if (!list) return;
+            list.innerHTML = assignmentsData.map((a) => `
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
+                    <div>
+                        <span class="font-bold text-slate-900">[${a.category}] ${a.title}</span>
+                        <p class="text-slate-500 mt-0.5">과목: ${a.subject} | 제출기한: ${a.dueDate}</p>
+                    </div>
+                    <div class="space-x-1">
+                        <button onclick="window.openEditAssignmentModal('${a.id}')" class="px-2.5 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-xs font-bold">수정</button>
+                        <button onclick="window.deleteAssignmentById('${a.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs font-bold">삭제</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.openNoticeModal = function () {
+            const noticeContent = document.getElementById('noticeContent')?.innerText || '';
+            document.getElementById('modalNoticeInput').value = noticeContent.replace('📌 ', '');
+            document.getElementById('noticeModal').classList.remove('hidden');
+        };
+
+        window.closeNoticeModal = function () {
+            document.getElementById('noticeModal').classList.add('hidden');
+        };
+
+        window.saveNotice = function () {
+            const val = document.getElementById('modalNoticeInput').value;
+            const content = document.getElementById('noticeContent');
+            if (content) content.innerText = `📌 ${val}`;
+            window.closeNoticeModal();
+            window.showToast('교관 전달사항이 업데이트되었습니다.');
+        };
+
+        window.openAssignmentModal = function () {
+            document.getElementById('assignModalTitle').innerText = '신규 과제 등록';
+            document.getElementById('editAssignmentId').value = '';
+            document.getElementById('assignCategory').value = '안전';
+            document.getElementById('assignSubject').value = '';
+            document.getElementById('assignTitle').value = '';
+            document.getElementById('assignDueDate').value = '';
+            document.getElementById('assignMethod').value = '';
+            document.getElementById('assignInstructor').value = '';
+            document.getElementById('assignDetail').value = '';
+            document.getElementById('assignmentModal').classList.remove('hidden');
+        };
+
+        window.closeAssignmentModal = function () {
+            document.getElementById('assignmentModal').classList.add('hidden');
+        };
+
+        window.addAssignment = function () {
+            const editId = document.getElementById('editAssignmentId').value;
+            const category = document.getElementById('assignCategory').value;
+            const subject = document.getElementById('assignSubject').value || '일반';
+            const title = document.getElementById('assignTitle').value || '신규 과제';
+            const dueDate = document.getElementById('assignDueDate').value || '수업 당일';
+            const method = document.getElementById('assignMethod').value || 'LMS 제출';
+            const instructor = document.getElementById('assignInstructor').value || '담당교관';
+            const detailText = document.getElementById('assignDetail').value || '세부사항 없음';
+
+            const items = detailText.split('\n').filter(t => t.trim().length > 0).map((t, i) => ({ id: `item_${i}`, text: t, done: false }));
+
+            if (editId) {
+                const idx = assignmentsData.findIndex(a => a.id === editId);
+                if (idx !== -1) {
+                    assignmentsData[idx] = {
+                        ...assignmentsData[idx],
+                        category,
+                        subject,
+                        title,
+                        dueDate,
+                        method,
+                        instructor,
+                        items
+                    };
+                    window.showToast('과제 내용이 수정되었습니다.');
+                }
+            } else {
+                assignmentsData.unshift({
+                    id: `custom_${Date.now()}`,
+                    category,
+                    subject,
+                    title,
+                    dueDate,
+                    method,
+                    instructor,
+                    completedCount: 0,
+                    items
+                });
+                window.showToast('신규 과제가 등록되었습니다.');
+            }
+
+            window.renderAssignmentsGrid();
+            window.renderManageAssignmentsList();
+            window.closeAssignmentModal();
+        };
+
+        window.exportFullDataJSON = function () {
+            const fullData = { trainees, demerits, scheduleData, assignmentsData, evaluationResults };
+            const jsonStr = JSON.stringify(fullData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '대시보드_전체백업_데이터.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        window.importFullDataJSON = function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    if (data.trainees) trainees = data.trainees;
+                    if (data.demerits) demerits = data.demerits;
+                    if (data.scheduleData) scheduleData = data.scheduleData;
+                    if (data.assignmentsData) assignmentsData = data.assignmentsData;
+                    if (data.evaluationResults) evaluationResults = data.evaluationResults;
+
+                    window.renderDashboard();
+                    window.renderScheduleTable();
+                    window.renderTraineesTable();
+                    window.renderCompetencyTable();
+                    window.renderDemeritsTable();
+                    window.renderAssignmentsGrid();
+                    window.showToast('데이터가 정상적으로 복원되었습니다.');
+                } catch (err) {
+                    alert('유효하지 않은 JSON 백업 파일입니다.');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        window.handleExcelUpload = function (e) {
+            const file = e.target.files[0];
+            if (!file || !window.XLSX) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const workbook = window.XLSX.read(evt.target.result, { type: 'binary' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonRows = window.XLSX.utils.sheet_to_json(worksheet);
+
+                jsonRows.forEach((row, i) => {
+                    const category = row['구분'] || row['카테고리'] || '서비스';
+                    const subject = row['과목명'] || row['과목'] || '서비스 과목';
+                    const title = row['과제명'] || row['숙제'] || '과제';
+                    const dueDate = row['제출기한'] || row['숙제 시점'] || '수업 전날';
+                    const method = row['제출방식'] || row['TEST'] || 'LMS 제출';
+                    const instructor = row['담당교관'] || '담당교관';
+                    const detail = row['세부내용'] || row['설명'] || '';
+
+                    const items = detail.split('\n').filter(t => t.trim().length > 0).map((t, idx) => ({ id: `xl_${i}_${idx}`, text: t, done: false }));
+
+                    assignmentsData.unshift({
+                        id: `xl_assign_${Date.now()}_${i}`,
+                        category,
+                        subject,
+                        title,
+                        dueDate,
+                        method,
+                        instructor,
+                        completedCount: 0,
+                        items
+                    });
+                });
+
+                window.renderAssignmentsGrid();
+                window.showToast(`${jsonRows.length}건의 과제가 엑셀에서 등록되었습니다.`);
+            };
+            reader.readAsBinaryString(file);
+        };
+    </script>
+</body>
+</html>
