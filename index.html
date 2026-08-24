@@ -123,10 +123,6 @@
                     <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                     <span>과제 안내</span>
                 </button>
-                <button onclick="window.switchTab('handover')" id="tab-handover" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
-                    <i data-lucide="repeat" class="w-4 h-4 text-orange-500"></i>
-                    <span>교관 인수인계 🔄</span>
-                </button>
                 <button onclick="window.switchTab('manage')" id="tab-manage" class="tab-button text-orange-600 hover:text-orange-700 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5 font-bold">
                     <i data-lucide="edit-3" class="w-4 h-4 text-orange-500"></i>
                     <span>데이터 관리/수정 ⚙️</span>
@@ -286,13 +282,11 @@
         <!-- 2. TAB: 훈련 시간표 (Schedule) -->
         <section id="content-schedule" class="tab-content hidden space-y-6">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <!-- Top Header Block -->
                 <div class="border-b border-slate-100 pb-3">
                     <h2 class="text-lg font-bold text-slate-900">전체 커리큘럼 & 훈련 시간표 (11주 과정)</h2>
                     <p class="text-xs text-slate-500 mt-1">안전, 서비스, 기내방송, 실습 및 평가 종합 시간표 (이 탭에서 바로 등록/수정/삭제 가능)</p>
                 </div>
 
-                <!-- Row 1: View Mode Switcher & Add Schedule Button -->
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center space-x-2">
                         <span class="text-xs font-bold text-slate-600">보기 방식:</span>
@@ -314,7 +308,6 @@
                     </button>
                 </div>
 
-                <!-- Row 2: 11 Weeks Filter Buttons -->
                 <div class="pt-2 border-t border-slate-100">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                         <span class="text-xs font-bold text-slate-600 whitespace-nowrap min-w-[60px]">주차 선택:</span>
@@ -334,13 +327,8 @@
                     </div>
                 </div>
 
-                <div id="dayFilterContainer" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-                    <!-- Dynamic Render Day Filter Buttons -->
-                </div>
-
-                <div id="scheduleCalendarContainer" class="mb-4">
-                    <!-- Dynamic Render Weekly Calendar Grid -->
-                </div>
+                <div id="dayFilterContainer" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100"></div>
+                <div id="scheduleCalendarContainer" class="mb-4"></div>
 
                 <div id="scheduleTableWrapper" class="overflow-x-auto custom-scrollbar hidden">
                     <table class="w-full text-left border-collapse min-w-[700px]">
@@ -354,9 +342,7 @@
                                 <th class="p-3 text-center">관리</th>
                             </tr>
                         </thead>
-                        <tbody id="scheduleTableBody" class="divide-y divide-slate-100 text-xs">
-                            <!-- JS Dynamic Render -->
-                        </tbody>
+                        <tbody id="scheduleTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                     </table>
                 </div>
             </div>
@@ -392,9 +378,7 @@
                                 <th class="p-3 text-center w-28">관리</th>
                             </tr>
                         </thead>
-                        <tbody id="traineesTableBody" class="divide-y divide-slate-100 text-xs">
-                            <!-- JS Dynamic Render -->
-                        </tbody>
+                        <tbody id="traineesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                     </table>
                 </div>
 
@@ -425,9 +409,7 @@
                                     <th class="p-3 text-center w-24">역량 평가</th>
                                 </tr>
                             </thead>
-                            <tbody id="competencyTableBody" class="divide-y divide-slate-100 text-xs">
-                                <!-- JS Dynamic Render -->
-                            </tbody>
+                            <tbody id="competencyTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                         </table>
                     </div>
                 </div>
@@ -509,9 +491,7 @@
                                 <th class="p-3">담당 교관</th>
                             </tr>
                         </thead>
-                        <tbody id="demeritTableBody" class="divide-y divide-slate-100 text-xs">
-                            <!-- JS Dynamic Render -->
-                        </tbody>
+                        <tbody id="demeritTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                     </table>
                 </div>
             </div>
@@ -535,9 +515,7 @@
 
                 <div class="mb-4 flex items-center space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="text-xs font-bold text-slate-700 whitespace-nowrap">세부 평가 과목 선택:</label>
-                    <select id="testSubjectSelect" onchange="window.renderTestsTable()" class="text-xs border border-slate-200 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 w-full max-w-md">
-                        <!-- JS Dyn Populate -->
-                    </select>
+                    <select id="testSubjectSelect" onchange="window.renderTestsTable()" class="text-xs border border-slate-200 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 w-full max-w-md"></select>
                 </div>
 
                 <div class="overflow-x-auto custom-scrollbar">
@@ -553,9 +531,7 @@
                                 <th class="p-3 text-center">피드백 작성</th>
                             </tr>
                         </thead>
-                        <tbody id="testTableBody" class="divide-y divide-slate-100 text-xs">
-                            <!-- JS Dynamic Render -->
-                        </tbody>
+                        <tbody id="testTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                     </table>
                 </div>
             </div>
@@ -588,7 +564,6 @@
                     </div>
                 </div>
 
-                <!-- Reference Notice Banner -->
                 <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-xl mb-4 text-xs text-amber-900 space-y-1">
                     <div class="flex items-center space-x-1.5 font-bold text-amber-800">
                         <i data-lucide="info" class="w-4 h-4 text-amber-600"></i>
@@ -602,156 +577,11 @@
                     </div>
                 </div>
 
-                <div id="assignmentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- JS Dynamic Render -->
-                </div>
+                <div id="assignmentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
         </section>
 
-        <!-- 7. TAB: 교관 인수인계 (Handover) -->
-        <section id="content-handover" class="tab-content hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                <!-- Header Block -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
-                            <i data-lucide="repeat" class="w-5 h-5 text-orange-500"></i>
-                            <span>교관 인수인계 & 업무 공유</span>
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-1">교관 간 일일/주간 인수인계, 교과목 진행 현황, 과제 수거 및 특이사항을 공유합니다.</p>
-                    </div>
-                    <button onclick="window.openHandoverModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm self-start sm:self-auto">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        <span>➕ 인수인계 사항 등록</span>
-                    </button>
-                </div>
-
-                <!-- KPI Overview Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-orange-50/60 p-4 rounded-2xl border border-orange-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-orange-800">미결 인수인계</p>
-                            <h3 id="hoPendingCount" class="text-2xl font-extrabold text-orange-600 mt-0.5">0 <span class="text-xs font-normal text-slate-500">건</span></h3>
-                        </div>
-                        <div class="p-2.5 bg-orange-100 text-orange-600 rounded-xl">
-                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-blue-800">금주 과목 진행률 (1주차)</p>
-                            <h3 id="hoSubjectProgressText" class="text-2xl font-extrabold text-blue-600 mt-0.5">0%</h3>
-                        </div>
-                        <div class="p-2.5 bg-blue-100 text-blue-600 rounded-xl">
-                            <i data-lucide="book-open" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                    <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-emerald-800">인수인계 완료 건수</p>
-                            <h3 id="hoDoneCount" class="text-2xl font-extrabold text-emerald-600 mt-0.5">0 <span class="text-xs font-normal text-slate-500">건</span></h3>
-                        </div>
-                        <div class="p-2.5 bg-emerald-100 text-emerald-600 rounded-xl">
-                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                    <div class="bg-purple-50/60 p-4 rounded-2xl border border-purple-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-purple-800">과제/서류 확인 필요</p>
-                            <h3 id="hoAssignPendingCount" class="text-2xl font-extrabold text-purple-600 mt-0.5">0 <span class="text-xs font-normal text-slate-500">건</span></h3>
-                        </div>
-                        <div class="p-2.5 bg-purple-100 text-purple-600 rounded-xl">
-                            <i data-lucide="file-text" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section 1: Subject Progress Overview (교과목 진행 현황) -->
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="book-marked" class="w-4 h-4 text-orange-500"></i>
-                            <h3 class="text-sm font-bold text-slate-900">교과목 진행 현황 (금주 시간표 기반)</h3>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs font-semibold text-slate-600">주차 선택:</span>
-                            <select id="handoverWeekSelect" onchange="window.renderHandoverSubjectProgress()" class="text-xs border border-slate-200 rounded-xl p-1.5 bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                                <option value="1">1주차 (08/31~)</option>
-                                <option value="2">2주차 (09/07~)</option>
-                                <option value="3">3주차 (09/14~)</option>
-                                <option value="4">4주차 (09/21~)</option>
-                                <option value="5">5주차 (09/28~)</option>
-                                <option value="6">6주차 (10/05~)</option>
-                                <option value="7">7주차 (10/12~)</option>
-                                <option value="8">8주차 (10/19~)</option>
-                                <option value="9">9주차 (10/26~)</option>
-                                <option value="10">10주차 (11/02~)</option>
-                                <option value="11">11주차 (11/09~)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse min-w-[650px] text-xs">
-                            <thead>
-                                <tr class="bg-white text-slate-700 font-bold border-b border-slate-200">
-                                    <th class="p-2.5 w-24">일자</th>
-                                    <th class="p-2.5 w-36">교시 (시간)</th>
-                                    <th class="p-2.5 w-20 text-center">구분</th>
-                                    <th class="p-2.5">과목명</th>
-                                    <th class="p-2.5 w-28">담당 교관</th>
-                                    <th class="p-2.5 text-center w-28">진행 상태</th>
-                                </tr>
-                            </thead>
-                            <tbody id="handoverSubjectTableBody" class="divide-y divide-slate-200 bg-white text-xs">
-                                <!-- JS Dynamic Render -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Section 2: Daily Handover Log List (교관 인수인계 일지) -->
-                <div class="space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="message-square-code" class="w-4 h-4 text-orange-500"></i>
-                            <h3 class="text-sm font-bold text-slate-900">교관 인수인계 일지</h3>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-medium">
-                                <button onclick="window.filterHandoverCategory('ALL')" id="ho-cat-all" class="ho-cat-btn bg-white text-orange-600 font-bold shadow-sm px-2.5 py-1 rounded-lg">전체</button>
-                                <button onclick="window.filterHandoverCategory('과제점검')" id="ho-cat-assign" class="ho-cat-btn text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg">과제점검</button>
-                                <button onclick="window.filterHandoverCategory('교과목진행')" id="ho-cat-subject" class="ho-cat-btn text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg">교과목진행</button>
-                                <button onclick="window.filterHandoverCategory('근태/생활')" id="ho-cat-attitude" class="ho-cat-btn text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg">근태/생활</button>
-                                <button onclick="window.filterHandoverCategory('기타')" id="ho-cat-etc" class="ho-cat-btn text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg">기타</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="handoverLogGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- JS Dynamic Render -->
-                    </div>
-                </div>
-
-                <!-- Section 3: Daily Handover Checklist -->
-                <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 space-y-3">
-                    <div class="flex justify-between items-center border-b border-amber-200 pb-2">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="check-square" class="w-4 h-4 text-amber-700"></i>
-                            <h3 class="text-sm font-bold text-amber-900">교관 일일 인수인계 체크리스트</h3>
-                        </div>
-                        <span class="text-[11px] font-bold text-amber-700">교대 시 점검 항목</span>
-                    </div>
-
-                    <div id="handoverChecklistContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        <!-- JS Dynamic Render -->
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- 8. TAB: 데이터 관리 / 수정 (Manage) -->
+        <!-- 7. TAB: 데이터 관리 / 수정 (Manage) -->
         <section id="content-manage" class="tab-content space-y-6 hidden">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <div class="border-b border-slate-100 pb-4 mb-6 space-y-3">
@@ -763,7 +593,6 @@
                         <p class="text-xs text-slate-500 mt-1">시간표, 훈련생 명부, 벌점 내역, 과제 정보를 직접 등록/수정/삭제하고 JSON 백업 및 복원을 진행합니다.</p>
                     </div>
 
-                    <!-- 서브탭 버튼 메뉴: 상단 배치 -->
                     <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-xl w-full">
                         <button onclick="window.switchManageSubTab('schedule')" id="mbtn-schedule" class="manage-subtab-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
                             <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
@@ -829,9 +658,7 @@
                                     <th class="p-3 text-center">관리</th>
                                 </tr>
                             </thead>
-                            <tbody id="manageScheduleTableBody" class="divide-y divide-slate-100 text-xs">
-                                <!-- JS Dynamic Render -->
-                            </tbody>
+                            <tbody id="manageScheduleTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                         </table>
                     </div>
                 </div>
@@ -855,9 +682,7 @@
                                     <th class="p-3 text-center">관리</th>
                                 </tr>
                             </thead>
-                            <tbody id="manageTraineesTableBody" class="divide-y divide-slate-100 text-xs">
-                                <!-- JS Dynamic Render -->
-                            </tbody>
+                            <tbody id="manageTraineesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                         </table>
                     </div>
                 </div>
@@ -878,9 +703,7 @@
                                     <th class="p-3 text-center">관리</th>
                                 </tr>
                             </thead>
-                            <tbody id="manageDemeritsTableBody" class="divide-y divide-slate-100 text-xs">
-                                <!-- JS Dynamic Render -->
-                            </tbody>
+                            <tbody id="manageDemeritsTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
                         </table>
                     </div>
                 </div>
@@ -894,9 +717,7 @@
                             <span>신규 과제 추가</span>
                         </button>
                     </div>
-                    <div id="manageAssignmentsList" class="space-y-3">
-                        <!-- JS Dynamic Render -->
-                    </div>
+                    <div id="manageAssignmentsList" class="space-y-3"></div>
                 </div>
 
                 <!-- SUB-TAB 5: Backup & Restore -->
@@ -919,7 +740,7 @@
                                 <i data-lucide="upload" class="w-4 h-4"></i>
                                 <span>JSON 백업 파일 불러오기</span>
                             </button>
-                            <button onclick="window.resetDataToDefault()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition border border-rose-200 ml-auto">
+                            <button onclick="window.openConfirmModal('기본 초기 데이터로 리셋하시겠습니까?', window.resetDataToDefault)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition border border-rose-200 ml-auto">
                                 <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                                 <span>기본 초기 데이터로 리셋</span>
                             </button>
@@ -932,52 +753,16 @@
 
     </main>
 
-    <!-- Modals Section -->
-    <!-- Modal 1: Handover Log Modal -->
-    <div id="handoverModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900" id="handoverModalTitle">인수인계 사항 등록</h3>
-                <button onclick="window.closeHandoverModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <!-- Custom Modal: Confirmation Box -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 space-y-4 text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="help-circle" class="w-6 h-6"></i>
             </div>
-            <input type="hidden" id="editHandoverId" value="">
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">작성 일자</label>
-                    <input type="date" id="hoDateInput" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">작성 교관</label>
-                    <input type="text" id="hoAuthorInput" placeholder="예: 유재진 교관" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">구분 카테고리</label>
-                    <select id="hoCategorySelect" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold">
-                        <option value="과제점검">과제점검</option>
-                        <option value="교과목진행">교과목진행</option>
-                        <option value="근태/생활">근태/생활</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">제목</label>
-                    <input type="text" id="hoTitleInput" placeholder="인수인계 요약 제목 입력" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">상세 내용 및 전달사항</label>
-                    <textarea id="hoContentInput" rows="4" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="다음 교관에게 전달할 세부 내용, 훈련생 특이사항, 서류 수거 현황 등..."></textarea>
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">처리 상태</label>
-                    <select id="hoStatusSelect" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold">
-                        <option value="진행중">진행중 (미결)</option>
-                        <option value="완료">완료</option>
-                    </select>
-                </div>
-            </div>
-            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
-                <button onclick="window.closeHandoverModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="window.saveHandoverLog()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
+            <h3 class="text-sm font-bold text-slate-900" id="confirmModalText">정말 진행하시겠습니까?</h3>
+            <div class="flex justify-center space-x-2 pt-2">
+                <button onclick="window.closeConfirmModal(false)" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.closeConfirmModal(true)" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">확인</button>
             </div>
         </div>
     </div>
@@ -1100,9 +885,7 @@
             <div class="space-y-3">
                 <div>
                     <label class="text-xs font-semibold text-slate-600 block mb-1">훈련생 선택</label>
-                    <select id="demeritSelectEmp" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <!-- JS Populated -->
-                    </select>
+                    <select id="demeritSelectEmp" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500"></select>
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-slate-600 block mb-1">위반 항목</label>
@@ -1276,7 +1059,7 @@
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="font-semibold text-slate-600 block mb-1">사번</label>
-                    <input type="text" id="newTraineeEmpId" placeholder="예: 260831" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <input type="text" id="newTraineeEmpId" placeholder="예: 2608007" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
@@ -1327,9 +1110,17 @@
             ]
         };
 
-        // Trainees initial default array (30)
-        let DEFAULT_TRAINEES = Array.from({ length: 30 }, (_, i) => {
-            const empId = (260801 + i).toString();
+        // Updated 30 Trainees EmpIDs from uploaded photo
+        const NEW_EMP_IDS = [
+            "2608007", "2608008", "2608011", "2608012", "2608013",
+            "2608014", "2608015", "2608016", "2608017", "2608018",
+            "2608019", "2608020", "2608022", "2608025", "2608026",
+            "2608028", "2608029", "2608031", "2608033", "2608034",
+            "2608037", "2608042", "2608043", "2608046", "2608047",
+            "2608048", "2608049", "2608051", "2608055", "2608056"
+        ];
+
+        let DEFAULT_TRAINEES = NEW_EMP_IDS.map((empId, i) => {
             return {
                 empId: empId,
                 observationNote: i === 1 ? '비상탈출 훈련 시 리더십 우수, 필기 보완 필요' :
@@ -1489,53 +1280,12 @@
             { id: "sft-1002-1", category: "안전", subject: "안전보건교육", title: "동영상보기", dueDate: "교육 생성 후 안내", method: "훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고", instructor: "안전보건 파트", items: [{ id: "sh1", text: "신규채용자 안전보건교육 수료 완료", done: false }] }
         ];
 
-        let DEFAULT_HANDOVER_LOGS = [
-            {
-                id: "ho_1",
-                date: "2026-09-01",
-                author: "유재진 교관",
-                category: "과제점검",
-                title: "입과 서류 및 필수 앱 설치 체크리스트 점검",
-                content: "여권/증명사진/외화통장 미제출자 2명(260805, 260812) 내일 아침 조회 시 재확인 필요. 태블릿 WiFi 설정 및 Crew Connex 앱 다운로드 상태 28명 완료함.",
-                status: "진행중"
-            },
-            {
-                id: "ho_2",
-                date: "2026-09-01",
-                author: "오아현 교관",
-                category: "교과목진행",
-                title: "09/02 Image Making 준비물 안내 인수인계",
-                content: "09/02 1~4교시 Image Making 수업 전 헤어 연출 도구(스프레이, U핀, 미세망 등) 지참 여부 교시 시작 전 체크 부탁드립니다.",
-                status: "진행중"
-            },
-            {
-                id: "ho_3",
-                date: "2026-08-31",
-                author: "담임교관",
-                category: "근태/생활",
-                title: "반장/부반장 및 리더 선출 결과 전달",
-                content: "반장 260802, 부반장 260801, 안전리더 260803, 서비스리더 260804 선출 완료. 아침 조회 진행 시 리더 훈련생 활용하여 인원 점검 진행 권장.",
-                status: "완료"
-            }
-        ];
-
-        let DEFAULT_HANDOVER_CHECKLIST = [
-            { id: "hoc_1", text: "아침 조회 시 [인사와 표정] / [일·중 승객응대화법] 연습 안내 전달", done: true },
-            { id: "hoc_2", text: "입과 서류 미제출자 (여권/외화통장/서약서) 개별 독촉 및 수거", done: false },
-            { id: "hoc_3", text: "오늘 예정 교과목 강의실 PC 및 실습 비상품/장비 상태 점검", done: true },
-            { id: "hoc_4", text: "벌점 부과 대상자 발생 시 대시보드 내 즉시 등록 및 사유 기록", done: false },
-            { id: "hoc_5", text: "다음 날 과제 제출 기한 항목 사전 안내 및 러닝플랫폼 시청 확인", done: false }
-        ];
-
         // Application State Variables
         let trainees = [];
         let demerits = [];
         let scheduleData = [];
         let assignmentsData = [];
         let evaluationResults = {};
-        let handoverLogs = [];
-        let handoverChecklist = [];
-        let subjectProgressState = {};
 
         window.saveStateToLocalStorage = function() {
             try {
@@ -1545,9 +1295,6 @@
                     scheduleData,
                     assignmentsData,
                     evaluationResults,
-                    handoverLogs,
-                    handoverChecklist,
-                    subjectProgressState,
                     noticeContent: document.getElementById('noticeContent')?.innerText || ''
                 };
                 localStorage.setItem('cabin_crew_dashboard_data', JSON.stringify(fullData));
@@ -1566,9 +1313,6 @@
                     scheduleData = data.scheduleData || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                     assignmentsData = data.assignmentsData || JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
                     evaluationResults = data.evaluationResults || {};
-                    handoverLogs = data.handoverLogs || JSON.parse(JSON.stringify(DEFAULT_HANDOVER_LOGS));
-                    handoverChecklist = data.handoverChecklist || JSON.parse(JSON.stringify(DEFAULT_HANDOVER_CHECKLIST));
-                    subjectProgressState = data.subjectProgressState || {};
                     if (data.noticeContent && document.getElementById('noticeContent')) {
                         document.getElementById('noticeContent').innerText = data.noticeContent;
                     }
@@ -1578,9 +1322,6 @@
                     scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                     assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
                     evaluationResults = {};
-                    handoverLogs = JSON.parse(JSON.stringify(DEFAULT_HANDOVER_LOGS));
-                    handoverChecklist = JSON.parse(JSON.stringify(DEFAULT_HANDOVER_CHECKLIST));
-                    subjectProgressState = {};
                 }
             } catch(e) {
                 console.error("Local storage load error:", e);
@@ -1589,36 +1330,42 @@
                 scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                 assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
                 evaluationResults = {};
-                handoverLogs = JSON.parse(JSON.stringify(DEFAULT_HANDOVER_LOGS));
-                handoverChecklist = JSON.parse(JSON.stringify(DEFAULT_HANDOVER_CHECKLIST));
-                subjectProgressState = {};
             }
         };
 
-        window.resetDataToDefault = function() {
-            if (confirm("정말로 모든 수정 데이터를 삭제하고 초기 기본 상태로 되돌리시겠습니까?")) {
-                localStorage.removeItem('cabin_crew_dashboard_data');
-                trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
-                demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
-                scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-                assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
-                evaluationResults = {};
-                handoverLogs = JSON.parse(JSON.stringify(DEFAULT_HANDOVER_LOGS));
-                handoverChecklist = JSON.parse(JSON.stringify(DEFAULT_HANDOVER_CHECKLIST));
-                subjectProgressState = {};
-                
-                const notice = document.getElementById('noticeContent');
-                if (notice) notice.innerText = "📌 09/01\n입과 첫날 여권, 증명사진, 외화통장 제출\n10시30분 본부장님/실장님 간담회\n서약서 및 동의서 5개 진행\n반장/부반장/서비스 리더 선출";
+        let onConfirmAction = null;
+        window.openConfirmModal = function(msg, actionCallback) {
+            document.getElementById('confirmModalText').innerText = msg;
+            onConfirmAction = actionCallback;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        };
 
-                window.renderDashboard();
-                window.renderScheduleTable();
-                window.renderTraineesTable();
-                window.renderCompetencyTable();
-                window.renderDemeritsTable();
-                window.renderAssignmentsGrid();
-                window.renderHandoverSection();
-                window.showToast("기본 초기 데이터로 정상 복원되었습니다.");
+        window.closeConfirmModal = function(isConfirmed) {
+            document.getElementById('confirmModal').classList.add('hidden');
+            if (isConfirmed && typeof onConfirmAction === 'function') {
+                onConfirmAction();
             }
+            onConfirmAction = null;
+        };
+
+        window.resetDataToDefault = function() {
+            localStorage.removeItem('cabin_crew_dashboard_data');
+            trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+            demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
+            scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+            assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
+            evaluationResults = {};
+            
+            const notice = document.getElementById('noticeContent');
+            if (notice) notice.innerText = "📌 09/01\n입과 첫날 여권, 증명사진, 외화통장 제출\n10시30분 본부장님/실장님 간담회\n서약서 및 동의서 5개 진행\n반장/부반장/서비스 리더 선출";
+
+            window.renderDashboard();
+            window.renderScheduleTable();
+            window.renderTraineesTable();
+            window.renderCompetencyTable();
+            window.renderDemeritsTable();
+            window.renderAssignmentsGrid();
+            window.showToast("기본 초기 데이터로 정상 복원되었습니다.");
         };
 
         window.checkAuthStatus = function () {
@@ -1702,7 +1449,6 @@
             if (tabName === 'demerit') window.renderDemeritsTable();
             if (tabName === 'evaluation') window.renderTestsTable();
             if (tabName === 'assignment') window.renderAssignmentsGrid();
-            if (tabName === 'handover') window.renderHandoverSection();
             if (tabName === 'manage') window.switchManageSubTab('schedule');
 
             if (window.lucide) window.lucide.createIcons();
@@ -1856,7 +1602,7 @@
                                                         </div>
                                                         <div class="flex space-x-1 pl-1">
                                                             <button onclick="window.openEditScheduleModal(${globalIdx})" title="시간표 수정" class="text-slate-400 hover:text-orange-600 p-0.5"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
-                                                            <button onclick="window.deleteScheduleItem(${globalIdx})" title="시간표 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                            <button onclick="window.openConfirmModal('해당 시간표 항목을 삭제하시겠습니까?', () => window.deleteScheduleItem(${globalIdx}))" title="시간표 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                                                         </div>
                                                     </div>
                                                 `;
@@ -1886,7 +1632,7 @@
                             <td class="p-3 text-slate-600">${s.instructor}</td>
                             <td class="p-3 text-center space-x-1">
                                 <button onclick="window.openEditScheduleModal(${globalIdx})" class="px-2 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-[11px] font-bold">수정</button>
-                                <button onclick="window.deleteScheduleItem(${globalIdx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                                <button onclick="window.openConfirmModal('해당 시간표 항목을 삭제하시겠습니까?', () => window.deleteScheduleItem(${globalIdx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
                             </td>
                         </tr>
                     `;
@@ -2309,7 +2055,7 @@
                                 <div class="flex items-center space-x-2">
                                     <span class="text-xs font-semibold text-slate-400">${a.subject}</span>
                                     <button onclick="window.openEditAssignmentModal('${a.id}')" title="과제 수정" class="text-slate-400 hover:text-orange-600 p-0.5"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                                    <button onclick="window.deleteAssignmentById('${a.id}')" title="과제 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="window.openConfirmModal('해당 과제를 삭제하시겠습니까?', () => window.deleteAssignmentById('${a.id}'))" title="과제 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
                             </div>
                             <h3 class="text-sm font-bold text-slate-900 mb-2">${a.title}</h3>
@@ -2339,7 +2085,7 @@
                             </div>
                             <div class="flex justify-end space-x-2 pt-2 border-t border-slate-50">
                                 <button onclick="window.openEditAssignmentModal('${a.id}')" class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold rounded-lg text-[11px]">수정</button>
-                                <button onclick="window.deleteAssignmentById('${a.id}')" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg text-[11px]">삭제</button>
+                                <button onclick="window.openConfirmModal('해당 과제를 삭제하시겠습니까?', () => window.deleteAssignmentById('${a.id}'))" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg text-[11px]">삭제</button>
                             </div>
                         </div>
                     </div>
@@ -2364,234 +2110,13 @@
         };
 
         window.deleteAssignmentById = function (assignId) {
-            if (confirm('해당 과제를 삭제하시겠습니까?')) {
-                const idx = assignmentsData.findIndex(a => a.id === assignId);
-                if (idx !== -1) {
-                    assignmentsData.splice(idx, 1);
-                    window.saveStateToLocalStorage();
-                    window.renderAssignmentsGrid();
-                    window.renderManageAssignmentsList();
-                    window.showToast('과제가 삭제되었습니다.');
-                }
-            }
-        };
-
-        let currentHandoverCat = 'ALL';
-
-        window.filterHandoverCategory = function(cat) {
-            currentHandoverCat = cat;
-            document.querySelectorAll('.ho-cat-btn').forEach(btn => btn.className = 'ho-cat-btn text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg');
-            const catKey = cat === 'ALL' ? 'all' : cat === '과제점검' ? 'assign' : cat === '교과목진행' ? 'subject' : cat === '근태/생활' ? 'attitude' : 'etc';
-            const activeBtn = document.getElementById(`ho-cat-${catKey}`);
-            if (activeBtn) activeBtn.className = 'ho-cat-btn bg-white text-orange-600 font-bold shadow-sm px-2.5 py-1 rounded-lg';
-            window.renderHandoverLogs();
-        };
-
-        window.renderHandoverSection = function() {
-            window.updateHandoverKPIs();
-            window.renderHandoverSubjectProgress();
-            window.renderHandoverLogs();
-            window.renderHandoverChecklist();
-        };
-
-        window.updateHandoverKPIs = function() {
-            const pendingCount = handoverLogs.filter(h => h.status === '진행중').length;
-            const doneCount = handoverLogs.filter(h => h.status === '완료').length;
-            const pendingAssign = assignmentsData.filter(a => a.items && a.items.some(i => !i.done)).length;
-
-            const week1Items = scheduleData.filter(s => s.week === 1);
-            let doneSubjects = 0;
-            week1Items.forEach((s, idx) => {
-                const key = `sub_1_${idx}`;
-                if (subjectProgressState[key] === '완료') doneSubjects++;
-            });
-            const progressPct = week1Items.length > 0 ? Math.round((doneSubjects / week1Items.length) * 100) : 0;
-
-            const pendingEl = document.getElementById('hoPendingCount');
-            const progressEl = document.getElementById('hoSubjectProgressText');
-            const doneEl = document.getElementById('hoDoneCount');
-            const assignEl = document.getElementById('hoAssignPendingCount');
-
-            if (pendingEl) pendingEl.innerHTML = `${pendingCount} <span class="text-xs font-normal text-slate-500">건</span>`;
-            if (progressEl) progressEl.innerText = `${progressPct}% (${doneSubjects}/${week1Items.length})`;
-            if (doneEl) doneEl.innerHTML = `${doneCount} <span class="text-xs font-normal text-slate-500">건</span>`;
-            if (assignEl) assignEl.innerHTML = `${pendingAssign} <span class="text-xs font-normal text-slate-500">건</span>`;
-        };
-
-        window.renderHandoverSubjectProgress = function() {
-            const weekVal = Number(document.getElementById('handoverWeekSelect')?.value || 1);
-            const tbody = document.getElementById('handoverSubjectTableBody');
-            if (!tbody) return;
-
-            const weekItems = scheduleData.filter(s => s.week === weekVal);
-            tbody.innerHTML = weekItems.map((s, idx) => {
-                const statusKey = `sub_${weekVal}_${idx}`;
-                const currStatus = subjectProgressState[statusKey] || (s.date === '08/31' || s.date === '09/01' ? '완료' : '진행중');
-
-                return `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-2.5 font-bold text-slate-800">${s.dayName}</td>
-                        <td class="p-2.5 font-medium text-slate-500">${s.period}</td>
-                        <td class="p-2.5 text-center"><span class="px-2 py-0.5 text-[10px] rounded font-bold ${s.cat === '안전' ? 'bg-red-50 text-red-600' : s.cat === '서비스' ? 'bg-blue-50 text-blue-600' : s.cat === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${s.cat}</span></td>
-                        <td class="p-2.5 font-bold text-slate-900">${s.name}</td>
-                        <td class="p-2.5 text-slate-600">${s.instructor}</td>
-                        <td class="p-2.5 text-center">
-                            <button onclick="window.toggleSubjectProgress('${statusKey}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition shadow-2xs ${currStatus === '완료' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : currStatus === '진행중' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-slate-100 text-slate-600'}">
-                                ${currStatus === '완료' ? '✅ 완료' : currStatus === '진행중' ? '⏳ 진행중' : '⏸️ 예정'}
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            if (window.lucide) window.lucide.createIcons();
-        };
-
-        window.toggleSubjectProgress = function(statusKey) {
-            const current = subjectProgressState[statusKey] || '진행중';
-            const next = current === '진행중' ? '완료' : current === '완료' ? '예정' : '진행중';
-            subjectProgressState[statusKey] = next;
-            window.saveStateToLocalStorage();
-            window.renderHandoverSection();
-        };
-
-        window.renderHandoverLogs = function() {
-            const grid = document.getElementById('handoverLogGrid');
-            if (!grid) return;
-
-            const filtered = currentHandoverCat === 'ALL' ? handoverLogs : handoverLogs.filter(h => h.category === currentHandoverCat);
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<p class="text-xs text-slate-400 italic p-4 col-span-2 text-center bg-slate-50 rounded-2xl">해당 카테고리의 인수인계 내역이 없습니다.</p>`;
-                return;
-            }
-
-            grid.innerHTML = filtered.map(h => `
-                <div class="bg-white p-4 rounded-2xl border ${h.status === '진행중' ? 'border-orange-200 bg-orange-50/20 shadow-2xs' : 'border-slate-200'} shadow-sm flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex justify-between items-start mb-1.5">
-                            <div class="flex items-center space-x-2">
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded ${h.category === '과제점검' ? 'bg-purple-100 text-purple-700' : h.category === '교과목진행' ? 'bg-blue-100 text-blue-700' : h.category === '근태/생활' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}">${h.category}</span>
-                                <span class="text-xs font-bold text-slate-500">${h.date} | ${h.author}</span>
-                            </div>
-                            <button onclick="window.toggleHandoverLogStatus('${h.id}')" class="px-2 py-0.5 text-[10px] font-extrabold rounded-md transition ${h.status === '진행중' ? 'bg-orange-500 text-white shadow-2xs' : 'bg-emerald-100 text-emerald-800'}">
-                                ${h.status === '진행중' ? '⏳ 미결 (진행중)' : '✅ 완료됨'}
-                            </button>
-                        </div>
-                        <h4 class="text-sm font-bold text-slate-900 mb-1">${h.title}</h4>
-                        <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50/80 p-2.5 rounded-xl border border-slate-100">${h.content}</p>
-                    </div>
-
-                    <div class="flex justify-end space-x-1.5 pt-2 border-t border-slate-100">
-                        <button onclick="window.openEditHandoverModal('${h.id}')" class="px-2.5 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded-lg text-[11px] font-bold">수정</button>
-                        <button onclick="window.deleteHandoverLog('${h.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-[11px] font-bold">삭제</button>
-                    </div>
-                </div>
-            `).join('');
-            if (window.lucide) window.lucide.createIcons();
-        };
-
-        window.toggleHandoverLogStatus = function(logId) {
-            const log = handoverLogs.find(h => h.id === logId);
-            if (log) {
-                log.status = log.status === '진행중' ? '완료' : '진행중';
+            const idx = assignmentsData.findIndex(a => a.id === assignId);
+            if (idx !== -1) {
+                assignmentsData.splice(idx, 1);
                 window.saveStateToLocalStorage();
-                window.renderHandoverSection();
-            }
-        };
-
-        window.renderHandoverChecklist = function() {
-            const container = document.getElementById('handoverChecklistContainer');
-            if (!container) return;
-
-            container.innerHTML = handoverChecklist.map((item, idx) => `
-                <div onclick="window.toggleHandoverChecklist(${idx})" class="p-2.5 rounded-xl border text-xs cursor-pointer flex items-center space-x-2 transition ${item.done ? 'bg-amber-100/70 border-amber-300 text-amber-900' : 'bg-white border-amber-200 text-slate-700 hover:bg-amber-50'}">
-                    <input type="checkbox" ${item.done ? 'checked' : ''} class="text-orange-500 rounded focus:ring-orange-500">
-                    <span class="${item.done ? 'line-through text-amber-700/70 font-medium' : 'font-bold'}">${item.text}</span>
-                </div>
-            `).join('');
-        };
-
-        window.toggleHandoverChecklist = function(idx) {
-            if (handoverChecklist[idx]) {
-                handoverChecklist[idx].done = !handoverChecklist[idx].done;
-                window.saveStateToLocalStorage();
-                window.renderHandoverChecklist();
-            }
-        };
-
-        window.openHandoverModal = function() {
-            document.getElementById('handoverModalTitle').innerText = '인수인계 사항 등록';
-            document.getElementById('editHandoverId').value = '';
-            document.getElementById('hoDateInput').value = new Date().toISOString().split('T')[0];
-            document.getElementById('hoAuthorInput').value = '담당교관';
-            document.getElementById('hoCategorySelect').value = '과제점검';
-            document.getElementById('hoTitleInput').value = '';
-            document.getElementById('hoContentInput').value = '';
-            document.getElementById('hoStatusSelect').value = '진행중';
-            document.getElementById('handoverModal').classList.remove('hidden');
-        };
-
-        window.openEditHandoverModal = function(logId) {
-            const log = handoverLogs.find(h => h.id === logId);
-            if (!log) return;
-
-            document.getElementById('handoverModalTitle').innerText = '인수인계 사항 수정';
-            document.getElementById('editHandoverId').value = log.id;
-            document.getElementById('hoDateInput').value = log.date || new Date().toISOString().split('T')[0];
-            document.getElementById('hoAuthorInput').value = log.author || '담당교관';
-            document.getElementById('hoCategorySelect').value = log.category || '과제점검';
-            document.getElementById('hoTitleInput').value = log.title || '';
-            document.getElementById('hoContentInput').value = log.content || '';
-            document.getElementById('hoStatusSelect').value = log.status || '진행중';
-            document.getElementById('handoverModal').classList.remove('hidden');
-        };
-
-        window.closeHandoverModal = function() {
-            document.getElementById('handoverModal').classList.add('hidden');
-        };
-
-        window.saveHandoverLog = function() {
-            const editId = document.getElementById('editHandoverId').value;
-            const date = document.getElementById('hoDateInput').value || new Date().toISOString().split('T')[0];
-            const author = document.getElementById('hoAuthorInput').value.trim() || '담당교관';
-            const category = document.getElementById('hoCategorySelect').value;
-            const title = document.getElementById('hoTitleInput').value.trim() || '인수인계 전달사항';
-            const content = document.getElementById('hoContentInput').value.trim() || '세부사항 없음';
-            const status = document.getElementById('hoStatusSelect').value;
-
-            if (editId) {
-                const idx = handoverLogs.findIndex(h => h.id === editId);
-                if (idx !== -1) {
-                    handoverLogs[idx] = { id: editId, date, author, category, title, content, status };
-                    window.showToast('인수인계 내용이 수정되었습니다.');
-                }
-            } else {
-                handoverLogs.unshift({
-                    id: `ho_${Date.now()}`,
-                    date,
-                    author,
-                    category,
-                    title,
-                    content,
-                    status
-                });
-                window.showToast('새 인수인계 항목이 등록되었습니다.');
-            }
-
-            window.saveStateToLocalStorage();
-            window.renderHandoverSection();
-            window.closeHandoverModal();
-        };
-
-        window.deleteHandoverLog = function(logId) {
-            if (confirm('해당 인수인계 기록을 삭제하시겠습니까?')) {
-                const idx = handoverLogs.findIndex(h => h.id === logId);
-                if (idx !== -1) {
-                    handoverLogs.splice(idx, 1);
-                    window.saveStateToLocalStorage();
-                    window.renderHandoverSection();
-                    window.showToast('인수인계 항목이 삭제되었습니다.');
-                }
+                window.renderAssignmentsGrid();
+                window.renderManageAssignmentsList();
+                window.showToast('과제가 삭제되었습니다.');
             }
         };
 
@@ -2633,7 +2158,7 @@
                         <td class="p-3 text-slate-600">${s.instructor}</td>
                         <td class="p-3 text-center space-x-1">
                             <button onclick="window.openEditScheduleModal(${globalIdx})" class="px-2 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-[11px] font-bold">수정</button>
-                            <button onclick="window.deleteScheduleItem(${globalIdx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                            <button onclick="window.openConfirmModal('해당 시간표 항목을 삭제하시겠습니까?', () => window.deleteScheduleItem(${globalIdx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
                         </td>
                     </tr>
                 `;
@@ -2641,13 +2166,11 @@
         };
 
         window.deleteScheduleItem = function (globalIdx) {
-            if (confirm('해당 시간표 항목을 삭제하시겠습니까?')) {
-                scheduleData.splice(globalIdx, 1);
-                window.saveStateToLocalStorage();
-                window.renderScheduleTable();
-                window.renderManageScheduleTable();
-                window.showToast('시간표 항목이 삭제되었습니다.');
-            }
+            scheduleData.splice(globalIdx, 1);
+            window.saveStateToLocalStorage();
+            window.renderScheduleTable();
+            window.renderManageScheduleTable();
+            window.showToast('시간표 항목이 삭제되었습니다.');
         };
 
         window.openAddScheduleModal = function () {
@@ -2714,22 +2237,20 @@
                     <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
                     <td class="p-3 font-bold text-slate-900">${t.empId}</td>
                     <td class="p-3 text-center">
-                        <button onclick="window.deleteTrainee(${idx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                        <button onclick="window.openConfirmModal('해당 훈련생을 명부에서 삭제하시겠습니까?', () => window.deleteTrainee(${idx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
                     </td>
                 </tr>
             `).join('');
         };
 
         window.deleteTrainee = function (idx) {
-            if (confirm('해당 훈련생을 명부에서 삭제하시겠습니까?')) {
-                trainees.splice(idx, 1);
-                window.saveStateToLocalStorage();
-                window.renderManageTraineesTable();
-                window.renderTraineesTable();
-                window.renderCompetencyTable();
-                window.renderDashboard();
-                window.showToast('훈련생 정보가 삭제되었습니다.');
-            }
+            trainees.splice(idx, 1);
+            window.saveStateToLocalStorage();
+            window.renderManageTraineesTable();
+            window.renderTraineesTable();
+            window.renderCompetencyTable();
+            window.renderDashboard();
+            window.showToast('훈련생 정보가 삭제되었습니다.');
         };
 
         window.openAddTraineeModal = function () {
@@ -2771,21 +2292,19 @@
                     <td class="p-3 font-bold text-red-600">${d.points}점</td>
                     <td class="p-3 text-slate-600">${d.instructor}</td>
                     <td class="p-3 text-center">
-                        <button onclick="window.deleteDemerit(${idx})" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                        <button onclick="window.openConfirmModal('해당 벌점 기록을 삭제하시겠습니까?', () => window.deleteDemerit(${idx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
                     </td>
                 </tr>
             `).join('');
         };
 
         window.deleteDemerit = function (idx) {
-            if (confirm('해당 벌점 기록을 삭제하시겠습니까?')) {
-                demerits.splice(idx, 1);
-                window.saveStateToLocalStorage();
-                window.renderManageDemeritsTable();
-                window.renderDemeritsTable();
-                window.renderDashboard();
-                window.showToast('벌점 기록이 삭제되었습니다.');
-            }
+            demerits.splice(idx, 1);
+            window.saveStateToLocalStorage();
+            window.renderManageDemeritsTable();
+            window.renderDemeritsTable();
+            window.renderDashboard();
+            window.showToast('벌점 기록이 삭제되었습니다.');
         };
 
         window.renderManageAssignmentsList = function () {
@@ -2799,7 +2318,7 @@
                     </div>
                     <div class="space-x-1">
                         <button onclick="window.openEditAssignmentModal('${a.id}')" class="px-2.5 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-xs font-bold">수정</button>
-                        <button onclick="window.deleteAssignmentById('${a.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs font-bold">삭제</button>
+                        <button onclick="window.openConfirmModal('해당 과제를 삭제하시겠습니까?', () => window.deleteAssignmentById('${a.id}'))" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs font-bold">삭제</button>
                     </div>
                 </div>
             `).join('');
@@ -2890,7 +2409,7 @@
         };
 
         window.exportFullDataJSON = function () {
-            const fullData = { trainees, demerits, scheduleData, assignmentsData, evaluationResults, handoverLogs, handoverChecklist, subjectProgressState };
+            const fullData = { trainees, demerits, scheduleData, assignmentsData, evaluationResults };
             const jsonStr = JSON.stringify(fullData, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -2913,9 +2432,6 @@
                     if (data.scheduleData) scheduleData = data.scheduleData;
                     if (data.assignmentsData) assignmentsData = data.assignmentsData;
                     if (data.evaluationResults) evaluationResults = data.evaluationResults;
-                    if (data.handoverLogs) handoverLogs = data.handoverLogs;
-                    if (data.handoverChecklist) handoverChecklist = data.handoverChecklist;
-                    if (data.subjectProgressState) subjectProgressState = data.subjectProgressState;
 
                     window.saveStateToLocalStorage();
                     window.renderDashboard();
@@ -2924,10 +2440,9 @@
                     window.renderCompetencyTable();
                     window.renderDemeritsTable();
                     window.renderAssignmentsGrid();
-                    window.renderHandoverSection();
                     window.showToast('데이터가 정상적으로 복원되었습니다.');
                 } catch (err) {
-                    alert('유효하지 않은 JSON 백업 파일입니다.');
+                    window.showToast('유효하지 않은 JSON 백업 파일입니다.');
                 }
             };
             reader.readAsText(file);
@@ -2986,7 +2501,6 @@
             window.populateTestSubjectOptions();
             window.renderTestsTable();
             window.renderAssignmentsGrid();
-            window.renderHandoverSection();
             
             if (window.lucide) {
                 window.lucide.createIcons();
