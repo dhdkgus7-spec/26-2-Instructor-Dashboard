@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation Buttons -->
+            <!-- Tab Navigation Buttons (교관 인수인계 탭 제거) -->
             <nav class="flex space-x-6 overflow-x-auto custom-scrollbar pt-2 text-sm font-medium">
                 <button onclick="window.switchTab('dashboard')" id="tab-dashboard" class="tab-button tab-active pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
@@ -1110,7 +1110,7 @@
             ]
         };
 
-        // Updated 30 Trainees EmpIDs from uploaded photo
+        // Updated 30 Trainees Exact EmpIDs
         const NEW_EMP_IDS = [
             "2608007", "2608008", "2608011", "2608012", "2608013",
             "2608014", "2608015", "2608016", "2608017", "2608018",
@@ -1120,21 +1120,19 @@
             "2608048", "2608049", "2608051", "2608055", "2608056"
         ];
 
-        let DEFAULT_TRAINEES = NEW_EMP_IDS.map((empId, i) => {
+        let DEFAULT_TRAINEES = NEW_EMP_IDS.map((empId) => {
             return {
                 empId: empId,
-                observationNote: i === 1 ? '비상탈출 훈련 시 리더십 우수, 필기 보완 필요' :
-                                 i === 4 ? '롤플레잉 시 긴장도가 높아 억양 조절 연습 필요' : '특이사항 없음',
-                counselingNote: i === 1 ? '09/03 1차 면담: 기숙사 생활 적응 완료, 과제 스케줄 관리 독려' :
-                                i === 4 ? '09/05 1차 면담: 발음/어조에 대한 불안감 토로, 개별 피드백 요청' : '면담 내역 없음',
+                observationNote: '특이사항 없음',
+                counselingNote: '면담 내역 없음',
                 competency: {
-                    safety: i === 0 ? 1 : i === 1 ? 5 : i === 4 ? 3 : 4,
+                    safety: 4,
                     lowCost: 4,
-                    trust: 5,
-                    teamwork: i === 1 ? 5 : 4,
-                    challenge: i === 4 ? 3 : 4,
-                    strengths: i === 1 ? '비상 절차 이행력 및 팀 리딩 능력 매우 탁월함' : '책임감이 강하고 실습 태도가 매우 성실함',
-                    weaknesses: i === 4 ? '실습 롤플레이 시 발음 및 어조 조절 연습 필요' : '보완점 지속 관찰 중'
+                    trust: 4,
+                    teamwork: 4,
+                    challenge: 4,
+                    strengths: '특이사항 없음',
+                    weaknesses: '특이사항 없음'
                 }
             };
         });
@@ -1309,6 +1307,12 @@
                 if (saved) {
                     const data = JSON.parse(saved);
                     trainees = data.trainees || JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+                    
+                    // 구 사번(6자리 사번 등)이 캐시되어 있는 경우 새 30명 사번 목록으로 자동 동기화
+                    if (!trainees.length || (trainees[0] && trainees[0].empId && trainees[0].empId.length === 6)) {
+                        trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+                    }
+                    
                     demerits = data.demerits || JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
                     scheduleData = data.scheduleData || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                     assignmentsData = data.assignmentsData || JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
