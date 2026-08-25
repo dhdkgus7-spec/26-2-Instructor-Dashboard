@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation Buttons (교관 인수인계 탭 제거) -->
+            <!-- Tab Navigation Buttons -->
             <nav class="flex space-x-6 overflow-x-auto custom-scrollbar pt-2 text-sm font-medium">
                 <button onclick="window.switchTab('dashboard')" id="tab-dashboard" class="tab-button tab-active pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
@@ -1110,7 +1110,7 @@
             ]
         };
 
-        // Updated 30 Trainees Exact EmpIDs
+        // Exact 30 Trainees EmpIDs from User's latest JSON payload
         const NEW_EMP_IDS = [
             "2608007", "2608008", "2608011", "2608012", "2608013",
             "2608014", "2608015", "2608016", "2608017", "2608018",
@@ -1160,7 +1160,7 @@
             { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '6~7교시 (15:00~16:50)', cat: '서비스', name: '서비스 마인드', instructor: '박민지A 교관' },
             { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
 
-            // Week 2 (09/07 ~ 09/11)
+            // Week 2
             { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장 1', instructor: '오아현, 박민지A, 김연희, 현윤선 교관' },
             { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '2~3교시 (10:00~11:50)', cat: '서비스', name: '국제선 승객응대 화법(대양주)', instructor: '김연희 교관' },
             { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '4~6교시 (12:00~15:50)', cat: '서비스', name: '기내서비스 용어', instructor: '박민지A, 현윤선, 오아현 교관' },
@@ -1181,7 +1181,7 @@
             { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '5~6교시 (14:00~15:50)', cat: '서비스', name: '국내선 FLIGHT 실습', instructor: '오아현, 이은비 교관' },
             { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '국내선 에어카페 실습 1-1_설렘배송', instructor: '김연희, 현윤선, 오아현, 이은비 교관' },
 
-            // Week 3~11
+            // Week 3
             { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '국제선 승객응대 화법(중국) TEST', instructor: '박민지A, 현윤선, 이은비 교관' },
             { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '2~4교시 (10:00~12:50)', cat: '서비스', name: '국내선 에어카페 실습 2', instructor: '이은비, 김연희, 현윤선, 박민지A 교관' },
             { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '5교시 (14:00~14:50)', cat: '서비스', name: '국내선 에어카페 실습 3', instructor: '최수연, 김연희, 이은비, 박민지A 교관' },
@@ -1201,6 +1201,8 @@
             { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '4교시 (12:00~14:50)', cat: '서비스', name: '승무원 CIQ', instructor: '현윤선 교관' },
             { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '5~7교시 (14:00~16:50)', cat: '기내 방송', name: '기내방송2', instructor: '한재민 교관' },
             { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+
+            // Week 4
             { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '1~2교시 (09:00~10:50)', cat: '서비스', name: '사전기내식 TEST', instructor: '오아현, 이은비, 김연희 교관' },
             { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '3교시 (11:00~11:50)', cat: '서비스', name: '용모와 복장 3', instructor: '박민지A, 이은비, 김연희 교관' },
             { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '4~5교시 (12:00~14:50)', cat: '기내 방송', name: '기내방송3(중국어)', instructor: '정혜윤 교관' },
@@ -1215,6 +1217,8 @@
             { week: 4, date: '09/23', dayName: '09월 23일 (수)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '기내 면세 실습1_예약주문서', instructor: '현윤선, 이은비, 오아현, 김연희 교관' },
             { week: 4, date: '09/24', dayName: '09월 24일 (목)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '추석 연휴', instructor: '-' },
             { week: 4, date: '09/25', dayName: '09월 25일 (금)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '추석 연휴', instructor: '-' },
+
+            // Week 5
             { week: 5, date: '09/28', dayName: '09월 28일 (월)', period: '1~4교시 (09:00~12:50)', cat: '서비스', name: 'CIQ TEST', instructor: '현윤선, 이은비, 박민지A, 김연희 교관' },
             { week: 5, date: '09/28', dayName: '09월 28일 (월)', period: '5~8교시 (14:00~17:50)', cat: '서비스', name: '기내 면세 실습2', instructor: '현윤선, 이은비, 오아현, 김연희 교관' },
             { week: 5, date: '09/29', dayName: '09월 29일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장4', instructor: '오아현, 이은비, 현윤선 교관' },
@@ -1230,9 +1234,100 @@
             { week: 5, date: '10/01', dayName: '10월 01일 (목)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
             { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '1교시 (09:00~09:50)', cat: '기내 방송', name: '방송TEST (터블런스)', instructor: '방송교관' },
             { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '2~5교시 (10:00~14:50)', cat: '서비스', name: '국제선 에어카페 실습2', instructor: '실습교관' },
-            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '6~7교시 (15:00~16:50)', cat: '서비스', name: 'FUN SVC', instructor: '서비스 파트' },
-            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
-            { week: 11, date: '11/10', dayName: '11월 10일 (화)', period: '1~8교시', cat: '기타', name: '수료식 리허설 및 수료식', instructor: '훈련팀 전체' }
+            { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '6~8교시 (15:00~17:50)', cat: '서비스', name: 'FUN SVC', instructor: '서비스 파트' },
+
+            // Week 6
+            { week: 6, date: '10/05', dayName: '10월05일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '대체공휴일', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월06일', period: '1교시 (09:00~09:50)', cat: '서비스', name: '에어카페&기내 면세 이론 TEST', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월06일', period: '2~6교시 (10:00~15:50)', cat: '서비스', name: '국제선 에어카페 실습3', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월06일', period: '7교시 (16:00~16:50)', cat: '서비스', name: 'Cabin Crew Vision', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월06일', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 6, date: '10/07', dayName: '10월07일', period: '1교시~4교시 (09:00~12:50)', cat: '서비스', name: '에어카페 실습TEST', instructor: '-' },
+            { week: 6, date: '10/07', dayName: '10월07일', period: '5교시~8교시 (14:00~17:50)', cat: '서비스', name: '단거리 FLIGHT 실습', instructor: '-' },
+            { week: 6, date: '10/08', dayName: '10월08일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '비자 인터뷰', instructor: '-' },
+            { week: 6, date: '10/09', dayName: '10월09일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '한글날', instructor: '-' },
+
+            // Week 7
+            { week: 7, date: '10/12', dayName: '10월12일', period: '1~6교시 (09:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '송지원 교관' },
+            { week: 7, date: '10/12', dayName: '10월12일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국내선)', instructor: '송지원, 유재진 교관' },
+            { week: 7, date: '10/13', dayName: '10월13일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '운항 원리의 이해', instructor: '-' },
+            { week: 7, date: '10/13', dayName: '10월13일', period: '3~4교시 (11:00~12:50)', cat: '기타', name: '운항관리 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/13', dayName: '10월13일', period: '5~6교시 (14:00~15:50)', cat: '기타', name: '운송 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/13', dayName: '10월13일', period: '7~8교시 (16:00~17:50)', cat: '기타', name: '영업 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/14', dayName: '10월14일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '정비 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/14', dayName: '10월14일', period: '2~6교시 (11:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '윤준영 교관' },
+            { week: 7, date: '10/14', dayName: '10월14일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국제선)', instructor: '임청, 김사라 교관' },
+            { week: 7, date: '10/15', dayName: '10월15일', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '제주항공의 안전정책 및 절차 (SMS)', instructor: '강신욱 교관' },
+            { week: 7, date: '10/15', dayName: '10월15일', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '김사라 교관' },
+            { week: 7, date: '10/15', dayName: '10월15일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공기 지상훈련(7) 비상장비', instructor: '이동찬 교관' },
+            { week: 7, date: '10/16', dayName: '10월16일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '승무원에게 적용되는 메뉴얼', instructor: '유재진 교관' },
+            { week: 7, date: '10/16', dayName: '10월16일', period: '4교시 (12:00~12:50)', cat: '안전', name: '항공기 지상훈련(1) 항공기 숙지', instructor: '임청 교관' },
+            { week: 7, date: '10/16', dayName: '10월16일', period: '5교시 (14:00~14:50)', cat: '안전', name: '항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템', instructor: '이동찬 교관' },
+            { week: 7, date: '10/16', dayName: '10월16일', period: '6교시 (15:00~15:50)', cat: '안전', name: '항공기 지상훈련(4) 승무원간 통신과 협조', instructor: '이동찬 교관' },
+            { week: 7, date: '10/16', dayName: '10월16일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공기 지상훈련(7) 비상장비', instructor: '임청 교관' },
+
+            // Week 8
+            { week: 8, date: '10/19', dayName: '10월19일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공사 절차 기본교육 심사평가', instructor: '이동찬 교관' },
+            { week: 8, date: '10/19', dayName: '10월19일', period: '2~3교시 (10:00~11:50)', cat: '안전', name: '항공기 지상훈련(5) 승무원의 임무와 표준절차', instructor: '이동찬 교관' },
+            { week: 8, date: '10/19', dayName: '10월19일', period: '4교시 (12:00~12:50)', cat: '안전', name: '항공기 지상훈련(6) 승객처리책임', instructor: '이동찬 교관' },
+            { week: 8, date: '10/19', dayName: '10월19일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '임청 교관' },
+            { week: 8, date: '10/20', dayName: '10월20일', period: '1교시 (06:00~09:00)', cat: '안전', name: '항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템 항공기 견학', instructor: '이광석 임청 이동찬 교관' },
+            { week: 8, date: '10/20', dayName: '10월20일', period: '2교시 (10:00~12:00)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '이동찬 교관' },
+            { week: 8, date: '10/20', dayName: '10월20일', period: '3교시 (13:00~15:00)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '임청 교관' },
+            { week: 8, date: '10/21', dayName: '10월21일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공기 지상훈련 심사평가1(1,2,3,7)', instructor: '김사라 교관' },
+            { week: 8, date: '10/21', dayName: '10월21일', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상상황 발생 시 의사소통과 정보 공유를 포함한 비상장비 훈련)', instructor: '김사라 윤준영 최홍규 교관' },
+            { week: 8, date: '10/21', dayName: '10월21일', period: '5교시 (14:00~14:50)', cat: '안전', name: '비상구 열 브리핑 Test', instructor: '강신욱 지혜진 이광석 심사관' },
+            { week: 8, date: '10/21', dayName: '10월21일', period: '6교시 (15:00~15:50)', cat: '안전', name: 'DEMO Test', instructor: '강신욱 지혜진 이광석 심사관' },
+            { week: 8, date: '10/21', dayName: '10월21일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '응급처치훈련(이론)', instructor: '이동찬 교관' },
+            { week: 8, date: '10/22', dayName: '10월22일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공기 지상훈련 심사평가2(4,5,6,8)', instructor: '이동찬 교관' },
+            { week: 8, date: '10/22', dayName: '10월22일', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '비상훈련 (비상상황 발생 시 의사소통과 정보 공유를 포함한 비상장비 훈련)', instructor: '윤준영 이동찬 김환태 교관' },
+            { week: 8, date: '10/22', dayName: '10월22일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_샤우팅', instructor: '임청 김사라 김환태 교관' },
+            { week: 8, date: '10/23', dayName: '10월23일', period: '1~7교시 (09:00~16:50)', cat: '안전', name: '승무원 자원관리', instructor: '태형식 교관' },
+            { week: 8, date: '10/23', dayName: '10월23일', period: '8교시 (17:00~17:50)', cat: '안전', name: '승무원 자원관리 심사평가', instructor: '태형식 교관' },
+
+            // Week 9
+            { week: 9, date: '10/26', dayName: '10월26일', period: '1~2교시 (09:00~10:50)', cat: '안전', name: '비상훈련 심사평가 비상장비_도슬오/장비구술 심사', instructor: '이동찬 김사라 윤준영 교관, 강신욱 지혜진 이광석 심사관' },
+            { week: 9, date: '10/26', dayName: '10월26일', period: '3~5교시 (11:00~14:50)', cat: '안전', name: '응급처치훈련(이론)', instructor: '이동찬 교관' },
+            { week: 9, date: '10/26', dayName: '10월26일', period: '6교시 (15:00~15:50)', cat: '안전', name: '응급처치훈련(이론) 항공생리', instructor: '이정희 간호사' },
+            { week: 9, date: '10/26', dayName: '10월26일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_샤우팅', instructor: '임청, 김사라, 윤준영 교관' },
+            { week: 9, date: '10/27', dayName: '10월27일', period: '1교시 (12:00~16:00)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_착수', instructor: '편희원 김사라 임청 교관' },
+            { week: 9, date: '10/27', dayName: '10월27일', period: '2교시 (15:00~16:00)', cat: '안전', name: '착수 심사', instructor: '서동천 지혜진 이광석 심사관' },
+            { week: 9, date: '10/28', dayName: '10월28일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(이론)', instructor: '임청 교관' },
+            { week: 9, date: '10/28', dayName: '10월28일', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '응급처치훈련(실습)', instructor: '임청, 이동찬, 김사라 교관' },
+            { week: 9, date: '10/28', dayName: '10월28일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '위험물훈련', instructor: '지혜진 교관' },
+            { week: 9, date: '10/29', dayName: '10월29일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(실습)', instructor: '윤준영 김사라 이동찬 교관, 강신욱 지혜진 이광석 심사관' },
+            { week: 9, date: '10/29', dayName: '10월29일', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_화재', instructor: '윤준영 김사라 이동찬 교관' },
+            { week: 9, date: '10/29', dayName: '10월29일', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_난동/감압/비탈', instructor: '윤준영 김사라 이동찬 교관' },
+            { week: 9, date: '10/29', dayName: '10월29일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_롤플레이(난동/감압/비탈)', instructor: '윤준영 김사라 이동찬 교관' },
+            { week: 9, date: '10/30', dayName: '10월30일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '위험물 훈련', instructor: '지혜진 교관' },
+            { week: 9, date: '10/30', dayName: '10월30일', period: '4교시 (12:00~12:50)', cat: '안전', name: '위허물 훈련 심사평가', instructor: '지혜진 교관' },
+            { week: 9, date: '10/30', dayName: '10월30일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
+
+            // Week 10
+            { week: 10, date: '11/02', dayName: '11월02일', period: '1~5교시 (09:00~14:50)', cat: '안전', name: '비상훈련 심사평가_샤우팅/비탈롤', instructor: '임청 김사라 윤준영 교관, 강신욱 진혜진 이광석 심사관' },
+            { week: 10, date: '11/02', dayName: '11월02일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
+            { week: 10, date: '11/02', dayName: '11월02일', period: '8교시 (17:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '임청 김사라 윤준영 교관' },
+            { week: 10, date: '11/03', dayName: '11월03일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공보안훈련 심사평가(이론)', instructor: '임청 교관' },
+            { week: 10, date: '11/03', dayName: '11월03일', period: '2~5교시 (10:00~12:50)', cat: '안전', name: '항공보안훈련(실습)', instructor: '임청 김사라 윤준영 교관' },
+            { week: 10, date: '11/03', dayName: '11월03일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '산업재해 교육', instructor: '-' },
+            { week: 10, date: '11/03', dayName: '11월03일', period: '8교시', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '항공보안훈련 심사평가(실습)', instructor: '임청 김사라 윤준영 교관, 강신욱 지혜진 이광석 심사관' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '4~5교시 (12:00~14:50)', cat: '기타', name: '객실브리핑의 이해', instructor: '-' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '6~7교시 (15:00~16:50)', cat: '기타', name: '슬기로운 레이오버 생활', instructor: '-' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '-' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '우주방사선 교육', instructor: '-' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '5교시 (14:00~14:50)', cat: '기타', name: '객실 승원실의 이해', instructor: '승원팀장' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '6교시 (15:00~15:50)', cat: '기타', name: '객실품질팀의 이해', instructor: '김만수 팀장' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '7교시 (16:00~16:50)', cat: '기타', name: '객실커머스팀의 이해', instructor: '이동규 팀장' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN (OE비행 안내 및 면담)', instructor: '담임교관' },
+            { week: 10, date: '11/06', dayName: '11월06일', period: '1~8교시 (09:00~17:50)', cat: '안전', name: '객실승무원 운항경험', instructor: '지혜진 강신욱 태형식 조혜정 이준우 이상엽 윤윤선 심사관' },
+
+            // Week 11
+            { week: 11, date: '11/09', dayName: '11월09일', period: '1~4교시 (09:00~12:50)', cat: '기타', name: '홍보촬영', instructor: '홍보팀' },
+            { week: 11, date: '11/09', dayName: '11월09일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '재심사 보충 및 면담, OE 교육 등', instructor: '-' },
+            { week: 11, date: '11/10', dayName: '11월10일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '객실편조팀의 이해', instructor: '유은희 팀장' },
+            { week: 11, date: '11/10', dayName: '11월10일', period: '3교시 (11:00~11:50)', cat: '기타', name: '객실기획팀의 이해', instructor: '-' },
+            { week: 11, date: '11/10', dayName: '11월10일', period: '3~8교시 (11:00~17:50)', cat: '기타', name: '수료식', instructor: '객실훈련팀' }
         ];
 
         let DEFAULT_ASSIGNMENTS = [
@@ -1252,9 +1347,9 @@
             { id: "svc-0915-2", category: "서비스", subject: "국제선 이론", title: "동영상보기", dueDate: "수업 전날", method: "수업 전 시청 점검", instructor: "최슬기 교관", items: [{ id: "fr2", text: "러닝플랫폼 내 [진짜 첫 비행] 시청", done: false }] },
             { id: "bc-0916-1", category: "기내 방송", subject: "기내방송1", title: "CAM 다운로드 및 방송문안 끊어읽기", dueDate: "수업 전날", method: "수업 시 육안 확인", instructor: "한재민 교관", items: [{ id: "bc1", text: "(교육일 이전) CAM 최신상태 저장 (개인 Device)", done: false }, { id: "bc2", text: "(교육일 이전) 총론 읽기", done: false }, { id: "bc3", text: "(교육일 이전) WELCOME, FAREWELL, TURBULENCE, SAFETY DEMO 한/영 끊어읽기 표시 및 연습", done: false }, { id: "bc4", text: "(교육 이후) Turbulence 심사 대비 안내 숙지 (한/영/일/중 TEST)", done: false }] },
             { id: "bc-0916-2", category: "기내 방송", subject: "기내방송 1-2", title: "동영상보기 (Shadowing 학습)", dueDate: "수업 전날", method: "러닝플랫폼 자습", instructor: "한재민 교관", items: [{ id: "bc5", text: "러닝플랫폼 Shadowing 영상 시청하며 학습 (Farewell/Turbulence/Safety Demo)", done: false }] },
-            { id: "sft-0917-1", category: "안전", subject: "사전 기내식", title: "Meal Code, 구성품 및 갤리브리핑 내용 암기", dueDate: "수업 1주 전 주말", method: "당일 수업 시간 쪽지 TEST", instructor: "오아현 교관", items: [{ id: "mc1", text: "SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기", done: false }, { id: "mc2", text: "사전 기내식 서비스 절차 암기해오기", done: false }] },
-            { id: "sft-0917-2", category: "안전", subject: "사전 기내식 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "오아현 교관", items: [{ id: "mc3", text: "사전기내식 실습 영상 공유하기", done: false }] },
-            { id: "sft-0917-3", category: "안전", subject: "사전 기내식", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "오아현 교관", items: [{ id: "mc4", text: "실습상황 6가지 공유 숙지", done: false }, { id: "mc5", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
+            { id: "sft-0917-1", category: "서비스", subject: "사전 기내식", title: "Meal Code, 구성품 및 갤리브리핑 내용 암기", dueDate: "수업 1주 전 주말", method: "당일 수업 시간 쪽지 TEST", instructor: "오아현 교관", items: [{ id: "item_0", text: "SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기", done: false }, { id: "item_1", text: "사전 기내식 서비스 절차 암기해오기", done: false }] },
+            { id: "sft-0917-2", category: "서비스", subject: "사전 기내식 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "오아현 교관", items: [{ id: "item_0", text: "사전기내식 실습 영상 공유하기", done: false }] },
+            { id: "sft-0917-3", category: "서비스", subject: "사전 기내식", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "오아현 교관", items: [{ id: "item_0", text: "실습상황 6가지 공유 숙지", done: false }, { id: "item_1", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
             { id: "svc-0918-1", category: "서비스", subject: "C.I.Q", title: "국가별 면세허용량 암기", dueDate: "수업 1주 전 안내", method: "당일 조회시간 구두 TEST", instructor: "현윤선 교관", items: [{ id: "ciq1", text: "스테이션인포 공지사항 내 모든 노선의 공지사항 다운로드", done: false }, { id: "ciq2", text: "면세 허용량 암기해오기 (면세 관련 상세 특이사항 포함)", done: false }] },
             { id: "svc-0918-2", category: "서비스", subject: "C.I.Q", title: "워크시트 작성 (패드 내 삽입)", dueDate: "수업 1주 전 안내", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "현윤선 교관", items: [{ id: "ciq3", text: "스테이션인포 공지사항 다운 내역 보면서 워크시트에 정리 후 제출", done: false }, { id: "ciq4", text: "워크시트 정리내용 암기", done: false }] },
             { id: "svc-0918-3", category: "서비스", subject: "C.I.Q", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "현윤선 교관", items: [{ id: "ciq5", text: "실습상황 2가지 공유(대한민국, 라오스)", done: false }, { id: "ciq6", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
@@ -1275,8 +1370,16 @@
             { id: "svc-0930-2", category: "서비스", subject: "국제선 에어카페 이론1,2", title: "절차 암기", dueDate: "수업 전날", method: "수업 시 랜덤 구두 TEST", instructor: "김연희, 이은비 교관", items: [{ id: "ac5", text: "국제선 에어카페 이론1 숙지", done: false }, { id: "ac6", text: "국제선 에어카페 이론2 숙지", done: false }] },
             { id: "svc-0930-3", category: "서비스", subject: "국제선 에어카페 판매 서비스", title: "국내선 에어카페 판매 서비스 복습해오기", dueDate: "수업 1주 전 (연휴 이용)", method: "수업 시 랜덤 구두 TEST", instructor: "박민지A, 김연희 교관", items: [{ id: "ac7", text: "국내선 에어카페 판매 서비스 교재 참고해 복습", done: false }] },
             { id: "svc-1001-1", category: "서비스", subject: "국제선 에어카페 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "실습교관", items: [{ id: "ac8", text: "에어카페 실습 동영상 공유하기", done: false }] },
-            { id: "sft-1002-1", category: "안전", subject: "안전보건교육", title: "동영상보기", dueDate: "교육 생성 후 안내", method: "훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고", instructor: "안전보건 파트", items: [{ id: "sh1", text: "신규채용자 안전보건교육 수료 완료", done: false }] }
+            { id: "sft-1002-1", category: "서비스", subject: "안전보건교육", title: "동영상보기", dueDate: "교육 생성 후 안내", method: "훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고", instructor: "안전보건 파트", items: [{ id: "item_0", text: "신규채용자 안전보건교육 수료 완료", done: false }] }
         ];
+
+        let DEFAULT_EVALUATION_RESULTS = {
+            "2608007_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608008_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608011_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608012_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608007_test_safety_s_sec": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" }
+        };
 
         // Application State Variables
         let trainees = [];
@@ -1308,15 +1411,16 @@
                     const data = JSON.parse(saved);
                     trainees = data.trainees || JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
                     
-                    // 구 사번(6자리 사번 등)이 캐시되어 있는 경우 새 30명 사번 목록으로 자동 동기화
-                    if (!trainees.length || (trainees[0] && trainees[0].empId && trainees[0].empId.length === 6)) {
+                    // 강제 동기화: 저장된 trainees의 첫번째 사번이 새 사번 규격과 다르면 기본 데이터로 전면 초기화
+                    if (!trainees.length || (trainees[0] && trainees[0].empId !== "2608007")) {
                         trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
                     }
                     
                     demerits = data.demerits || JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
                     scheduleData = data.scheduleData || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                     assignmentsData = data.assignmentsData || JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
-                    evaluationResults = data.evaluationResults || {};
+                    evaluationResults = data.evaluationResults || JSON.parse(JSON.stringify(DEFAULT_EVALUATION_RESULTS));
+                    
                     if (data.noticeContent && document.getElementById('noticeContent')) {
                         document.getElementById('noticeContent').innerText = data.noticeContent;
                     }
@@ -1325,7 +1429,7 @@
                     demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
                     scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                     assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
-                    evaluationResults = {};
+                    evaluationResults = JSON.parse(JSON.stringify(DEFAULT_EVALUATION_RESULTS));
                 }
             } catch(e) {
                 console.error("Local storage load error:", e);
@@ -1333,7 +1437,7 @@
                 demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
                 scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                 assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
-                evaluationResults = {};
+                evaluationResults = JSON.parse(JSON.stringify(DEFAULT_EVALUATION_RESULTS));
             }
         };
 
@@ -1358,7 +1462,7 @@
             demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
             scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
             assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
-            evaluationResults = {};
+            evaluationResults = JSON.parse(JSON.stringify(DEFAULT_EVALUATION_RESULTS));
             
             const notice = document.getElementById('noticeContent');
             if (notice) notice.innerText = "📌 09/01\n입과 첫날 여권, 증명사진, 외화통장 제출\n10시30분 본부장님/실장님 간담회\n서약서 및 동의서 5개 진행\n반장/부반장/서비스 리더 선출";
