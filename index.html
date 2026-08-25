@@ -358,7 +358,7 @@
                     </div>
                     <div class="flex items-center space-x-2">
                         <div class="relative min-w-[200px]">
-                            <input type="text" id="searchTraineeInput" oninput="window.renderTraineesTable()" placeholder="사번 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <input type="text" id="searchTraineeInput" oninput="window.renderTraineesTable()" placeholder="사번 또는 이름 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
                         </div>
                         <button onclick="window.exportTraineeDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm whitespace-nowrap">
@@ -373,7 +373,8 @@
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
                                 <th class="p-3 w-12">No</th>
-                                <th class="p-3 w-28">사번</th>
+                                <th class="p-3 w-24">사번</th>
+                                <th class="p-3 w-24">성명</th>
                                 <th class="p-3">교관 공유 특이사항 & 메모</th>
                                 <th class="p-3 text-center w-28">관리</th>
                             </tr>
@@ -399,7 +400,8 @@
                             <thead>
                                 <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                                     <th class="p-3 w-12 text-center">No</th>
-                                    <th class="p-3 w-24">사번</th>
+                                    <th class="p-3 w-20">사번</th>
+                                    <th class="p-3 w-20">성명</th>
                                     <th class="p-3 text-center w-20 bg-blue-50/50 text-blue-900">[안전]</th>
                                     <th class="p-3 text-center w-20 bg-emerald-50/50 text-emerald-900">[저비용]</th>
                                     <th class="p-3 text-center w-20 bg-amber-50/50 text-amber-900">[신뢰]</th>
@@ -485,6 +487,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
                                 <th class="p-3">일자</th>
                                 <th class="p-3">사번</th>
+                                <th class="p-3">성명</th>
                                 <th class="p-3">위반 항목</th>
                                 <th class="p-3">세부 위반 내용</th>
                                 <th class="p-3">부과 벌점</th>
@@ -524,6 +527,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
                                 <th class="p-3">No</th>
                                 <th class="p-3">사번</th>
+                                <th class="p-3">성명</th>
                                 <th class="p-3">현재 선택 과목 결과</th>
                                 <th class="p-3">판정 변경 (1차/2차/최종)</th>
                                 <th class="p-3">취득 점수</th>
@@ -679,6 +683,7 @@
                                 <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
                                     <th class="p-3">No</th>
                                     <th class="p-3">사번</th>
+                                    <th class="p-3">성명</th>
                                     <th class="p-3 text-center">관리</th>
                                 </tr>
                             </thead>
@@ -696,6 +701,7 @@
                                 <tr class="bg-slate-50 text-slate-600 text-xs font-semibold border-y border-slate-200">
                                     <th class="p-3">일자</th>
                                     <th class="p-3">사번</th>
+                                    <th class="p-3">성명</th>
                                     <th class="p-3">위반 항목</th>
                                     <th class="p-3">세부 내용</th>
                                     <th class="p-3">벌점</th>
@@ -1061,6 +1067,10 @@
                     <label class="font-semibold text-slate-600 block mb-1">사번</label>
                     <input type="text" id="newTraineeEmpId" placeholder="예: 2608007" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">성명 (이름)</label>
+                    <input type="text" id="newTraineeName" placeholder="예: 김훈련" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
                 <button onclick="window.closeAddTraineeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
@@ -1110,19 +1120,29 @@
             ]
         };
 
-        // Exact 30 Trainees EmpIDs from User's latest JSON payload
-        const NEW_EMP_IDS = [
-            "2608007", "2608008", "2608011", "2608012", "2608013",
-            "2608014", "2608015", "2608016", "2608017", "2608018",
-            "2608019", "2608020", "2608022", "2608025", "2608026",
-            "2608028", "2608029", "2608031", "2608033", "2608034",
-            "2608037", "2608042", "2608043", "2608046", "2608047",
-            "2608048", "2608049", "2608051", "2608055", "2608056"
+        // Exact 30 Trainees Seed Data (empId & name)
+        const TRAINEE_SEED_DATA = [
+            { empId: "2608007", name: "강다영A" }, { empId: "2608008", name: "강미선" },
+            { empId: "2608011", name: "권다인" }, { empId: "2608012", name: "김가영" },
+            { empId: "2608013", name: "김규림" }, { empId: "2608014", name: "김다경" },
+            { empId: "2608015", name: "김다윤" }, { empId: "2608016", name: "김서현A" },
+            { empId: "2608017", name: "김승윤" }, { empId: "2608018", name: "김예진A" },
+            { empId: "2608019", name: "김유진L" }, { empId: "2608020", name: "김유진M" },
+            { empId: "2608022", name: "김주은A" }, { empId: "2608025", name: "김형진A" },
+            { empId: "2608026", name: "문채원" }, { empId: "2608028", name: "박현정C" },
+            { empId: "2608029", name: "배지윤" }, { empId: "2608031", name: "신명진" },
+            { empId: "2608033", name: "심영주" }, { empId: "2608034", name: "오민주" },
+            { empId: "2608037", name: "이다은B" }, { empId: "2608042", name: "이채령" },
+            { empId: "2608043", name: "이채민" }, { empId: "2608046", name: "이해름" },
+            { empId: "2608047", name: "임태희" }, { empId: "2608048", name: "임화은" },
+            { empId: "2608049", name: "정다빈" }, { empId: "2608051", name: "정우혁" },
+            { empId: "2608055", name: "허수연" }, { empId: "2608056", name: "황승욱" }
         ];
 
-        let DEFAULT_TRAINEES = NEW_EMP_IDS.map((empId) => {
+        let DEFAULT_TRAINEES = TRAINEE_SEED_DATA.map((item) => {
             return {
-                empId: empId,
+                empId: item.empId,
+                name: item.name,
                 observationNote: '특이사항 없음',
                 counselingNote: '면담 내역 없음',
                 competency: {
@@ -1241,7 +1261,7 @@
             { week: 6, date: '10/06', dayName: '10월06일', period: '1교시 (09:00~09:50)', cat: '서비스', name: '에어카페&기내 면세 이론 TEST', instructor: '-' },
             { week: 6, date: '10/06', dayName: '10월06일', period: '2~6교시 (10:00~15:50)', cat: '서비스', name: '국제선 에어카페 실습3', instructor: '-' },
             { week: 6, date: '10/06', dayName: '10월06일', period: '7교시 (16:00~16:50)', cat: '서비스', name: 'Cabin Crew Vision', instructor: '-' },
-            { week: 6, date: '10/06', dayName: '10월06일', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 6, date: '10/06', dayName: '10월06일', period: '8교시 (17:00~17:50)', cat: '서비스', name: 'ADMIN', instructor: '담임교관' },
             { week: 6, date: '10/07', dayName: '10월07일', period: '1교시~4교시 (09:00~12:50)', cat: '서비스', name: '에어카페 실습TEST', instructor: '-' },
             { week: 6, date: '10/07', dayName: '10월07일', period: '5교시~8교시 (14:00~17:50)', cat: '서비스', name: '단거리 FLIGHT 실습', instructor: '-' },
             { week: 6, date: '10/08', dayName: '10월08일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '비자 인터뷰', instructor: '-' },
@@ -1251,7 +1271,7 @@
             { week: 7, date: '10/12', dayName: '10월12일', period: '1~6교시 (09:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '송지원 교관' },
             { week: 7, date: '10/12', dayName: '10월12일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국내선)', instructor: '송지원, 유재진 교관' },
             { week: 7, date: '10/13', dayName: '10월13일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '운항 원리의 이해', instructor: '-' },
-            { week: 7, date: '10/13', dayName: '10월13일', period: '3~4교시 (11:00~12:50)', cat: '기타', name: '운항관리 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/13', dayName: '10월13일', period: '3~4교시 (11:00~12:50)', cat: '기타', name: '운항관리 업무의 이해', instructor: '이태규 팀장 (통제기획팀)' },
             { week: 7, date: '10/13', dayName: '10월13일', period: '5~6교시 (14:00~15:50)', cat: '기타', name: '운송 업무의 이해', instructor: '-' },
             { week: 7, date: '10/13', dayName: '10월13일', period: '7~8교시 (16:00~17:50)', cat: '기타', name: '영업 업무의 이해', instructor: '-' },
             { week: 7, date: '10/14', dayName: '10월14일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '정비 업무의 이해', instructor: '-' },
@@ -1295,31 +1315,31 @@
             { week: 9, date: '10/28', dayName: '10월28일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(이론)', instructor: '임청 교관' },
             { week: 9, date: '10/28', dayName: '10월28일', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '응급처치훈련(실습)', instructor: '임청, 이동찬, 김사라 교관' },
             { week: 9, date: '10/28', dayName: '10월28일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '위험물훈련', instructor: '지혜진 교관' },
-            { week: 9, date: '10/29', dayName: '10월29일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(실습)', instructor: '윤준영 김사라 이동찬 교관, 강신욱 지혜진 이광석 심사관' },
+            { week: 9, date: '10/29', dayName: '10월29일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(실습)', instructor: '[교관] 윤준영 김사라 이동찬, [심사관] 강신욱 지혜진 이광석 심사관' },
             { week: 9, date: '10/29', dayName: '10월29일', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_화재', instructor: '윤준영 김사라 이동찬 교관' },
             { week: 9, date: '10/29', dayName: '10월29일', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_난동/감압/비탈', instructor: '윤준영 김사라 이동찬 교관' },
             { week: 9, date: '10/29', dayName: '10월29일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_롤플레이(난동/감압/비탈)', instructor: '윤준영 김사라 이동찬 교관' },
             { week: 9, date: '10/30', dayName: '10월30일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '위험물 훈련', instructor: '지혜진 교관' },
-            { week: 9, date: '10/30', dayName: '10월30일', period: '4교시 (12:00~12:50)', cat: '안전', name: '위허물 훈련 심사평가', instructor: '지혜진 교관' },
+            { week: 9, date: '10/30', dayName: '10월30일', period: '4교시 (12:00~12:50)', cat: '안전', name: '위험물 훈련 심사평가', instructor: '지혜진 교관' },
             { week: 9, date: '10/30', dayName: '10월30일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
 
             // Week 10
-            { week: 10, date: '11/02', dayName: '11월02일', period: '1~5교시 (09:00~14:50)', cat: '안전', name: '비상훈련 심사평가_샤우팅/비탈롤', instructor: '임청 김사라 윤준영 교관, 강신욱 진혜진 이광석 심사관' },
+            { week: 10, date: '11/02', dayName: '11월02일', period: '1~5교시 (09:00~14:50)', cat: '안전', name: '비상훈련 심사평가_샤우팅/비탈롤', instructor: '[교관]임청 김사라 윤준영, [심사관]강신욱 진혜진 이광석' },
             { week: 10, date: '11/02', dayName: '11월02일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
             { week: 10, date: '11/02', dayName: '11월02일', period: '8교시 (17:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '임청 김사라 윤준영 교관' },
             { week: 10, date: '11/03', dayName: '11월03일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공보안훈련 심사평가(이론)', instructor: '임청 교관' },
             { week: 10, date: '11/03', dayName: '11월03일', period: '2~5교시 (10:00~12:50)', cat: '안전', name: '항공보안훈련(실습)', instructor: '임청 김사라 윤준영 교관' },
             { week: 10, date: '11/03', dayName: '11월03일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '산업재해 교육', instructor: '-' },
-            { week: 10, date: '11/03', dayName: '11월03일', period: '8교시', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '항공보안훈련 심사평가(실습)', instructor: '임청 김사라 윤준영 교관, 강신욱 지혜진 이광석 심사관' },
+            { week: 10, date: '11/03', dayName: '11월03일', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN', instructor: '담임교관' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '항공보안훈련 심사평가(실습)', instructor: '[교관] 임청 김사라 윤준영, [심사관] 강신욱 지혜진 이광석' },
             { week: 10, date: '11/04', dayName: '11월04일', period: '4~5교시 (12:00~14:50)', cat: '기타', name: '객실브리핑의 이해', instructor: '-' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '6~7교시 (15:00~16:50)', cat: '기타', name: '슬기로운 레이오버 생활', instructor: '-' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '-' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '슬기로운 레이오버 생활', instructor: '-' },
+            { week: 10, date: '11/04', dayName: '11월04일', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN', instructor: '담임교관' },
             { week: 10, date: '11/05', dayName: '11월05일', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '우주방사선 교육', instructor: '-' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '5교시 (14:00~14:50)', cat: '기타', name: '객실 승원실의 이해', instructor: '승원팀장' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '5교시 (14:00~14:50)', cat: '기타', name: '승원실의 이해', instructor: '승원팀장' },
             { week: 10, date: '11/05', dayName: '11월05일', period: '6교시 (15:00~15:50)', cat: '기타', name: '객실품질팀의 이해', instructor: '김만수 팀장' },
             { week: 10, date: '11/05', dayName: '11월05일', period: '7교시 (16:00~16:50)', cat: '기타', name: '객실커머스팀의 이해', instructor: '이동규 팀장' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN (OE비행 안내 및 면담)', instructor: '담임교관' },
+            { week: 10, date: '11/05', dayName: '11월05일', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN (OE비행 안내 및 면담)', instructor: '담임교관' },
             { week: 10, date: '11/06', dayName: '11월06일', period: '1~8교시 (09:00~17:50)', cat: '안전', name: '객실승무원 운항경험', instructor: '지혜진 강신욱 태형식 조혜정 이준우 이상엽 윤윤선 심사관' },
 
             // Week 11
@@ -1331,7 +1351,7 @@
         ];
 
         let DEFAULT_ASSIGNMENTS = [
-            { id: "etc-checklist-01", category: "기타", subject: "입과 행정 서류 및 앱 체크리스트", title: "입과 준비 서류 및 필수 애플리케이션 설치", dueDate: "2026-09-01 18:00", method: "직접 지참 및 태블릿 설치 확인", instructor: "담임교관", items: [{ id: "item_0", text: "여권 및 증명사진, 외화통장 제출", done: false }, { id: "item_1", text: "서약서 및 동의서 (5장)", done: false }, { id: "item_2", text: "PAYCO ", done: false }, { id: "item_3", text: "HRD", done: false }, { id: "item_4", text: "J-ONE/MDM ", done: false }, { id: "item_5", text: "Crew Connex", done: false }, { id: "item_6", text: "에어부산 가입", done: false }, { id: "item_7", text: "법인카드", done: false }, { id: "item_8", text: "미국비자", done: false }] },
+            { id: "etc-checklist-01", category: "기타", subject: "입과 행정 서류 및 앱 체크리스트", title: "입과 준비 서류 및 필수 애플리케이션 설치", dueDate: "2026-09-01 18:00", method: "직접 지참 및 태블릿 설치 확인", instructor: "담임교관", items: [{ id: "item_0", text: "여권 및 증명사진, 외화통장 제출", done: false }, { id: "item_1", text: "서약서 및 동의서 (5장)", done: false }, { id: "item_2", text: "PAYCO ", done: false }, { id: "item_3", text: "HRD", done: false }, { id: "item_4", text: "J-ONE/MDM", done: false }, { id: "item_5", text: "Crew Connex", done: false }, { id: "item_6", text: "에어부산 가입", done: false }, { id: "item_7", text: "법인카드 발급", done: false }, { id: "item_8", text: "미국비자 신청서", done: false }] },
             { id: "svc-0902-1", category: "서비스", subject: "Image Making", title: "Hair-do 영상 시청 및 준비물 지참", dueDate: "수업 전날", method: "실습 수업 참여 점검", instructor: "조연진, 오아현 교관", items: [{ id: "im1", text: "러닝플랫폼 내 Hair-do 영상 시청 (*여자: 단발, 중단발, 포니테일, 쪽머리 / *남자: 숏컷 1,2)", done: false }, { id: "im2", text: "[수업 준비물] 메이크업, 헤어 연출을 위한 전체 도구 지참", done: false }, { id: "im3", text: "*메이크업 도구: 평소 메이크업 시 사용하는 모든 도구", done: false }, { id: "im4", text: "*헤어 연출 도구: 스프레이, 젤크림, U핀, 미세망, 머리끈, 고정핀 등 (헤어 스타일링기는 선택 지참)", done: false }] },
             { id: "svc-0907-1", category: "서비스", subject: "기내 서비스 용어", title: "용어 암기 및 러닝플랫폼 영상 학습", dueDate: "수업 전날", method: "당일 수업 시 랜덤 구두 TEST", instructor: "박민지A, 현윤선, 오아현 교관", items: [{ id: "sy1", text: "각 용어 암기해오기", done: false }, { id: "sy2", text: "러닝플랫폼 내 [처음 만난 기내 서비스 용어] 영상 시청", done: false }] },
             { id: "svc-0908-1", category: "서비스", subject: "국내선 이론", title: "전체적인 국내선 절차 암기", dueDate: "수업 전날", method: "수업 시 확인", instructor: "박혜린 교관", items: [{ id: "dt1", text: "러닝플랫폼 내 [진짜 첫비행] 영상 시청", done: false }, { id: "dt2", text: "국내선 기본 절차 흐름 숙지", done: false }] },
@@ -1347,9 +1367,9 @@
             { id: "svc-0915-2", category: "서비스", subject: "국제선 이론", title: "동영상보기", dueDate: "수업 전날", method: "수업 전 시청 점검", instructor: "최슬기 교관", items: [{ id: "fr2", text: "러닝플랫폼 내 [진짜 첫 비행] 시청", done: false }] },
             { id: "bc-0916-1", category: "기내 방송", subject: "기내방송1", title: "CAM 다운로드 및 방송문안 끊어읽기", dueDate: "수업 전날", method: "수업 시 육안 확인", instructor: "한재민 교관", items: [{ id: "bc1", text: "(교육일 이전) CAM 최신상태 저장 (개인 Device)", done: false }, { id: "bc2", text: "(교육일 이전) 총론 읽기", done: false }, { id: "bc3", text: "(교육일 이전) WELCOME, FAREWELL, TURBULENCE, SAFETY DEMO 한/영 끊어읽기 표시 및 연습", done: false }, { id: "bc4", text: "(교육 이후) Turbulence 심사 대비 안내 숙지 (한/영/일/중 TEST)", done: false }] },
             { id: "bc-0916-2", category: "기내 방송", subject: "기내방송 1-2", title: "동영상보기 (Shadowing 학습)", dueDate: "수업 전날", method: "러닝플랫폼 자습", instructor: "한재민 교관", items: [{ id: "bc5", text: "러닝플랫폼 Shadowing 영상 시청하며 학습 (Farewell/Turbulence/Safety Demo)", done: false }] },
-            { id: "sft-0917-1", category: "서비스", subject: "사전 기내식", title: "Meal Code, 구성품 및 갤리브리핑 내용 암기", dueDate: "수업 1주 전 주말", method: "당일 수업 시간 쪽지 TEST", instructor: "오아현 교관", items: [{ id: "item_0", text: "SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기", done: false }, { id: "item_1", text: "사전 기내식 서비스 절차 암기해오기", done: false }] },
-            { id: "sft-0917-2", category: "서비스", subject: "사전 기내식 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "오아현 교관", items: [{ id: "item_0", text: "사전기내식 실습 영상 공유하기", done: false }] },
-            { id: "sft-0917-3", category: "서비스", subject: "사전 기내식", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "오아현 교관", items: [{ id: "item_0", text: "실습상황 6가지 공유 숙지", done: false }, { id: "item_1", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
+            { id: "sft-0917-1", category: "안전", subject: "사전 기내식", title: "Meal Code, 구성품 및 갤리브리핑 내용 암기", dueDate: "수업 1주 전 주말", method: "당일 수업 시간 쪽지 TEST", instructor: "오아현 교관", items: [{ id: "item_0", text: "SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기", done: false }, { id: "item_1", text: "사전 기내식 서비스 절차 암기해오기", done: false }] },
+            { id: "sft-0917-2", category: "안전", subject: "사전 기내식 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "오아현 교관", items: [{ id: "item_0", text: "사전기내식 실습 영상 공유하기", done: false }] },
+            { id: "sft-0917-3", category: "안전", subject: "사전 기내식", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "오아현 교관", items: [{ id: "item_0", text: "실습상황 6가지 공유 숙지", done: false }, { id: "item_1", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
             { id: "svc-0918-1", category: "서비스", subject: "C.I.Q", title: "국가별 면세허용량 암기", dueDate: "수업 1주 전 안내", method: "당일 조회시간 구두 TEST", instructor: "현윤선 교관", items: [{ id: "ciq1", text: "스테이션인포 공지사항 내 모든 노선의 공지사항 다운로드", done: false }, { id: "ciq2", text: "면세 허용량 암기해오기 (면세 관련 상세 특이사항 포함)", done: false }] },
             { id: "svc-0918-2", category: "서비스", subject: "C.I.Q", title: "워크시트 작성 (패드 내 삽입)", dueDate: "수업 1주 전 안내", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "현윤선 교관", items: [{ id: "ciq3", text: "스테이션인포 공지사항 다운 내역 보면서 워크시트에 정리 후 제출", done: false }, { id: "ciq4", text: "워크시트 정리내용 암기", done: false }] },
             { id: "svc-0918-3", category: "서비스", subject: "C.I.Q", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "현윤선 교관", items: [{ id: "ciq5", text: "실습상황 2가지 공유(대한민국, 라오스)", done: false }, { id: "ciq6", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
@@ -1370,16 +1390,10 @@
             { id: "svc-0930-2", category: "서비스", subject: "국제선 에어카페 이론1,2", title: "절차 암기", dueDate: "수업 전날", method: "수업 시 랜덤 구두 TEST", instructor: "김연희, 이은비 교관", items: [{ id: "ac5", text: "국제선 에어카페 이론1 숙지", done: false }, { id: "ac6", text: "국제선 에어카페 이론2 숙지", done: false }] },
             { id: "svc-0930-3", category: "서비스", subject: "국제선 에어카페 판매 서비스", title: "국내선 에어카페 판매 서비스 복습해오기", dueDate: "수업 1주 전 (연휴 이용)", method: "수업 시 랜덤 구두 TEST", instructor: "박민지A, 김연희 교관", items: [{ id: "ac7", text: "국내선 에어카페 판매 서비스 교재 참고해 복습", done: false }] },
             { id: "svc-1001-1", category: "서비스", subject: "국제선 에어카페 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "실습교관", items: [{ id: "ac8", text: "에어카페 실습 동영상 공유하기", done: false }] },
-            { id: "sft-1002-1", category: "서비스", subject: "안전보건교육", title: "동영상보기", dueDate: "교육 생성 후 안내", method: "훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고", instructor: "안전보건 파트", items: [{ id: "item_0", text: "신규채용자 안전보건교육 수료 완료", done: false }] }
+            { id: "sft-1002-1", category: "안전", subject: "안전보건교육", title: "동영상보기", dueDate: "교육 생성 후 안내", method: "훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고", instructor: "안전보건 파트", items: [{ id: "sh1", text: "신규채용자 안전보건교육 수료 완료", done: false }] }
         ];
 
-        let DEFAULT_EVALUATION_RESULTS = {
-            "2608007_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
-            "2608008_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
-            "2608011_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
-            "2608012_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
-            "2608007_test_safety_s_sec": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" }
-        };
+        let DEFAULT_EVALUATION_RESULTS = {};
 
         // Application State Variables
         let trainees = [];
@@ -1411,9 +1425,18 @@
                     const data = JSON.parse(saved);
                     trainees = data.trainees || JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
                     
-                    // 강제 동기화: 저장된 trainees의 첫번째 사번이 새 사번 규격과 다르면 기본 데이터로 전면 초기화
+                    // 사번 & 이름 동기화 보완 로직
                     if (!trainees.length || (trainees[0] && trainees[0].empId !== "2608007")) {
                         trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+                    } else {
+                        trainees.forEach(t => {
+                            const found = TRAINEE_SEED_DATA.find(s => s.empId === t.empId);
+                            if (found) {
+                                t.name = found.name;
+                            } else if (!t.name) {
+                                t.name = '훈련생';
+                            }
+                        });
                     }
                     
                     demerits = data.demerits || JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
@@ -1586,7 +1609,7 @@
                     riskList.innerHTML = riskTrainees.map(t => `
                         <div class="p-2.5 bg-red-50 border border-red-100 rounded-xl flex justify-between items-center text-xs">
                             <div class="flex items-center space-x-2">
-                                <span class="font-bold text-red-700">사번 ${t.empId}</span>
+                                <span class="font-bold text-red-700">사번 ${t.empId} (${t.name || '-'})</span>
                                 <span class="bg-red-200 text-red-800 text-[10px] px-1.5 py-0.5 rounded font-bold">누적 벌점: ${demeritMap[t.empId] || 0}점</span>
                             </div>
                             <button onclick="window.switchTab('trainees')" class="text-[11px] text-red-600 font-bold hover:underline">상세보기</button>
@@ -1752,15 +1775,19 @@
         let currentEditTraineeIndex = -1;
 
         window.renderTraineesTable = function () {
-            const searchVal = document.getElementById('searchTraineeInput')?.value.trim() || '';
+            const searchVal = document.getElementById('searchTraineeInput')?.value.trim().toLowerCase() || '';
             const tbody = document.getElementById('traineesTableBody');
             if (!tbody) return;
 
-            const filtered = trainees.filter(t => t.empId.includes(searchVal));
+            const filtered = trainees.filter(t => 
+                t.empId.toLowerCase().includes(searchVal) || 
+                (t.name && t.name.toLowerCase().includes(searchVal))
+            );
             tbody.innerHTML = filtered.map((t, idx) => `
                 <tr class="hover:bg-slate-50">
                     <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
                     <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                    <td class="p-3 font-bold text-slate-800">${t.name || '-'}</td>
                     <td class="p-3 space-y-1">
                         <p class="text-xs text-slate-700">🔍 <span class="font-semibold text-slate-900">관찰/기록:</span> ${t.observationNote || '특이사항 없음'}</p>
                         <p class="text-xs text-slate-500">💬 <span class="font-semibold text-slate-700">개인 면담:</span> ${t.counselingNote || '면담 내역 없음'}</p>
@@ -1773,17 +1800,21 @@
         };
 
         window.renderCompetencyTable = function () {
-            const searchVal = document.getElementById('searchTraineeInput')?.value.trim() || '';
+            const searchVal = document.getElementById('searchTraineeInput')?.value.trim().toLowerCase() || '';
             const tbody = document.getElementById('competencyTableBody');
             if (!tbody) return;
 
-            const filtered = trainees.filter(t => t.empId.includes(searchVal));
+            const filtered = trainees.filter(t => 
+                t.empId.toLowerCase().includes(searchVal) || 
+                (t.name && t.name.toLowerCase().includes(searchVal))
+            );
             tbody.innerHTML = filtered.map((t, idx) => {
                 const c = t.competency || { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '-', weaknesses: '-' };
                 return `
                     <tr class="hover:bg-slate-50 border-b border-slate-100">
                         <td class="p-3 text-center text-slate-400 font-medium">${idx + 1}</td>
                         <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                        <td class="p-3 font-bold text-slate-800">${t.name || '-'}</td>
                         <td class="p-3 text-center font-bold text-blue-700 bg-blue-50/30">${c.safety || 4}점</td>
                         <td class="p-3 text-center font-bold text-emerald-700 bg-emerald-50/30">${c.lowCost || 4}점</td>
                         <td class="p-3 text-center font-bold text-amber-700 bg-amber-50/30">${c.trust || 4}점</td>
@@ -1805,7 +1836,7 @@
             const idx = trainees.findIndex(t => t.empId === empId);
             if (idx === -1) return;
             currentEditTraineeIndex = idx;
-            document.getElementById('modalTraineeTitle').innerText = `사번 ${empId} 특이사항 & 메모`;
+            document.getElementById('modalTraineeTitle').innerText = `사번 ${empId} (${trainees[idx].name || '이름미정'}) 특이사항 & 메모`;
             document.getElementById('modalObservationInput').value = trainees[idx].observationNote || '';
             document.getElementById('modalCounselingInput').value = trainees[idx].counselingNote || '';
             document.getElementById('noteModal').classList.remove('hidden');
@@ -1833,7 +1864,7 @@
             currentCompTraineeIndex = idx;
             const c = trainees[idx].competency || { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '', weaknesses: '' };
 
-            document.getElementById('compModalTitle').innerText = `사번 ${empId} 26-2차 정성평가`;
+            document.getElementById('compModalTitle').innerText = `사번 ${empId} (${trainees[idx].name || '이름미정'}) 26-2차 정성평가`;
             document.getElementById('compSafetySelect').value = c.safety || 4;
             document.getElementById('compLowCostSelect').value = c.lowCost || 4;
             document.getElementById('compTrustSelect').value = c.trust || 4;
@@ -1897,6 +1928,7 @@
                 return {
                     'No': idx + 1,
                     '사번': t.empId,
+                    '성명': t.name || '',
                     '누적 벌점': totalDemerits,
                     '안전 과목 통과': `${safetyPassCount} / ${safetySubjects.length}`,
                     '서비스 과목 통과': `${servicePassCount} / ${serviceSubjects.length}`,
@@ -1920,6 +1952,7 @@
                     safetyData.push({
                         'No': safetyRowNo++,
                         '사번': t.empId,
+                        '성명': t.name || '',
                         '과목명': s.label,
                         '1차 판정': res.pass1 || '-',
                         '2차 판정': res.pass2 || '-',
@@ -1941,6 +1974,7 @@
                     serviceData.push({
                         'No': serviceRowNo++,
                         '사번': t.empId,
+                        '성명': t.name || '',
                         '과목명': s.label,
                         '1차 판정': res.pass1 || '-',
                         '2차 판정': res.pass2 || '-',
@@ -1958,6 +1992,7 @@
                 return {
                     'No': idx + 1,
                     '사번': t.empId,
+                    '성명': t.name || '',
                     '관찰/기록 메모': t.observationNote || '특이사항 없음',
                     '개인 면담 메모': t.counselingNote || '면담 내역 없음',
                     '[안전] 점수': c.safety || '-',
@@ -1972,15 +2007,19 @@
             const wsBasic = window.XLSX.utils.json_to_sheet(basicData);
             window.XLSX.utils.book_append_sheet(wb, wsBasic, '기본정보');
 
-            const demeritData = demerits.map((d, idx) => ({
-                'No': idx + 1,
-                '일자': d.date,
-                '사번': d.empId,
-                '위반 항목': d.category,
-                '세부 위반 내용': d.detail,
-                '부과 벌점': d.points,
-                '담당 교관': d.instructor
-            }));
+            const demeritData = demerits.map((d, idx) => {
+                const tr = trainees.find(t => t.empId === d.empId);
+                return {
+                    'No': idx + 1,
+                    '일자': d.date,
+                    '사번': d.empId,
+                    '성명': tr ? tr.name : '',
+                    '위반 항목': d.category,
+                    '세부 위반 내용': d.detail,
+                    '부과 벌점': d.points,
+                    '담당 교관': d.instructor
+                };
+            });
             const wsDemerit = window.XLSX.utils.json_to_sheet(demeritData);
             window.XLSX.utils.book_append_sheet(wb, wsDemerit, '벌점 정보');
 
@@ -1991,22 +2030,26 @@
         window.renderDemeritsTable = function () {
             const tbody = document.getElementById('demeritTableBody');
             if (!tbody) return;
-            tbody.innerHTML = demerits.map(d => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-3 text-slate-500">${d.date}</td>
-                    <td class="p-3 font-bold text-slate-900">${d.empId}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded-md">${d.category}</span></td>
-                    <td class="p-3 text-slate-700">${d.detail}</td>
-                    <td class="p-3 font-extrabold text-red-600">${d.points}점</td>
-                    <td class="p-3 text-slate-600">${d.instructor}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = demerits.map(d => {
+                const tr = trainees.find(t => t.empId === d.empId);
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-slate-500">${d.date}</td>
+                        <td class="p-3 font-bold text-slate-900">${d.empId}</td>
+                        <td class="p-3 font-bold text-slate-800">${tr ? tr.name : '-'}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded-md">${d.category}</span></td>
+                        <td class="p-3 text-slate-700">${d.detail}</td>
+                        <td class="p-3 font-extrabold text-red-600">${d.points}점</td>
+                        <td class="p-3 text-slate-600">${d.instructor}</td>
+                    </tr>
+                `;
+            }).join('');
         };
 
         window.openDemeritModal = function () {
             const sel = document.getElementById('demeritSelectEmp');
             if (sel) {
-                sel.innerHTML = trainees.map(t => `<option value="${t.empId}">${t.empId}</option>`).join('');
+                sel.innerHTML = trainees.map(t => `<option value="${t.empId}">${t.empId} (${t.name || '이름미정'})</option>`).join('');
             }
             document.getElementById('demeritModal').classList.remove('hidden');
         };
@@ -2060,6 +2103,7 @@
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
                         <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                        <td class="p-3 font-bold text-slate-800">${t.name || '-'}</td>
                         <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md ${res.finalPass === 'PASS' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">${res.finalPass}</span></td>
                         <td class="p-3 space-x-1">
                             <button onclick="window.updateTestStatus('${resKey}', 'pass1')" class="px-2 py-0.5 text-[10px] font-bold rounded ${res.pass1 === 'PASS' ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'}">1차: ${res.pass1}</button>
@@ -2344,6 +2388,7 @@
                 <tr class="hover:bg-slate-50">
                     <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
                     <td class="p-3 font-bold text-slate-900">${t.empId}</td>
+                    <td class="p-3 font-bold text-slate-800">${t.name || '-'}</td>
                     <td class="p-3 text-center">
                         <button onclick="window.openConfirmModal('해당 훈련생을 명부에서 삭제하시겠습니까?', () => window.deleteTrainee(${idx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
                     </td>
@@ -2371,13 +2416,17 @@
 
         window.addNewTrainee = function () {
             const empId = document.getElementById('newTraineeEmpId').value.trim();
+            const name = document.getElementById('newTraineeName').value.trim() || '신규 훈련생';
             if (empId) {
                 trainees.push({
                     empId,
+                    name,
                     observationNote: '특이사항 없음',
                     counselingNote: '면담 내역 없음',
                     competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '특이사항 없음', weaknesses: '특이사항 없음' }
                 });
+                document.getElementById('newTraineeEmpId').value = '';
+                document.getElementById('newTraineeName').value = '';
                 window.saveStateToLocalStorage();
                 window.renderManageTraineesTable();
                 window.renderTraineesTable();
@@ -2391,19 +2440,23 @@
         window.renderManageDemeritsTable = function () {
             const tbody = document.getElementById('manageDemeritsTableBody');
             if (!tbody) return;
-            tbody.innerHTML = demerits.map((d, idx) => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-3 text-slate-500">${d.date}</td>
-                    <td class="p-3 font-bold text-slate-900">${d.empId}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded">${d.category}</span></td>
-                    <td class="p-3 text-slate-700">${d.detail}</td>
-                    <td class="p-3 font-bold text-red-600">${d.points}점</td>
-                    <td class="p-3 text-slate-600">${d.instructor}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="window.openConfirmModal('해당 벌점 기록을 삭제하시겠습니까?', () => window.deleteDemerit(${idx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = demerits.map((d, idx) => {
+                const tr = trainees.find(t => t.empId === d.empId);
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-slate-500">${d.date}</td>
+                        <td class="p-3 font-bold text-slate-900">${d.empId}</td>
+                        <td class="p-3 font-bold text-slate-800">${tr ? tr.name : '-'}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded">${d.category}</span></td>
+                        <td class="p-3 text-slate-700">${d.detail}</td>
+                        <td class="p-3 font-bold text-red-600">${d.points}점</td>
+                        <td class="p-3 text-slate-600">${d.instructor}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.openConfirmModal('해당 벌점 기록을 삭제하시겠습니까?', () => window.deleteDemerit(${idx}))" class="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-[11px] font-bold">삭제</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         };
 
         window.deleteDemerit = function (idx) {
