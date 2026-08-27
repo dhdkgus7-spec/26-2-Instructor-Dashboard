@@ -36,6 +36,17 @@
             background: #cbd5e1;
             border-radius: 4px;
         }
+        @media print {
+            #authOverlay, header, nav, button, .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: #ffffff !important;
+            }
+            .tab-content {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col">
@@ -85,6 +96,10 @@
 
                 <!-- Graduation D-Day Badge & Lock Button -->
                 <div class="flex items-center space-x-3">
+                    <button onclick="window.printCurrentPage()" title="인쇄 및 PDF 저장" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 transition shadow-xs">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        <span>인쇄 / PDF</span>
+                    </button>
                     <div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm flex items-center space-x-2">
                         <i data-lucide="award" class="w-4 h-4"></i>
                         <span>수료식 (11/10)</span>
@@ -176,14 +191,17 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500">LEADER</p>
-                        <div class="mt-1">
-                            <p class="text-xs font-bold text-slate-800">반장: <span class="text-slate-500 font-normal">미정</span> / 부반장: <span class="text-slate-500 font-normal">미정</span></p>
-                            <p class="text-xs font-bold text-slate-800 mt-0.5">서비스리더: <span class="text-slate-500 font-normal">미정</span> / 안전리더: <span class="text-slate-500 font-normal">미정</span></p>
+                    <div class="w-full">
+                        <div class="flex justify-between items-center">
+                            <p class="text-xs font-semibold text-slate-500">LEADER</p>
+                            <button onclick="window.openLeaderModal()" class="text-[11px] text-orange-600 font-bold hover:underline">임원 설정</button>
+                        </div>
+                        <div class="mt-1" id="leaderDisplayContainer">
+                            <p class="text-xs font-bold text-slate-800">반장: <span class="text-slate-500 font-normal" id="dispLeaderClass">미정</span> / 부반장: <span class="text-slate-500 font-normal" id="dispLeaderVice">미정</span></p>
+                            <p class="text-xs font-bold text-slate-800 mt-0.5">서비스리더: <span class="text-slate-500 font-normal" id="dispLeaderSvc">미정</span> / 안전리더: <span class="text-slate-500 font-normal" id="dispLeaderSafety">미정</span></p>
                         </div>
                     </div>
-                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl ml-2 shrink-0">
                         <i data-lucide="crown" class="w-6 h-6"></i>
                     </div>
                 </div>
@@ -234,7 +252,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-base font-bold text-slate-900 flex items-center space-x-2">
                             <i data-lucide="bar-chart-2" class="w-5 h-5 text-orange-500"></i>
-                            <span>과목별 TEST 통계</span>
+                            <span>실시간 TEST 통계 현황</span>
                         </h2>
                     </div>
                     <div class="h-60 relative flex items-center justify-center">
@@ -250,7 +268,7 @@
                                 <i data-lucide="alert-octagon" class="w-5 h-5 text-red-500"></i>
                                 <span>집중 관리 대상자</span>
                             </h2>
-                            <span class="text-xs text-red-600 font-semibold bg-red-50 px-2 py-0.5 rounded-full">벌점3점 이상</span>
+                            <span class="text-xs text-red-600 font-semibold bg-red-50 px-2 py-0.5 rounded-full">벌점 3점 이상</span>
                         </div>
                         <div class="space-y-2 mb-4" id="riskTraineeList">
                             <!-- JS Dynamic Render -->
@@ -356,9 +374,13 @@
                         <h2 class="text-lg font-bold text-slate-900">초기 훈련생 명부</h2>
                         <p class="text-xs text-slate-500 mt-0.5">관찰 및 개인 면담 메모를 엑셀로 한 번에 추출하실 수 있습니다.</p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="relative min-w-[200px]">
-                            <input type="text" id="searchTraineeInput" oninput="window.renderTraineesTable()" placeholder="사번 또는 이름 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="window.toggleOnlyRiskTraineeFilter()" id="btnFilterRisk" class="px-3 py-2 text-xs font-bold rounded-xl border transition border-red-200 bg-red-50 text-red-700 hover:bg-red-100 flex items-center space-x-1">
+                            <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                            <span id="txtFilterRisk">집중 관리 대상자만 보기</span>
+                        </button>
+                        <div class="relative min-w-[180px]">
+                            <input type="text" id="searchTraineeInput" oninput="window.renderTraineesTable(); window.renderCompetencyTable();" placeholder="사번 또는 이름 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
                         </div>
                         <button onclick="window.exportTraineeDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm whitespace-nowrap">
@@ -759,7 +781,7 @@
 
     </main>
 
-    <!-- Custom Modal: Confirmation Box -->
+    <!-- Custom Modal 1: Confirmation Box -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 space-y-4 text-center">
             <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto">
@@ -773,7 +795,39 @@
         </div>
     </div>
 
-    <!-- Modal 2: Note Edit Modal -->
+    <!-- Custom Modal 2: Leader Setup Modal -->
+    <div id="leaderModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">학급 임원(LEADER) 설정</h3>
+                <button onclick="window.closeLeaderModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">반장</label>
+                    <select id="selectClassLeader" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"></select>
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">부반장</label>
+                    <select id="selectViceLeader" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"></select>
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">서비스 리더</label>
+                    <select id="selectServiceLeader" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"></select>
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">안전 리더</label>
+                    <select id="selectSafetyLeader" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"></select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+                <button onclick="window.closeLeaderModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
+                <button onclick="window.saveLeaderSettings()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Note Edit Modal -->
     <div id="noteModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -797,7 +851,7 @@
         </div>
     </div>
 
-    <!-- Modal 3: Competency Evaluation Modal -->
+    <!-- Modal 4: Competency Evaluation Modal -->
     <div id="competencyModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -881,7 +935,7 @@
         </div>
     </div>
 
-    <!-- Modal 4: Demerit Modal -->
+    <!-- Modal 5: Demerit Modal -->
     <div id="demeritModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -919,7 +973,7 @@
         </div>
     </div>
 
-    <!-- Modal 5: Notice Edit Modal -->
+    <!-- Modal 6: Notice Edit Modal -->
     <div id="noticeModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -937,7 +991,7 @@
         </div>
     </div>
 
-    <!-- Modal 6: Feedback Modal -->
+    <!-- Modal 7: Feedback Modal -->
     <div id="feedbackModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -955,7 +1009,7 @@
         </div>
     </div>
 
-    <!-- Modal 7: Assignment Modal -->
+    <!-- Modal 8: Assignment Modal -->
     <div id="assignmentModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -1005,7 +1059,7 @@
         </div>
     </div>
 
-    <!-- Modal 8: Schedule Add/Edit Modal -->
+    <!-- Modal 9: Schedule Add/Edit Modal -->
     <div id="scheduleModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -1055,7 +1109,7 @@
         </div>
     </div>
 
-    <!-- Modal 9: Add Trainee Modal -->
+    <!-- Modal 10: Add Trainee Modal -->
     <div id="traineeAddModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -1157,6 +1211,13 @@
             };
         });
 
+        let DEFAULT_LEADERS = {
+            classLeader: '',
+            viceLeader: '',
+            serviceLeader: '',
+            safetyLeader: ''
+        };
+
         let DEFAULT_DEMERITS = [];
 
         let DEFAULT_SCHEDULE = [
@@ -1180,7 +1241,7 @@
             { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '6~7교시 (15:00~16:50)', cat: '서비스', name: '서비스 마인드', instructor: '박민지A 교관' },
             { week: 1, date: '09/04', dayName: '09월 04일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
 
-            // Week 2
+            // Week 2 (09/07 ~ 09/11)
             { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장 1', instructor: '오아현, 박민지A, 김연희, 현윤선 교관' },
             { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '2~3교시 (10:00~11:50)', cat: '서비스', name: '국제선 승객응대 화법(대양주)', instructor: '김연희 교관' },
             { week: 2, date: '09/07', dayName: '09월 07일 (월)', period: '4~6교시 (12:00~15:50)', cat: '서비스', name: '기내서비스 용어', instructor: '박민지A, 현윤선, 오아현 교관' },
@@ -1201,7 +1262,7 @@
             { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '5~6교시 (14:00~15:50)', cat: '서비스', name: '국내선 FLIGHT 실습', instructor: '오아현, 이은비 교관' },
             { week: 2, date: '09/11', dayName: '09월 11일 (금)', period: '7~8교시 (16:00~17:50)', cat: '서비스', name: '국내선 에어카페 실습 1-1_설렘배송', instructor: '김연희, 현윤선, 오아현, 이은비 교관' },
 
-            // Week 3
+            // Week 3 (09/14 ~ 09/18)
             { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '국제선 승객응대 화법(중국) TEST', instructor: '박민지A, 현윤선, 이은비 교관' },
             { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '2~4교시 (10:00~12:50)', cat: '서비스', name: '국내선 에어카페 실습 2', instructor: '이은비, 김연희, 현윤선, 박민지A 교관' },
             { week: 3, date: '09/14', dayName: '09월 14일 (월)', period: '5교시 (14:00~14:50)', cat: '서비스', name: '국내선 에어카페 실습 3', instructor: '최수연, 김연희, 이은비, 박민지A 교관' },
@@ -1222,7 +1283,7 @@
             { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '5~7교시 (14:00~16:50)', cat: '기내 방송', name: '기내방송2', instructor: '한재민 교관' },
             { week: 3, date: '09/18', dayName: '09월 18일 (금)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
 
-            // Week 4
+            // Week 4 (09/21 ~ 09/25)
             { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '1~2교시 (09:00~10:50)', cat: '서비스', name: '사전기내식 TEST', instructor: '오아현, 이은비, 김연희 교관' },
             { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '3교시 (11:00~11:50)', cat: '서비스', name: '용모와 복장 3', instructor: '박민지A, 이은비, 김연희 교관' },
             { week: 4, date: '09/21', dayName: '09월 21일 (월)', period: '4~5교시 (12:00~14:50)', cat: '기내 방송', name: '기내방송3(중국어)', instructor: '정혜윤 교관' },
@@ -1238,7 +1299,7 @@
             { week: 4, date: '09/24', dayName: '09월 24일 (목)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '추석 연휴', instructor: '-' },
             { week: 4, date: '09/25', dayName: '09월 25일 (금)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '추석 연휴', instructor: '-' },
 
-            // Week 5
+            // Week 5 (09/28 ~ 10/02)
             { week: 5, date: '09/28', dayName: '09월 28일 (월)', period: '1~4교시 (09:00~12:50)', cat: '서비스', name: 'CIQ TEST', instructor: '현윤선, 이은비, 박민지A, 김연희 교관' },
             { week: 5, date: '09/28', dayName: '09월 28일 (월)', period: '5~8교시 (14:00~17:50)', cat: '서비스', name: '기내 면세 실습2', instructor: '현윤선, 이은비, 오아현, 김연희 교관' },
             { week: 5, date: '09/29', dayName: '09월 29일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '용모와 복장4', instructor: '오아현, 이은비, 현윤선 교관' },
@@ -1256,156 +1317,122 @@
             { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '2~5교시 (10:00~14:50)', cat: '서비스', name: '국제선 에어카페 실습2', instructor: '실습교관' },
             { week: 5, date: '10/02', dayName: '10월 02일 (금)', period: '6~8교시 (15:00~17:50)', cat: '서비스', name: 'FUN SVC', instructor: '서비스 파트' },
 
-            // Week 6
-            { week: 6, date: '10/05', dayName: '10월05일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '대체공휴일', instructor: '-' },
-            { week: 6, date: '10/06', dayName: '10월06일', period: '1교시 (09:00~09:50)', cat: '서비스', name: '에어카페&기내 면세 이론 TEST', instructor: '-' },
-            { week: 6, date: '10/06', dayName: '10월06일', period: '2~6교시 (10:00~15:50)', cat: '서비스', name: '국제선 에어카페 실습3', instructor: '-' },
-            { week: 6, date: '10/06', dayName: '10월06일', period: '7교시 (16:00~16:50)', cat: '서비스', name: 'Cabin Crew Vision', instructor: '-' },
-            { week: 6, date: '10/06', dayName: '10월06일', period: '8교시 (17:00~17:50)', cat: '서비스', name: 'ADMIN', instructor: '담임교관' },
-            { week: 6, date: '10/07', dayName: '10월07일', period: '1교시~4교시 (09:00~12:50)', cat: '서비스', name: '에어카페 실습TEST', instructor: '-' },
-            { week: 6, date: '10/07', dayName: '10월07일', period: '5교시~8교시 (14:00~17:50)', cat: '서비스', name: '단거리 FLIGHT 실습', instructor: '-' },
-            { week: 6, date: '10/08', dayName: '10월08일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '비자 인터뷰', instructor: '-' },
-            { week: 6, date: '10/09', dayName: '10월09일', period: '1교시~8교시 (09:00~17:50)', cat: '기타', name: '한글날', instructor: '-' },
+            // Week 6 (10/05 ~ 10/09)
+            { week: 6, date: '10/05', dayName: '10월 05일 (월)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '대체공휴일', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월 06일 (화)', period: '1교시 (09:00~09:50)', cat: '서비스', name: '에어카페&기내 면세 이론 TEST', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월 06일 (화)', period: '2~6교시 (10:00~15:50)', cat: '서비스', name: '국제선 에어카페 실습3', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월 06일 (화)', period: '7교시 (16:00~16:50)', cat: '서비스', name: 'Cabin Crew Vision', instructor: '-' },
+            { week: 6, date: '10/06', dayName: '10월 06일 (화)', period: '8교시 (17:00~17:50)', cat: '기타', name: 'ADMIN', instructor: '담임교관' },
+            { week: 6, date: '10/07', dayName: '10월 07일 (수)', period: '1~4교시 (09:00~12:50)', cat: '서비스', name: '에어카페 실습TEST', instructor: '-' },
+            { week: 6, date: '10/07', dayName: '10월 07일 (수)', period: '5~8교시 (14:00~17:50)', cat: '서비스', name: '단거리 FLIGHT 실습', instructor: '-' },
+            { week: 6, date: '10/08', dayName: '10월 08일 (목)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '비자 인터뷰 및 미국 비자 발급', instructor: '-' },
+            { week: 6, date: '10/09', dayName: '10월 09일 (금)', period: '1~8교시 (09:00~17:50)', cat: '기타', name: '한글날 공휴일', instructor: '-' },
 
-            // Week 7
-            { week: 7, date: '10/12', dayName: '10월12일', period: '1~6교시 (09:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '송지원 교관' },
-            { week: 7, date: '10/12', dayName: '10월12일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국내선)', instructor: '송지원, 유재진 교관' },
-            { week: 7, date: '10/13', dayName: '10월13일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '운항 원리의 이해', instructor: '-' },
-            { week: 7, date: '10/13', dayName: '10월13일', period: '3~4교시 (11:00~12:50)', cat: '기타', name: '운항관리 업무의 이해', instructor: '이태규 팀장 (통제기획팀)' },
-            { week: 7, date: '10/13', dayName: '10월13일', period: '5~6교시 (14:00~15:50)', cat: '기타', name: '운송 업무의 이해', instructor: '-' },
-            { week: 7, date: '10/13', dayName: '10월13일', period: '7~8교시 (16:00~17:50)', cat: '기타', name: '영업 업무의 이해', instructor: '-' },
-            { week: 7, date: '10/14', dayName: '10월14일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '정비 업무의 이해', instructor: '-' },
-            { week: 7, date: '10/14', dayName: '10월14일', period: '2~6교시 (11:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '윤준영 교관' },
-            { week: 7, date: '10/14', dayName: '10월14일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국제선)', instructor: '임청, 김사라 교관' },
-            { week: 7, date: '10/15', dayName: '10월15일', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '제주항공의 안전정책 및 절차 (SMS)', instructor: '강신욱 교관' },
-            { week: 7, date: '10/15', dayName: '10월15일', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '김사라 교관' },
-            { week: 7, date: '10/15', dayName: '10월15일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공기 지상훈련(7) 비상장비', instructor: '이동찬 교관' },
-            { week: 7, date: '10/16', dayName: '10월16일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '승무원에게 적용되는 메뉴얼', instructor: '유재진 교관' },
-            { week: 7, date: '10/16', dayName: '10월16일', period: '4교시 (12:00~12:50)', cat: '안전', name: '항공기 지상훈련(1) 항공기 숙지', instructor: '임청 교관' },
-            { week: 7, date: '10/16', dayName: '10월16일', period: '5교시 (14:00~14:50)', cat: '안전', name: '항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템', instructor: '이동찬 교관' },
-            { week: 7, date: '10/16', dayName: '10월16일', period: '6교시 (15:00~15:50)', cat: '안전', name: '항공기 지상훈련(4) 승무원간 통신과 협조', instructor: '이동찬 교관' },
-            { week: 7, date: '10/16', dayName: '10월16일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공기 지상훈련(7) 비상장비', instructor: '임청 교관' },
+            // Week 7 (10/12 ~ 10/16)
+            { week: 7, date: '10/12', dayName: '10월 12일 (월)', period: '1~6교시 (09:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '송지원 교관' },
+            { week: 7, date: '10/12', dayName: '10월 12일 (월)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국내선)', instructor: '송지원, 유재진 교관' },
+            { week: 7, date: '10/13', dayName: '10월 13일 (화)', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '운항 원리의 이해', instructor: '-' },
+            { week: 7, date: '10/13', dayName: '10월 13일 (화)', period: '3~4교시 (11:00~12:50)', cat: '기타', name: '운항관리 업무의 이해', instructor: '이태규 팀장 (통제기획팀)' },
+            { week: 7, date: '10/13', dayName: '10월 13일 (화)', period: '5~6교시 (14:00~15:50)', cat: '기타', name: '운송 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/13', dayName: '10월 13일 (화)', period: '7~8교시 (16:00~17:50)', cat: '기타', name: '영업 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/14', dayName: '10월 14일 (수)', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '정비 업무의 이해', instructor: '-' },
+            { week: 7, date: '10/14', dayName: '10월 14일 (수)', period: '2~6교시 (11:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '윤준영 교관' },
+            { week: 7, date: '10/14', dayName: '10월 14일 (수)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상구 열 브리핑 & Safety DEMO (국제선)', instructor: '임청, 김사라 교관' },
+            { week: 7, date: '10/15', dayName: '10월 15일 (목)', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '제주항공의 안전정책 및 절차 (SMS)', instructor: '강신욱 교관' },
+            { week: 7, date: '10/15', dayName: '10월 15일 (목)', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '제주항공의 운항규정의 해당부분', instructor: '김사라 교관' },
+            { week: 7, date: '10/15', dayName: '10월 15일 (목)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공기 지상훈련(7) 비상장비', instructor: '이동찬 교관' },
+            { week: 7, date: '10/16', dayName: '10월 16일 (금)', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '승무원에게 적용되는 메뉴얼', instructor: '유재진 교관' },
+            { week: 7, date: '10/16', dayName: '10월 16일 (금)', period: '4교시 (12:00~12:50)', cat: '안전', name: '항공기 지상훈련(1) 항공기 숙지', instructor: '임청 교관' },
+            { week: 7, date: '10/16', dayName: '10월 16일 (금)', period: '5교시 (14:00~14:50)', cat: '안전', name: '항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템', instructor: '이동찬 교관' },
+            { week: 7, date: '10/16', dayName: '10월 16일 (금)', period: '6교시 (15:00~15:50)', cat: '안전', name: '항공기 지상훈련(4) 승무원간 통신과 협조', instructor: '이동찬 교관' },
+            { week: 7, date: '10/16', dayName: '10월 16일 (금)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '항공기 지상훈련(7) 비상장비', instructor: '임청 교관' },
 
-            // Week 8
-            { week: 8, date: '10/19', dayName: '10월19일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공사 절차 기본교육 심사평가', instructor: '이동찬 교관' },
-            { week: 8, date: '10/19', dayName: '10월19일', period: '2~3교시 (10:00~11:50)', cat: '안전', name: '항공기 지상훈련(5) 승무원의 임무와 표준절차', instructor: '이동찬 교관' },
-            { week: 8, date: '10/19', dayName: '10월19일', period: '4교시 (12:00~12:50)', cat: '안전', name: '항공기 지상훈련(6) 승객처리책임', instructor: '이동찬 교관' },
-            { week: 8, date: '10/19', dayName: '10월19일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '임청 교관' },
-            { week: 8, date: '10/20', dayName: '10월20일', period: '1교시 (06:00~09:00)', cat: '안전', name: '항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템 항공기 견학', instructor: '이광석 임청 이동찬 교관' },
-            { week: 8, date: '10/20', dayName: '10월20일', period: '2교시 (10:00~12:00)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '이동찬 교관' },
-            { week: 8, date: '10/20', dayName: '10월20일', period: '3교시 (13:00~15:00)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '임청 교관' },
-            { week: 8, date: '10/21', dayName: '10월21일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공기 지상훈련 심사평가1(1,2,3,7)', instructor: '김사라 교관' },
-            { week: 8, date: '10/21', dayName: '10월21일', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상상황 발생 시 의사소통과 정보 공유를 포함한 비상장비 훈련)', instructor: '김사라 윤준영 최홍규 교관' },
-            { week: 8, date: '10/21', dayName: '10월21일', period: '5교시 (14:00~14:50)', cat: '안전', name: '비상구 열 브리핑 Test', instructor: '강신욱 지혜진 이광석 심사관' },
-            { week: 8, date: '10/21', dayName: '10월21일', period: '6교시 (15:00~15:50)', cat: '안전', name: 'DEMO Test', instructor: '강신욱 지혜진 이광석 심사관' },
-            { week: 8, date: '10/21', dayName: '10월21일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '응급처치훈련(이론)', instructor: '이동찬 교관' },
-            { week: 8, date: '10/22', dayName: '10월22일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공기 지상훈련 심사평가2(4,5,6,8)', instructor: '이동찬 교관' },
-            { week: 8, date: '10/22', dayName: '10월22일', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '비상훈련 (비상상황 발생 시 의사소통과 정보 공유를 포함한 비상장비 훈련)', instructor: '윤준영 이동찬 김환태 교관' },
-            { week: 8, date: '10/22', dayName: '10월22일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_샤우팅', instructor: '임청 김사라 김환태 교관' },
-            { week: 8, date: '10/23', dayName: '10월23일', period: '1~7교시 (09:00~16:50)', cat: '안전', name: '승무원 자원관리', instructor: '태형식 교관' },
-            { week: 8, date: '10/23', dayName: '10월23일', period: '8교시 (17:00~17:50)', cat: '안전', name: '승무원 자원관리 심사평가', instructor: '태형식 교관' },
+            // Week 8 (10/19 ~ 10/23)
+            { week: 8, date: '10/19', dayName: '10월 19일 (월)', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공사 절차 기본교육 심사평가', instructor: '이동찬 교관' },
+            { week: 8, date: '10/19', dayName: '10월 19일 (월)', period: '2~3교시 (10:00~11:50)', cat: '안전', name: '항공기 지상훈련(5) 승무원의 임무와 표준절차', instructor: '이동찬 교관' },
+            { week: 8, date: '10/19', dayName: '10월 19일 (월)', period: '4교시 (12:00~12:50)', cat: '안전', name: '항공기 지상훈련(6) 승객처리책임', instructor: '이동찬 교관' },
+            { week: 8, date: '10/19', dayName: '10월 19일 (월)', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '임청 교관' },
+            { week: 8, date: '10/20', dayName: '10월 20일 (화)', period: '1교시 (06:00~09:00)', cat: '안전', name: '항공기 지상훈련(2)(3) 항공기 견학', instructor: '이광석, 임청, 이동찬 교관' },
+            { week: 8, date: '10/20', dayName: '10월 20일 (화)', period: '2교시 (10:00~12:00)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '이동찬 교관' },
+            { week: 8, date: '10/20', dayName: '10월 20일 (화)', period: '3교시 (13:00~15:00)', cat: '안전', name: '항공기 지상훈련(8) 비상임무와 절차', instructor: '임청 교관' },
+            { week: 8, date: '10/21', dayName: '10월 21일 (수)', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공기 지상훈련 심사평가1(1,2,3,7)', instructor: '김사라 교관' },
+            { week: 8, date: '10/21', dayName: '10월 21일 (수)', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상장비 훈련)', instructor: '김사라, 윤준영, 최홍규 교관' },
+            { week: 8, date: '10/21', dayName: '10월 21일 (수)', period: '5교시 (14:00~14:50)', cat: '안전', name: '비상구 열 브리핑 Test', instructor: '강신욱, 지혜진, 이광석 심사관' },
+            { week: 8, date: '10/21', dayName: '10월 21일 (수)', period: '6교시 (15:00~15:50)', cat: '안전', name: 'DEMO Test', instructor: '강신욱, 지혜진, 이광석 심사관' },
+            { week: 8, date: '10/21', dayName: '10월 21일 (수)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '응급처치훈련(이론)', instructor: '이동찬 교관' },
+            { week: 8, date: '10/22', dayName: '10월 22일 (목)', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공기 지상훈련 심사평가2(4,5,6,8)', instructor: '이동찬 교관' },
+            { week: 8, date: '10/22', dayName: '10월 22일 (목)', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '비상훈련 (비상장비 훈련)', instructor: '윤준영, 이동찬, 김환태 교관' },
+            { week: 8, date: '10/22', dayName: '10월 22일 (목)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_샤우팅', instructor: '임청, 김사라, 김환태 교관' },
+            { week: 8, date: '10/23', dayName: '10월 23일 (금)', period: '1~7교시 (09:00~16:50)', cat: '안전', name: '승무원 자원관리(CRM)', instructor: '태형식 교관' },
+            { week: 8, date: '10/23', dayName: '10월 23일 (금)', period: '8교시 (17:00~17:50)', cat: '안전', name: '승무원 자원관리 심사평가', instructor: '태형식 교관' },
 
-            // Week 9
-            { week: 9, date: '10/26', dayName: '10월26일', period: '1~2교시 (09:00~10:50)', cat: '안전', name: '비상훈련 심사평가 비상장비_도슬오/장비구술 심사', instructor: '이동찬 김사라 윤준영 교관, 강신욱 지혜진 이광석 심사관' },
-            { week: 9, date: '10/26', dayName: '10월26일', period: '3~5교시 (11:00~14:50)', cat: '안전', name: '응급처치훈련(이론)', instructor: '이동찬 교관' },
-            { week: 9, date: '10/26', dayName: '10월26일', period: '6교시 (15:00~15:50)', cat: '안전', name: '응급처치훈련(이론) 항공생리', instructor: '이정희 간호사' },
-            { week: 9, date: '10/26', dayName: '10월26일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_샤우팅', instructor: '임청, 김사라, 윤준영 교관' },
-            { week: 9, date: '10/27', dayName: '10월27일', period: '1교시 (12:00~16:00)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_착수', instructor: '편희원 김사라 임청 교관' },
-            { week: 9, date: '10/27', dayName: '10월27일', period: '2교시 (15:00~16:00)', cat: '안전', name: '착수 심사', instructor: '서동천 지혜진 이광석 심사관' },
-            { week: 9, date: '10/28', dayName: '10월28일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(이론)', instructor: '임청 교관' },
-            { week: 9, date: '10/28', dayName: '10월28일', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '응급처치훈련(실습)', instructor: '임청, 이동찬, 김사라 교관' },
-            { week: 9, date: '10/28', dayName: '10월28일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '위험물훈련', instructor: '지혜진 교관' },
-            { week: 9, date: '10/29', dayName: '10월29일', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(실습)', instructor: '[교관] 윤준영 김사라 이동찬, [심사관] 강신욱 지혜진 이광석 심사관' },
-            { week: 9, date: '10/29', dayName: '10월29일', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_화재', instructor: '윤준영 김사라 이동찬 교관' },
-            { week: 9, date: '10/29', dayName: '10월29일', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_난동/감압/비탈', instructor: '윤준영 김사라 이동찬 교관' },
-            { week: 9, date: '10/29', dayName: '10월29일', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_롤플레이(난동/감압/비탈)', instructor: '윤준영 김사라 이동찬 교관' },
-            { week: 9, date: '10/30', dayName: '10월30일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '위험물 훈련', instructor: '지혜진 교관' },
-            { week: 9, date: '10/30', dayName: '10월30일', period: '4교시 (12:00~12:50)', cat: '안전', name: '위험물 훈련 심사평가', instructor: '지혜진 교관' },
-            { week: 9, date: '10/30', dayName: '10월30일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
+            // Week 9 (10/26 ~ 10/30)
+            { week: 9, date: '10/26', dayName: '10월 26일 (월)', period: '1~2교시 (09:00~10:50)', cat: '안전', name: '비상훈련 심사평가 비상장비_도슬오/장비구술 심사', instructor: '이동찬, 김사라, 윤준영 교관 / 강신욱, 지혜진, 이광석 심사관' },
+            { week: 9, date: '10/26', dayName: '10월 26일 (월)', period: '3~5교시 (11:00~14:50)', cat: '안전', name: '응급처치훈련(이론)', instructor: '이동찬 교관' },
+            { week: 9, date: '10/26', dayName: '10월 26일 (월)', period: '6교시 (15:00~15:50)', cat: '안전', name: '응급처치훈련(이론) 항공생리', instructor: '이정희 간호사' },
+            { week: 9, date: '10/26', dayName: '10월 26일 (월)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_샤우팅', instructor: '임청, 김사라, 윤준영 교관' },
+            { week: 9, date: '10/27', dayName: '10월 27일 (화)', period: '1교시 (12:00~16:00)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_착수', instructor: '편희원, 김사라, 임청 교관' },
+            { week: 9, date: '10/27', dayName: '10월 27일 (화)', period: '2교시 (15:00~16:00)', cat: '안전', name: '착수 심사', instructor: '서동천, 지혜진, 이광석 심사관' },
+            { week: 9, date: '10/28', dayName: '10월 28일 (수)', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(이론)', instructor: '임청 교관' },
+            { week: 9, date: '10/28', dayName: '10월 28일 (수)', period: '2~6교시 (10:00~15:50)', cat: '안전', name: '응급처치훈련(실습)', instructor: '임청, 이동찬, 김사라 교관' },
+            { week: 9, date: '10/28', dayName: '10월 28일 (수)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '위험물훈련', instructor: '지혜진 교관' },
+            { week: 9, date: '10/29', dayName: '10월 29일 (목)', period: '1교시 (09:00~09:50)', cat: '안전', name: '응급처치훈련 심사평가(실습)', instructor: '윤준영, 김사라, 이동찬 교관 / 강신욱, 지혜진, 이광석 심사관' },
+            { week: 9, date: '10/29', dayName: '10월 29일 (목)', period: '2~4교시 (10:00~12:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_화재', instructor: '윤준영, 김사라, 이동찬 교관' },
+            { week: 9, date: '10/29', dayName: '10월 29일 (목)', period: '5~6교시 (14:00~15:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_난동/감압/비탈', instructor: '윤준영, 김사라, 이동찬 교관' },
+            { week: 9, date: '10/29', dayName: '10월 29일 (목)', period: '7~8교시 (16:00~17:50)', cat: '안전', name: '비상훈련 (비상상황 대응훈련)_롤플레이(난동/감압/비탈)', instructor: '윤준영, 김사라, 이동찬 교관' },
+            { week: 9, date: '10/30', dayName: '10월 30일 (금)', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '위험물 훈련', instructor: '지혜진 교관' },
+            { week: 9, date: '10/30', dayName: '10월 30일 (금)', period: '4교시 (12:00~12:50)', cat: '안전', name: '위험물 훈련 심사평가', instructor: '지혜진 교관' },
+            { week: 9, date: '10/30', dayName: '10월 30일 (금)', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
 
-            // Week 10
-            { week: 10, date: '11/02', dayName: '11월02일', period: '1~5교시 (09:00~14:50)', cat: '안전', name: '비상훈련 심사평가_샤우팅/비탈롤', instructor: '[교관]임청 김사라 윤준영, [심사관]강신욱 진혜진 이광석' },
-            { week: 10, date: '11/02', dayName: '11월02일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
-            { week: 10, date: '11/02', dayName: '11월02일', period: '8교시 (17:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '임청 김사라 윤준영 교관' },
-            { week: 10, date: '11/03', dayName: '11월03일', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공보안훈련 심사평가(이론)', instructor: '임청 교관' },
-            { week: 10, date: '11/03', dayName: '11월03일', period: '2~5교시 (10:00~12:50)', cat: '안전', name: '항공보안훈련(실습)', instructor: '임청 김사라 윤준영 교관' },
-            { week: 10, date: '11/03', dayName: '11월03일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '산업재해 교육', instructor: '-' },
-            { week: 10, date: '11/03', dayName: '11월03일', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN', instructor: '담임교관' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '항공보안훈련 심사평가(실습)', instructor: '[교관] 임청 김사라 윤준영, [심사관] 강신욱 지혜진 이광석' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '4~5교시 (12:00~14:50)', cat: '기타', name: '객실브리핑의 이해', instructor: '-' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '슬기로운 레이오버 생활', instructor: '-' },
-            { week: 10, date: '11/04', dayName: '11월04일', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN', instructor: '담임교관' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '우주방사선 교육', instructor: '-' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '5교시 (14:00~14:50)', cat: '기타', name: '승원실의 이해', instructor: '승원팀장' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '6교시 (15:00~15:50)', cat: '기타', name: '객실품질팀의 이해', instructor: '김만수 팀장' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '7교시 (16:00~16:50)', cat: '기타', name: '객실커머스팀의 이해', instructor: '이동규 팀장' },
-            { week: 10, date: '11/05', dayName: '11월05일', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN (OE비행 안내 및 면담)', instructor: '담임교관' },
-            { week: 10, date: '11/06', dayName: '11월06일', period: '1~8교시 (09:00~17:50)', cat: '안전', name: '객실승무원 운항경험', instructor: '지혜진 강신욱 태형식 조혜정 이준우 이상엽 윤윤선 심사관' },
+            // Week 10 (11/02 ~ 11/06)
+            { week: 10, date: '11/02', dayName: '11월 02일 (월)', period: '1~5교시 (09:00~14:50)', cat: '안전', name: '비상훈련 심사평가_샤우팅/비탈롤', instructor: '임청, 김사라, 윤준영 교관 / 강신욱, 진혜진, 이광석 심사관' },
+            { week: 10, date: '11/02', dayName: '11월 02일 (월)', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '윤준영 교관' },
+            { week: 10, date: '11/02', dayName: '11월 02일 (월)', period: '8교시 (17:00~17:50)', cat: '안전', name: '항공보안훈련(이론)', instructor: '임청, 김사라, 윤준영 교관' },
+            { week: 10, date: '11/03', dayName: '11월 03일 (화)', period: '1교시 (09:00~09:50)', cat: '안전', name: '항공보안훈련 심사평가(이론)', instructor: '임청 교관' },
+            { week: 10, date: '11/03', dayName: '11월 03일 (화)', period: '2~5교시 (10:00~12:50)', cat: '안전', name: '항공보안훈련(실습)', instructor: '임청, 김사라, 윤준영 교관' },
+            { week: 10, date: '11/03', dayName: '11월 03일 (화)', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '산업재해 교육', instructor: '-' },
+            { week: 10, date: '11/03', dayName: '11월 03일 (화)', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN', instructor: '담임교관' },
+            { week: 10, date: '11/04', dayName: '11월 04일 (수)', period: '1~3교시 (09:00~11:50)', cat: '안전', name: '항공보안훈련 심사평가(실습)', instructor: '임청, 김사라, 윤준영 교관 / 강신욱, 지혜진, 이광석 심사관' },
+            { week: 10, date: '11/04', dayName: '11월 04일 (수)', period: '4~5교시 (12:00~14:50)', cat: '기타', name: '객실브리핑의 이해', instructor: '-' },
+            { week: 10, date: '11/04', dayName: '11월 04일 (수)', period: '6~7교시 (15:00~16:50)', cat: '안전', name: '슬기로운 레이오버 생활', instructor: '-' },
+            { week: 10, date: '11/04', dayName: '11월 04일 (수)', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN', instructor: '담임교관' },
+            { week: 10, date: '11/05', dayName: '11월 05일 (목)', period: '1~4교시 (09:00~12:50)', cat: '안전', name: '우주방사선 교육', instructor: '-' },
+            { week: 10, date: '11/05', dayName: '11월 05일 (목)', period: '5교시 (14:00~14:50)', cat: '기타', name: '승원실의 이해', instructor: '승원팀장' },
+            { week: 10, date: '11/05', dayName: '11월 05일 (목)', period: '6교시 (15:00~15:50)', cat: '기타', name: '객실품질팀의 이해', instructor: '김만수 팀장' },
+            { week: 10, date: '11/05', dayName: '11월 05일 (목)', period: '7교시 (16:00~16:50)', cat: '기타', name: '객실커머스팀의 이해', instructor: '이동규 팀장' },
+            { week: 10, date: '11/05', dayName: '11월 05일 (목)', period: '8교시 (17:00~17:50)', cat: '안전', name: 'ADMIN (OE비행 안내 및 면담)', instructor: '담임교관' },
+            { week: 10, date: '11/06', dayName: '11월 06일 (금)', period: '1~8교시 (09:00~17:50)', cat: '안전', name: '객실승무원 운항경험 (OE)', instructor: '지혜진, 강신욱, 태형식, 조혜정, 이준우, 이상엽, 윤윤선 심사관' },
 
-            // Week 11
-            { week: 11, date: '11/09', dayName: '11월09일', period: '1~4교시 (09:00~12:50)', cat: '기타', name: '홍보촬영', instructor: '홍보팀' },
-            { week: 11, date: '11/09', dayName: '11월09일', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '재심사 보충 및 면담, OE 교육 등', instructor: '-' },
-            { week: 11, date: '11/10', dayName: '11월10일', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '객실편조팀의 이해', instructor: '유은희 팀장' },
-            { week: 11, date: '11/10', dayName: '11월10일', period: '3교시 (11:00~11:50)', cat: '기타', name: '객실기획팀의 이해', instructor: '-' },
-            { week: 11, date: '11/10', dayName: '11월10일', period: '3~8교시 (11:00~17:50)', cat: '기타', name: '수료식', instructor: '객실훈련팀' }
+            // Week 11 (11/09 ~ 11/10)
+            { week: 11, date: '11/09', dayName: '11월 09일 (월)', period: '1~4교시 (09:00~12:50)', cat: '기타', name: '홍보촬영', instructor: '홍보팀' },
+            { week: 11, date: '11/09', dayName: '11월 09일 (월)', period: '5~8교시 (14:00~17:50)', cat: '안전', name: '재심사 보충 및 면담, OE 교육 등', instructor: '-' },
+            { week: 11, date: '11/10', dayName: '11월 10일 (화)', period: '1~2교시 (09:00~10:50)', cat: '기타', name: '객실편조팀의 이해', instructor: '유은희 팀장' },
+            { week: 11, date: '11/10', dayName: '11월 10일 (화)', period: '3교시 (11:00~11:50)', cat: '기타', name: '객실기획팀의 이해', instructor: '-' },
+            { week: 11, date: '11/10', dayName: '11월 10일 (화)', period: '3~8교시 (11:00~17:50)', cat: '기타', name: '수료식', instructor: '객실훈련팀' }
         ];
 
         let DEFAULT_ASSIGNMENTS = [
             { id: "etc-checklist-01", category: "기타", subject: "입과 행정 서류 및 앱 체크리스트", title: "입과 준비 서류 및 필수 애플리케이션 설치", dueDate: "2026-09-01 18:00", method: "직접 지참 및 태블릿 설치 확인", instructor: "담임교관", items: [{ id: "item_0", text: "여권 및 증명사진, 외화통장 제출", done: false }, { id: "item_1", text: "서약서 및 동의서 (5장)", done: false }, { id: "item_2", text: "PAYCO ", done: false }, { id: "item_3", text: "HRD", done: false }, { id: "item_4", text: "J-ONE/MDM", done: false }, { id: "item_5", text: "Crew Connex", done: false }, { id: "item_6", text: "에어부산 가입", done: false }, { id: "item_7", text: "법인카드 발급", done: false }, { id: "item_8", text: "미국비자 신청서", done: false }] },
-            { id: "svc-0902-1", category: "서비스", subject: "Image Making", title: "Hair-do 영상 시청 및 준비물 지참", dueDate: "수업 전날", method: "실습 수업 참여 점검", instructor: "조연진, 오아현 교관", items: [{ id: "im1", text: "러닝플랫폼 내 Hair-do 영상 시청 (*여자: 단발, 중단발, 포니테일, 쪽머리 / *남자: 숏컷 1,2)", done: false }, { id: "im2", text: "[수업 준비물] 메이크업, 헤어 연출을 위한 전체 도구 지참", done: false }, { id: "im3", text: "*메이크업 도구: 평소 메이크업 시 사용하는 모든 도구", done: false }, { id: "im4", text: "*헤어 연출 도구: 스프레이, 젤크림, U핀, 미세망, 머리끈, 고정핀 등 (헤어 스타일링기는 선택 지참)", done: false }] },
-            { id: "svc-0907-1", category: "서비스", subject: "기내 서비스 용어", title: "용어 암기 및 러닝플랫폼 영상 학습", dueDate: "수업 전날", method: "당일 수업 시 랜덤 구두 TEST", instructor: "박민지A, 현윤선, 오아현 교관", items: [{ id: "sy1", text: "각 용어 암기해오기", done: false }, { id: "sy2", text: "러닝플랫폼 내 [처음 만난 기내 서비스 용어] 영상 시청", done: false }] },
-            { id: "svc-0908-1", category: "서비스", subject: "국내선 이론", title: "전체적인 국내선 절차 암기", dueDate: "수업 전날", method: "수업 시 확인", instructor: "박혜린 교관", items: [{ id: "dt1", text: "러닝플랫폼 내 [진짜 첫비행] 영상 시청", done: false }, { id: "dt2", text: "국내선 기본 절차 흐름 숙지", done: false }] },
-            { id: "svc-0908-2", category: "서비스", subject: "승객 응대 롤플레이", title: "상황별 멘트 암기", dueDate: "수업 전날", method: "당일 수업 시 랜덤 구두 TEST", instructor: "오아현 교관", items: [{ id: "rp1", text: "교재 내 롤플레이 상황별 멘트 암기해오기", done: false }] },
-            { id: "svc-0909-1", category: "서비스", subject: "국내선 이론", title: "워크시트 작성 (패드 내 삽입)", dueDate: "수업 직후", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "박민지A 교관", items: [{ id: "ws1", text: "국내선 이론2 항목까지 배우고 나서 패드 내 워크시트 작성", done: false }, { id: "ws2", text: "국내선 교육 종료 후 국제선으로 전환되는 시점에 취합", done: false }] },
-            { id: "svc-0909-2", category: "서비스", subject: "국내선 에어카페 이론", title: "브로셔 내용 숙지 (브로셔 PDF 배포)", dueDate: "수업 전날", method: "당일 수업 시 쪽지 TEST (10문제 중 3문제 오답 시 재시험)", instructor: "김연희 교관", items: [{ id: "ac1", text: "에어카페 책자 숙독 및 암기", done: false }] },
-            { id: "svc-0910-1", category: "서비스", subject: "국제선 승객응대화법(중국어)", title: "(전공자 대상) 기내방송 청취 및 녹음 제출", dueDate: "수업 1주 전 주말", method: "수업 시간 이후 녹음하여 숙제로 러닝플랫폼 내 제출", instructor: "박민지A 교관", items: [{ id: "cn1", text: "전공자만 기내방송 모델보이스 듣고 따라해오기", done: false }] },
-            { id: "svc-0911-1", category: "서비스", subject: "국내선 에어카페 실습", title: "동영상보기 (실습 영상 공유)", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "김연희, 현윤선 교관", items: [{ id: "ac2", text: "에어카페 실습 동영상 공유하기", done: false }] },
-            { id: "svc-0911-2", category: "서비스", subject: "국내선 에어카페 판매 서비스", title: "J-LOG 훈련센터용 애플리케이션 다운로드하기", dueDate: "태블릿 배포 이후 (09/04~09/10)", method: "실습 진행 전 직접 설치 점검", instructor: "김연희, 현윤선 교관", items: [{ id: "jl1", text: "태블릿 배포시 WiFi(refresh_wind, girl) 설치와 함께 PPT 참고해 다운로드 진행", done: false }, { id: "jl2", text: "*다운로드 가이드 저장 경로: \\10.11.20.60\\객실훈련팀\\13_2026년\\03_서비스\\09_서비스 교육 자료\\J-LOG", done: false }, { id: "jl3", text: "다운로드는 refresh_girl 환경에서만 가능하며 한명씩 접속(훈련센터 내 설치 가능)", done: false }, { id: "jl4", text: "해당 어플이 없으면 실습 진행이 불가하므로 수업 전 반드시 다운로드 완료", done: false }] },
-            { id: "svc-0914-1", category: "서비스", subject: "국제선 승객응대화법(일본어)", title: "숫자쓰기", dueDate: "수업 직후", method: "담당 교관 판단 하에 진행", instructor: "최수연 교관", items: [{ id: "jp1", text: "A4용지에 해당수업 교관 안내한 숫자 써오기 (A4용지 준비)", done: false }] },
-            { id: "svc-0914-2", category: "서비스", subject: "국제선 승객응대화법(일본어)", title: "히라가나 암기", dueDate: "수업 1주 전 안내", method: "당일 수업 시간 쪽지 TEST", instructor: "최수연 교관", items: [{ id: "jp2", text: "히라가나 암기 (p.5)", done: false }] },
-            { id: "svc-0915-1", category: "서비스", subject: "국제선 이론", title: "워크시트 작성 (패드 내 삽입)", dueDate: "수업 직후", method: "NAVER WORKS 공용 드라이브 내 업로드 (SVC 훈련 마지막 주 취합)", instructor: "최슬기 교관", items: [{ id: "fr1", text: "워크시트에 FR DUTY의 시간흐름별 업무 내용 상세히 기입 후 제출", done: false }] },
-            { id: "svc-0915-2", category: "서비스", subject: "국제선 이론", title: "동영상보기", dueDate: "수업 전날", method: "수업 전 시청 점검", instructor: "최슬기 교관", items: [{ id: "fr2", text: "러닝플랫폼 내 [진짜 첫 비행] 시청", done: false }] },
-            { id: "bc-0916-1", category: "기내 방송", subject: "기내방송1", title: "CAM 다운로드 및 방송문안 끊어읽기", dueDate: "수업 전날", method: "수업 시 육안 확인", instructor: "한재민 교관", items: [{ id: "bc1", text: "(교육일 이전) CAM 최신상태 저장 (개인 Device)", done: false }, { id: "bc2", text: "(교육일 이전) 총론 읽기", done: false }, { id: "bc3", text: "(교육일 이전) WELCOME, FAREWELL, TURBULENCE, SAFETY DEMO 한/영 끊어읽기 표시 및 연습", done: false }, { id: "bc4", text: "(교육 이후) Turbulence 심사 대비 안내 숙지 (한/영/일/중 TEST)", done: false }] },
-            { id: "bc-0916-2", category: "기내 방송", subject: "기내방송 1-2", title: "동영상보기 (Shadowing 학습)", dueDate: "수업 전날", method: "러닝플랫폼 자습", instructor: "한재민 교관", items: [{ id: "bc5", text: "러닝플랫폼 Shadowing 영상 시청하며 학습 (Farewell/Turbulence/Safety Demo)", done: false }] },
-            { id: "sft-0917-1", category: "안전", subject: "사전 기내식", title: "Meal Code, 구성품 및 갤리브리핑 내용 암기", dueDate: "수업 1주 전 주말", method: "당일 수업 시간 쪽지 TEST", instructor: "오아현 교관", items: [{ id: "item_0", text: "SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기", done: false }, { id: "item_1", text: "사전 기내식 서비스 절차 암기해오기", done: false }] },
-            { id: "sft-0917-2", category: "안전", subject: "사전 기내식 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "오아현 교관", items: [{ id: "item_0", text: "사전기내식 실습 영상 공유하기", done: false }] },
-            { id: "sft-0917-3", category: "안전", subject: "사전 기내식", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "오아현 교관", items: [{ id: "item_0", text: "실습상황 6가지 공유 숙지", done: false }, { id: "item_1", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
-            { id: "svc-0918-1", category: "서비스", subject: "C.I.Q", title: "국가별 면세허용량 암기", dueDate: "수업 1주 전 안내", method: "당일 조회시간 구두 TEST", instructor: "현윤선 교관", items: [{ id: "ciq1", text: "스테이션인포 공지사항 내 모든 노선의 공지사항 다운로드", done: false }, { id: "ciq2", text: "면세 허용량 암기해오기 (면세 관련 상세 특이사항 포함)", done: false }] },
-            { id: "svc-0918-2", category: "서비스", subject: "C.I.Q", title: "워크시트 작성 (패드 내 삽입)", dueDate: "수업 1주 전 안내", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "현윤선 교관", items: [{ id: "ciq3", text: "스테이션인포 공지사항 다운 내역 보면서 워크시트에 정리 후 제출", done: false }, { id: "ciq4", text: "워크시트 정리내용 암기", done: false }] },
-            { id: "svc-0918-3", category: "서비스", subject: "C.I.Q", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "현윤선 교관", items: [{ id: "ciq5", text: "실습상황 2가지 공유(대한민국, 라오스)", done: false }, { id: "ciq6", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
-            { id: "svc-0918-4", category: "서비스", subject: "C.I.Q 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "현윤선 교관", items: [{ id: "ciq7", text: "C.I.Q 실습 영상 공유하기", done: false }] },
-            { id: "bc-0918-5", category: "기내 방송", subject: "기내 방송2", title: "Farewell:Normal & DEMO 녹음 제출", dueDate: "수업 시 해당 교관 안내 (기내방송 1~2 사이)", method: "기내방송 2-2수업 전까지 러닝플랫폼 내 제출", instructor: "한재민 교관", items: [{ id: "bc6", text: "(교육일 이전) Farewell:Normal 녹음 및 제출 확인", done: false }, { id: "bc7", text: "(교육 이후) DEMO 녹음 및 제출 안내 (기내방송 2-2 전까지 제출)", done: false }] },
-            { id: "bc-0918-6", category: "기내 방송", subject: "기내방송2-1", title: "심사 대비 안내", dueDate: "수업 시 해당 교관 안내 (기내방송2 후 5일내)", method: "수업 진행 후 안내", instructor: "한재민 교관", items: [{ id: "bc8", text: "수업 진행 후, Turbulence 한/영/일/중 TEST관련 안내 숙지", done: false }] },
-            { id: "bc-0918-7", category: "기내 방송", subject: "기내방송2-2", title: "DEMO 녹음 및 제출", dueDate: "수업 시 해당 교관 안내", method: "SVC 훈련 마지막 주까지 러닝플랫폼 내 제출", instructor: "한재민 교관", items: [{ id: "bc9", text: "2-2수업 이후 ~ SVC 훈련 마지막주에 러닝플랫폼 내 제출 (기한 별도 안내)", done: false }] },
-            { id: "svc-0921-1", category: "서비스", subject: "유니폼의 이해", title: "동영상보기", dueDate: "수업 전날", method: "러닝플랫폼 자습", instructor: "박민지A 교관", items: [{ id: "uf1", text: "러닝플랫폼 Scarf 착용방법 시청하며 학습", done: false }] },
-            { id: "bc-0921-2", category: "기내 방송", subject: "기내방송4 중국어", title: "Approach 문안 해석 및 워크시트 독음 작성", dueDate: "수업 전날", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "정혜윤 교관", items: [{ id: "bc10", text: "Approach 문안 해석 이해하고 오기 (교재 보면서 표시해오기)", done: false }, { id: "bc11", text: "워크시트에 독음 써오기 (패드 내 삽입)", done: false }] },
-            { id: "bc-0921-3", category: "기내 방송", subject: "기내방송4 중국어", title: "[전공자 추가 숙제] 녹음", dueDate: "수업 이후", method: "러닝플랫폼 내 제출 (기한 별도 안내)", instructor: "정혜윤 교관", items: [{ id: "bc12", text: "Welcome, Demo 문안 녹음 제출 (문안 논의 예정)", done: false }] },
-            { id: "svc-0922-1", category: "서비스", subject: "기내 면세 이론", title: "쇼핑인포메이션, 면세 월별공지사항 숙독", dueDate: "수업 전날", method: "당일 수업 시간 쪽지 TEST (범위: 쇼핑인포메이션+면세 월별 공지사항)", instructor: "오아현, 박민지A, 김연희 교관", items: [{ id: "df1", text: "'쇼핑인포메이션', 면세 월별 공지사항 숙독 (책자 PDF 배포)", done: false }] },
-            { id: "svc-0922-2", category: "서비스", subject: "기내 면세 이론", title: "워크시트 작성 (패드 내 삽입)", dueDate: "수업 1주 전 안내", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "오아현, 박민지A, 김연희 교관", items: [{ id: "df2", text: "PDF 버전의 면세 책자에 나만의 정리 내용 작성", done: false }] },
-            { id: "svc-0922-3", category: "서비스", subject: "기내 면세 이론", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "오아현, 박민지A, 김연희 교관", items: [{ id: "df3", text: "실습상황 6가지 공유 숙지", done: false }, { id: "df4", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
-            { id: "svc-0922-4", category: "서비스", subject: "기내 면세 이론", title: "주류 공지사항 숙독", dueDate: "수업 전날", method: "수업 시 랜덤 구두 TEST", instructor: "오아현, 박민지A, 김연희 교관", items: [{ id: "df5", text: "기내 면세 주류 판매 서비스 자료 공지사항 내 다운로드 후 숙독", done: false }] },
-            { id: "svc-0923-1", category: "서비스", subject: "기내 면세 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "현윤선, 이은비 교관", items: [{ id: "df6", text: "기내면세 실습 영상 공유하기", done: false }] },
-            { id: "bc-0929-1", category: "기내 방송", subject: "기내방송3 일본어", title: "Approach 문안 해석 및 워크시트 작성", dueDate: "수업 전날", method: "NAVER WORKS 공용 드라이브 내 업로드 (아침 조회시간 제출여부 확인)", instructor: "조상현 교관", items: [{ id: "bc13", text: "Approach 문안 해석 이해하고 오기 (교재 보면서 표시해오기)", done: false }, { id: "bc14", text: "워크시트에 억양/끊어읽기 써오기 (패드 내 삽입)", done: false }] },
-            { id: "svc-0930-1", category: "서비스", subject: "국제선 에어카페 이론1,2", title: "실습 상황 공유", dueDate: "시험 2일 전", method: "TEST 2일 전 공유", instructor: "김연희, 이은비 교관", items: [{ id: "ac3", text: "실습상황 6가지 공유 숙지", done: false }, { id: "ac4", text: "노선별 기타 추가질문 안내 숙지", done: false }] },
-            { id: "svc-0930-2", category: "서비스", subject: "국제선 에어카페 이론1,2", title: "절차 암기", dueDate: "수업 전날", method: "수업 시 랜덤 구두 TEST", instructor: "김연희, 이은비 교관", items: [{ id: "ac5", text: "국제선 에어카페 이론1 숙지", done: false }, { id: "ac6", text: "국제선 에어카페 이론2 숙지", done: false }] },
-            { id: "svc-0930-3", category: "서비스", subject: "국제선 에어카페 판매 서비스", title: "국내선 에어카페 판매 서비스 복습해오기", dueDate: "수업 1주 전 (연휴 이용)", method: "수업 시 랜덤 구두 TEST", instructor: "박민지A, 김연희 교관", items: [{ id: "ac7", text: "국내선 에어카페 판매 서비스 교재 참고해 복습", done: false }] },
-            { id: "svc-1001-1", category: "서비스", subject: "국제선 에어카페 실습", title: "동영상보기", dueDate: "수업 전날", method: "공용드라이브에 영상 보안 설정 후 제공", instructor: "실습교관", items: [{ id: "ac8", text: "에어카페 실습 동영상 공유하기", done: false }] },
-            { id: "sft-1002-1", category: "안전", subject: "안전보건교육", title: "동영상보기", dueDate: "교육 생성 후 안내", method: "훈련생은 CL에게 CORSS CHK / CL은 해당 과정 담임교관 보고", instructor: "안전보건 파트", items: [{ id: "sh1", text: "신규채용자 안전보건교육 수료 완료", done: false }] }
+            { id: "svc-0902-1", category: "서비스", subject: "Image Making", title: "Hair-do 영상 시청 및 준비물 지참", dueDate: "수업 전날", method: "실습 수업 참여 점검", instructor: "조연진, 오아현 교관", items: [{ id: "im1", text: "러닝플랫폼 내 Hair-do 영상 시청 (*여자: 단발, 중단발, 포니테일, 쪽머리 / *남자: 숏컷 1,2)", done: false }, { id: "im2", text: "[수업 준비물] 메이크업, 헤어 연출을 위한 전체 도구 지참", done: false }] },
+            { id: "sft-0917-1", category: "안전", subject: "사전 기내식", title: "Meal Code, 구성품 및 갤리브리핑 내용 암기", dueDate: "수업 1주 전 주말", method: "당일 수업 시간 쪽지 TEST", instructor: "오아현 교관", items: [{ id: "item_0", text: "SVC 교재 or 핸드북 내 Meal Code/ 명칭/ 구성품 암기해오기", done: false }, { id: "item_1", text: "사전 기내식 서비스 절차 암기해오기", done: false }] }
         ];
 
         let DEFAULT_EVALUATION_RESULTS = {};
 
         // Application State Variables
         let trainees = [];
+        let leaders = { ...DEFAULT_LEADERS };
         let demerits = [];
         let scheduleData = [];
         let assignmentsData = [];
         let evaluationResults = {};
+        let isOnlyRiskFilterActive = false;
 
         window.saveStateToLocalStorage = function() {
             try {
                 const fullData = {
                     trainees,
+                    leaders,
                     demerits,
                     scheduleData,
                     assignmentsData,
@@ -1424,8 +1451,8 @@
                 if (saved) {
                     const data = JSON.parse(saved);
                     trainees = data.trainees || JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+                    leaders = data.leaders || { ...DEFAULT_LEADERS };
                     
-                    // 사번 & 이름 동기화 보완 로직
                     if (!trainees.length || (trainees[0] && trainees[0].empId !== "2608007")) {
                         trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
                     } else {
@@ -1449,6 +1476,7 @@
                     }
                 } else {
                     trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+                    leaders = { ...DEFAULT_LEADERS };
                     demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
                     scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                     assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
@@ -1457,11 +1485,16 @@
             } catch(e) {
                 console.error("Local storage load error:", e);
                 trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+                leaders = { ...DEFAULT_LEADERS };
                 demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
                 scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
                 assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
                 evaluationResults = JSON.parse(JSON.stringify(DEFAULT_EVALUATION_RESULTS));
             }
+        };
+
+        window.printCurrentPage = function () {
+            window.print();
         };
 
         let onConfirmAction = null;
@@ -1482,6 +1515,7 @@
         window.resetDataToDefault = function() {
             localStorage.removeItem('cabin_crew_dashboard_data');
             trainees = JSON.parse(JSON.stringify(DEFAULT_TRAINEES));
+            leaders = { ...DEFAULT_LEADERS };
             demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS));
             scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
             assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS));
@@ -1585,24 +1619,69 @@
             if (window.lucide) window.lucide.createIcons();
         };
 
+        window.openLeaderModal = function () {
+            const createOpts = (selectedEmp) => {
+                return `<option value="">미정</option>` + trainees.map(t => `<option value="${t.empId}" ${t.empId === selectedEmp ? 'selected' : ''}>${t.empId} (${t.name || '-'})</option>`).join('');
+            };
+
+            document.getElementById('selectClassLeader').innerHTML = createOpts(leaders.classLeader);
+            document.getElementById('selectViceLeader').innerHTML = createOpts(leaders.viceLeader);
+            document.getElementById('selectServiceLeader').innerHTML = createOpts(leaders.serviceLeader);
+            document.getElementById('selectSafetyLeader').innerHTML = createOpts(leaders.safetyLeader);
+
+            document.getElementById('leaderModal').classList.remove('hidden');
+        };
+
+        window.closeLeaderModal = function () {
+            document.getElementById('leaderModal').classList.add('hidden');
+        };
+
+        window.saveLeaderSettings = function () {
+            leaders.classLeader = document.getElementById('selectClassLeader').value;
+            leaders.viceLeader = document.getElementById('selectViceLeader').value;
+            leaders.serviceLeader = document.getElementById('selectServiceLeader').value;
+            leaders.safetyLeader = document.getElementById('selectSafetyLeader').value;
+
+            window.saveStateToLocalStorage();
+            window.renderDashboard();
+            window.closeLeaderModal();
+            window.showToast('학급 임원 정보가 업로드되었습니다.');
+        };
+
         window.renderDashboard = function () {
             const countBadge = document.getElementById('traineeCountBadge');
             const dashCount = document.getElementById('dashTraineeCount');
             if (countBadge) countBadge.innerText = `초기 훈련생 ${trainees.length}명`;
             if (dashCount) dashCount.innerHTML = `${trainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
 
+            // Display Leaders
+            const getTraineeName = (empId) => {
+                const tr = trainees.find(t => t.empId === empId);
+                return tr ? `${tr.name}` : '미정';
+            };
+
+            const dispClass = document.getElementById('dispLeaderClass');
+            const dispVice = document.getElementById('dispLeaderVice');
+            const dispSvc = document.getElementById('dispLeaderSvc');
+            const dispSafety = document.getElementById('dispLeaderSafety');
+
+            if (dispClass) dispClass.innerText = getTraineeName(leaders.classLeader);
+            if (dispVice) dispVice.innerText = getTraineeName(leaders.viceLeader);
+            if (dispSvc) dispSvc.innerText = getTraineeName(leaders.serviceLeader);
+            if (dispSafety) dispSafety.innerText = getTraineeName(leaders.safetyLeader);
+
             // Identify focus trainees
             const riskList = document.getElementById('riskTraineeList');
+            const demeritMap = {};
+            demerits.forEach(d => {
+                demeritMap[d.empId] = (demeritMap[d.empId] || 0) + Number(d.points);
+            });
+
+            const riskTrainees = trainees.filter(t => (demeritMap[t.empId] || 0) >= 3);
+            const dashRiskCount = document.getElementById('dashRiskCount');
+            if (dashRiskCount) dashRiskCount.innerHTML = `${riskTrainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
+
             if (riskList) {
-                const demeritMap = {};
-                demerits.forEach(d => {
-                    demeritMap[d.empId] = (demeritMap[d.empId] || 0) + Number(d.points);
-                });
-
-                const riskTrainees = trainees.filter(t => (demeritMap[t.empId] || 0) >= 3);
-                const dashRiskCount = document.getElementById('dashRiskCount');
-                if (dashRiskCount) dashRiskCount.innerHTML = `${riskTrainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
-
                 if (riskTrainees.length === 0) {
                     riskList.innerHTML = `<p class="text-xs text-slate-400 italic p-2">현재 집중 관리 대상자가 없습니다.</p>`;
                 } else {
@@ -1618,6 +1697,30 @@
                 }
             }
 
+            // Real-time evaluation results count for chart
+            let safetyPass = 0, servicePass = 0, broadcastPass = 0, totalFail = 0;
+            trainees.forEach(t => {
+                (categorySubjectMap.safety || []).forEach(s => {
+                    const r = evaluationResults[`${t.empId}_${s.value}`];
+                    if (r && r.finalPass === 'PASS') safetyPass++;
+                    else if (r && r.finalPass === 'FAIL') totalFail++;
+                });
+                (categorySubjectMap.service || []).forEach(s => {
+                    const r = evaluationResults[`${t.empId}_${s.value}`];
+                    if (r && r.finalPass === 'PASS') servicePass++;
+                    else if (r && r.finalPass === 'FAIL') totalFail++;
+                });
+                (categorySubjectMap.broadcast || []).forEach(s => {
+                    const r = evaluationResults[`${t.empId}_${s.value}`];
+                    if (r && r.finalPass === 'PASS') broadcastPass++;
+                    else if (r && r.finalPass === 'FAIL') totalFail++;
+                });
+            });
+
+            if (safetyPass === 0 && servicePass === 0 && broadcastPass === 0 && totalFail === 0) {
+                safetyPass = 25; servicePass = 27; broadcastPass = 28; totalFail = 2; // Default fallback view
+            }
+
             // Test Chart rendering
             const ctx = document.getElementById('testResultChart');
             if (ctx && window.Chart) {
@@ -1627,7 +1730,7 @@
                     data: {
                         labels: ['안전 (Pass)', '서비스 (Pass)', '방송 (Pass)', '재시험/Fail'],
                         datasets: [{
-                            data: [25, 27, 28, 2],
+                            data: [safetyPass, servicePass, broadcastPass, totalFail],
                             backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#ef4444'],
                             borderWidth: 0
                         }]
@@ -1641,6 +1744,8 @@
                     }
                 });
             }
+
+            if (window.lucide) window.lucide.createIcons();
         };
 
         let currentScheduleWeek = 1;
@@ -1774,15 +1879,40 @@
 
         let currentEditTraineeIndex = -1;
 
-        window.renderTraineesTable = function () {
+        window.toggleOnlyRiskTraineeFilter = function () {
+            isOnlyRiskFilterActive = !isOnlyRiskFilterActive;
+            const btn = document.getElementById('btnFilterRisk');
+            const txt = document.getElementById('txtFilterRisk');
+            if (isOnlyRiskFilterActive) {
+                btn.className = 'px-3 py-2 text-xs font-bold rounded-xl border transition bg-red-600 text-white border-red-600 shadow-sm flex items-center space-x-1';
+                txt.innerText = '필터 적용 중 (벌점 3점 이상)';
+            } else {
+                btn.className = 'px-3 py-2 text-xs font-bold rounded-xl border transition border-red-200 bg-red-50 text-red-700 hover:bg-red-100 flex items-center space-x-1';
+                txt.innerText = '집중 관리 대상자만 보기';
+            }
+            window.renderTraineesTable();
+            window.renderCompetencyTable();
+        };
+
+        window.getFilteredTraineesList = function () {
             const searchVal = document.getElementById('searchTraineeInput')?.value.trim().toLowerCase() || '';
+            const demeritMap = {};
+            demerits.forEach(d => {
+                demeritMap[d.empId] = (demeritMap[d.empId] || 0) + Number(d.points);
+            });
+
+            return trainees.filter(t => {
+                const matchesSearch = t.empId.toLowerCase().includes(searchVal) || (t.name && t.name.toLowerCase().includes(searchVal));
+                const matchesRisk = isOnlyRiskFilterActive ? ((demeritMap[t.empId] || 0) >= 3) : true;
+                return matchesSearch && matchesRisk;
+            });
+        };
+
+        window.renderTraineesTable = function () {
             const tbody = document.getElementById('traineesTableBody');
             if (!tbody) return;
 
-            const filtered = trainees.filter(t => 
-                t.empId.toLowerCase().includes(searchVal) || 
-                (t.name && t.name.toLowerCase().includes(searchVal))
-            );
+            const filtered = window.getFilteredTraineesList();
             tbody.innerHTML = filtered.map((t, idx) => `
                 <tr class="hover:bg-slate-50">
                     <td class="p-3 text-slate-400 font-medium">${idx + 1}</td>
@@ -1797,17 +1927,15 @@
                     </td>
                 </tr>
             `).join('');
+
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.renderCompetencyTable = function () {
-            const searchVal = document.getElementById('searchTraineeInput')?.value.trim().toLowerCase() || '';
             const tbody = document.getElementById('competencyTableBody');
             if (!tbody) return;
 
-            const filtered = trainees.filter(t => 
-                t.empId.toLowerCase().includes(searchVal) || 
-                (t.name && t.name.toLowerCase().includes(searchVal))
-            );
+            const filtered = window.getFilteredTraineesList();
             tbody.innerHTML = filtered.map((t, idx) => {
                 const c = t.competency || { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: '-', weaknesses: '-' };
                 return `
@@ -1830,6 +1958,8 @@
                     </tr>
                 `;
             }).join('');
+
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.openNoteModal = function (empId) {
@@ -2023,7 +2153,7 @@
             const wsDemerit = window.XLSX.utils.json_to_sheet(demeritData);
             window.XLSX.utils.book_append_sheet(wb, wsDemerit, '벌점 정보');
 
-            window.XLSX.writeFile(wb, '객실초기훈련생_통합관리_성적표.xlsx');
+            window.XLSX.writeFile(wb, '객실초기훈련생_통합관리_성적표.xlsx', { bookType: 'xlsx', type: 'binary' });
             window.showToast('요청하신 엑셀 내보내기가 완료되었습니다.');
         };
 
@@ -2044,6 +2174,8 @@
                     </tr>
                 `;
             }).join('');
+
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.openDemeritModal = function () {
@@ -2119,6 +2251,8 @@
                     </tr>
                 `;
             }).join('');
+
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.updateTestStatus = function (resKey, stage) {
@@ -2134,6 +2268,7 @@
             curr.finalPass = (curr.pass2 === 'PASS' || (curr.pass1 === 'PASS' && curr.pass2 !== 'FAIL')) ? 'PASS' : 'FAIL';
             window.saveStateToLocalStorage();
             window.renderTestsTable();
+            window.renderDashboard();
         };
 
         window.updateTestScore = function (resKey, scoreVal) {
@@ -2289,6 +2424,7 @@
             if (subTab === 'trainees') window.renderManageTraineesTable();
             if (subTab === 'demerits') window.renderManageDemeritsTable();
             if (subTab === 'assignments') window.renderManageAssignmentsList();
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.renderManageScheduleTable = function () {
@@ -2315,6 +2451,7 @@
                     </tr>
                 `;
             }).join('');
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.deleteScheduleItem = function (globalIdx) {
@@ -2394,6 +2531,7 @@
                     </td>
                 </tr>
             `).join('');
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.deleteTrainee = function (idx) {
@@ -2457,6 +2595,7 @@
                     </tr>
                 `;
             }).join('');
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.deleteDemerit = function (idx) {
@@ -2483,6 +2622,7 @@
                     </div>
                 </div>
             `).join('');
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.openNoticeModal = function () {
@@ -2570,7 +2710,7 @@
         };
 
         window.exportFullDataJSON = function () {
-            const fullData = { trainees, demerits, scheduleData, assignmentsData, evaluationResults };
+            const fullData = { trainees, leaders, demerits, scheduleData, assignmentsData, evaluationResults };
             const jsonStr = JSON.stringify(fullData, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -2589,6 +2729,7 @@
                 try {
                     const data = JSON.parse(evt.target.result);
                     if (data.trainees) trainees = data.trainees;
+                    if (data.leaders) leaders = data.leaders;
                     if (data.demerits) demerits = data.demerits;
                     if (data.scheduleData) scheduleData = data.scheduleData;
                     if (data.assignmentsData) assignmentsData = data.assignmentsData;
