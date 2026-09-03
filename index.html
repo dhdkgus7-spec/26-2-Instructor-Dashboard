@@ -111,7 +111,7 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation Buttons (과제 안내 제거됨) -->
+            <!-- Tab Navigation Buttons -->
             <nav class="flex space-x-6 overflow-x-auto custom-scrollbar pt-2 text-sm font-medium">
                 <button onclick="window.switchTab('dashboard')" id="tab-dashboard" class="tab-button pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5 tab-active">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
@@ -605,7 +605,7 @@
             </div>
         </section>
 
-        <!-- 6. TAB: 데이터 관리 / 수정 (Manage - 과제 관리 제거됨) -->
+        <!-- 6. TAB: 데이터 관리 / 수정 (Manage) -->
         <section id="content-manage" class="tab-content space-y-6 hidden">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <div class="border-b border-slate-100 pb-4 mb-6 space-y-3">
@@ -1069,6 +1069,14 @@
     <script>
         const INSTRUCTOR_SECRET = "Jeju@ir262";
 
+        // ============================================================================
+        // [배포 버전 자동 감지 엔진]
+        // 깃허브에 푸시할 때마다 이 값을 현재 시점으로 변경하면 모든 접속자의 브라우저 캐시가 강제 갱신됩니다.
+        // ============================================================================
+        const DEPLOY_VERSION = "2026-09-03_11:30"; 
+        const STORAGE_KEY = "cabin_master_dashboard_data";
+        const VERSION_KEY = "cabin_dashboard_deploy_version";
+
         const categorySubjectMap = {
             safety: [
                 { value: 'test_safety_k_proc', label: '항공사 절차기본' },
@@ -1104,7 +1112,7 @@
             ]
         };
 
-        // 제공해주신 최신 JSON 데이터로 완벽 치환
+        // 29명 전원의 상세 개인면담 메모 완벽 반영
         let DEFAULT_TRAINNEES_ARR = [
             { empId: "2608007", name: "강다영A", observationNote: "특이사항 없음", counselingNote: "PUS Base / 2000.11.17 / 진주 / 중어중문학과 / ISTP", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608008", name: "강미선", observationNote: "특이사항 없음", counselingNote: "2003.03.14 / 신소재공학과 / ENFJ / 취미: 헬스", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
@@ -1146,6 +1154,7 @@
 
         let DEFAULT_DEMERITS_ARR = [];
 
+        // 11주 전체 시간표 마스터 데이터
         let DEFAULT_SCHEDULE_ARR = [
             { week: 1, date: "08/31", dayName: "08월 31일 (월)", period: "1~8교시 (09:00~17:50)", cat: "기타", name: "온보딩", instructor: "담임교관" },
             { week: 1, date: "09/01", dayName: "09월 01일 (화)", period: "1교시 (09:00~09:50)", cat: "기타", name: "오리엔테이션 (입과 및 생활 안내)", instructor: "유재진, 오아현 교관" },
@@ -1343,34 +1352,38 @@
                     evaluationResults,
                     noticeContent: document.getElementById('noticeContent')?.innerText || ''
                 };
-                localStorage.setItem('cabin_crew_dashboard_data', JSON.stringify(fullData));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(fullData));
+                localStorage.setItem(VERSION_KEY, DEPLOY_VERSION);
             } catch(e) {
-                console.error("Local storage save error:", e);
+                console.error("로컬 저장 실패:", e);
             }
         };
 
         window.loadStateFromLocalStorage = function() {
             try {
-                const saved = localStorage.getItem('cabin_crew_dashboard_data');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    trainees = data.trainees || JSON.parse(JSON.stringify(DEFAULT_TRAINNEES_ARR));
-                    leaders = data.leaders || { ...DEFAULT_LEADERS_OBJ };
-                    if (!leaders.classLeader) leaders.classLeader = "2608019";
-                    if (!leaders.viceLeader) leaders.viceLeader = "2608056";
+                const localVersion = localStorage.getItem(VERSION_KEY);
+                const savedRaw = localStorage.getItem(STORAGE_KEY);
 
-                    demerits = data.demerits || JSON.parse(JSON.stringify(DEFAULT_DEMERITS_ARR));
-                    scheduleData = data.scheduleData || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_ARR));
-                    evaluationResults = data.evaluationResults || JSON.parse(JSON.stringify(DEFAULT_EVAL_RESULTS_OBJ));
-                    
-                    if (data.noticeContent && document.getElementById('noticeContent')) {
-                        document.getElementById('noticeContent').innerText = data.noticeContent;
-                    }
-                } else {
+                // 새 버전이 배포되었거나 저장본이 없으면 최신 소스코드 데이터로 강제 자동 갱신
+                if (!savedRaw || localVersion !== DEPLOY_VERSION) {
+                    console.log("새로운 대시보드 버전이 감지되었습니다. 최신 마스터 데이터로 동기화합니다.");
                     window.resetDataToDefaultValues();
+                    window.saveStateToLocalStorage();
+                    return;
+                }
+
+                const data = JSON.parse(savedRaw);
+                trainees = (data.trainees && data.trainees.length > 0) ? data.trainees : JSON.parse(JSON.stringify(DEFAULT_TRAINNEES_ARR));
+                leaders = data.leaders || { ...DEFAULT_LEADERS_OBJ };
+                demerits = data.demerits || JSON.parse(JSON.stringify(DEFAULT_DEMERITS_ARR));
+                scheduleData = (data.scheduleData && data.scheduleData.length > 0) ? data.scheduleData : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_ARR));
+                evaluationResults = data.evaluationResults || JSON.parse(JSON.stringify(DEFAULT_EVAL_RESULTS_OBJ));
+
+                if (data.noticeContent && document.getElementById('noticeContent')) {
+                    document.getElementById('noticeContent').innerText = data.noticeContent;
                 }
             } catch(e) {
-                console.error("Local storage load error:", e);
+                console.error("데이터 로드 오류, 기본값으로 복구합니다:", e);
                 window.resetDataToDefaultValues();
             }
         };
@@ -1403,8 +1416,10 @@
         };
 
         window.resetDataToDefault = function() {
-            localStorage.removeItem('cabin_crew_dashboard_data');
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(VERSION_KEY);
             window.resetDataToDefaultValues();
+            window.saveStateToLocalStorage();
             
             const notice = document.getElementById('noticeContent');
             if (notice) notice.innerText = "📌 훈련생 근태 및 태도 특이사항 발생 시 유재진, 오아현에게 공유 부탁드립니다. 감사합니다!!! >.,<";
