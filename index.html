@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>객실훈련팀 교관용 초기 훈련생 통합 관리 대시보드</title>
@@ -60,7 +61,7 @@
             <p class="text-slate-500 text-xs mb-6">훈련생 민감 정보 보호를 위해 접근 암호를 입력하세요.</p>
             
             <form id="authForm" onsubmit="window.handleInstructorAuth(event)">
-                <input type="password" id="authPassword" placeholder="비밀번호 입력" autofocus="" class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 text-center font-mono">
+                <input type="password" id="authPassword" placeholder="비밀번호 입력" autofocus class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 text-center font-mono">
                 <div id="authError" class="text-red-500 text-xs font-semibold mb-3 hidden flex items-center justify-center space-x-1">
                     <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
                     <span>비밀번호가 일치하지 않습니다.</span>
@@ -110,7 +111,7 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation Buttons -->
+            <!-- Tab Navigation Buttons (과제 안내 제거됨) -->
             <nav class="flex space-x-6 overflow-x-auto custom-scrollbar pt-2 text-sm font-medium">
                 <button onclick="window.switchTab('dashboard')" id="tab-dashboard" class="tab-button pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5 tab-active">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
@@ -131,10 +132,6 @@
                 <button onclick="window.switchTab('evaluation')" id="tab-evaluation" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
                     <i data-lucide="file-check-2" class="w-4 h-4"></i>
                     <span>TEST 평가 현황</span>
-                </button>
-                <button onclick="window.switchTab('assignment')" id="tab-assignment" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5">
-                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
-                    <span>과제 안내</span>
                 </button>
                 <button onclick="window.switchTab('manage')" id="tab-manage" class="tab-button text-slate-600 hover:text-slate-900 pb-3 px-1 whitespace-nowrap flex items-center space-x-1.5 font-bold">
                     <i data-lucide="edit-3" class="w-4 h-4 text-orange-500"></i>
@@ -206,7 +203,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Today's Schedule Overview (동적으로 오늘 날짜 반영) -->
+                <!-- Today's Schedule Overview -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm lg:col-span-1 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-4">
@@ -216,9 +213,7 @@
                             </h2>
                             <span id="dashTodayScheduleBadge" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">진행 중</span>
                         </div>
-                        <div class="space-y-3" id="dashTodayScheduleList">
-                            <!-- JS를 통해 오늘 날짜 수업 목록 자동 주입 -->
-                        </div>
+                        <div class="space-y-3" id="dashTodayScheduleList"></div>
                     </div>
                     <button onclick="window.switchTab('schedule')" class="mt-4 w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition text-center border border-slate-200">
                         전체 11주 시간표 상세보기 →
@@ -234,7 +229,7 @@
                         </h2>
                     </div>
                     <div class="h-60 relative flex items-center justify-center">
-                        <canvas id="testResultChart" style="box-sizing: border-box; display: block; height: 240px; width: 347.7px;" width="434" height="300"></canvas>
+                        <canvas id="testResultChart" style="box-sizing: border-box; display: block; height: 240px; width: 100%;"></canvas>
                     </div>
                 </div>
 
@@ -248,7 +243,9 @@
                             </h2>
                             <span class="text-xs text-red-600 font-semibold bg-red-50 px-2 py-0.5 rounded-full">벌점 3점 이상</span>
                         </div>
-                        <div class="space-y-2 mb-4" id="riskTraineeList"><p class="text-xs text-slate-400 italic p-2">현재 집중 관리 대상자가 없습니다.</p></div>
+                        <div class="space-y-2 mb-4" id="riskTraineeList">
+                            <p class="text-xs text-slate-400 italic p-2">현재 집중 관리 대상자가 없습니다.</p>
+                        </div>
 
                         <!-- Instructor Notice Board -->
                         <div class="pt-3 border-t border-slate-100">
@@ -608,51 +605,7 @@
             </div>
         </section>
 
-        <!-- 6. TAB: 과제 안내 (Assignment) -->
-        <section id="content-assignment" class="tab-content space-y-6 hidden">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">과목별 과제 안내 및 제출 현황</h2>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
-                            <button onclick="window.filterAssignmentCat('ALL')" id="btn-assign-all" class="assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs">전체</button>
-                            <button onclick="window.filterAssignmentCat('기타')" id="btn-assign-etc" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기타</button>
-                            <button onclick="window.filterAssignmentCat('안전')" id="btn-assign-safety" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">안전</button>
-                            <button onclick="window.filterAssignmentCat('서비스')" id="btn-assign-service" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">서비스</button>
-                            <button onclick="window.filterAssignmentCat('기내 방송')" id="btn-assign-broadcast" class="assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs">기내 방송</button>
-                        </div>
-                        <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="window.handleExcelUpload(event)" class="hidden">
-                        <button onclick="document.getElementById('excelFileInput').click()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                            <span>엑셀 파일 파싱/업로드</span>
-                        </button>
-                        <button onclick="window.openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                            <span>신규 과제 등록</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-xl mb-4 text-xs text-amber-900 space-y-1">
-                    <div class="flex items-center space-x-1.5 font-bold text-amber-800">
-                        <i data-lucide="info" class="w-4 h-4 text-amber-600"></i>
-                        <span>📌 [아침 조회시간 참고 사항]</span>
-                    </div>
-                    <p class="pl-5 text-amber-800 font-medium">· <strong>[인사와 표정]</strong> 수업 이후 조회 시 한국어로 인사 연습</p>
-                    <p class="pl-5 text-amber-800 font-medium">· <strong>[승객 응대 화법(일본어, 중국어)]</strong> 수업 이후 아침 조회 시 아래 2가지 중 택1하여 진행:</p>
-                    <div class="pl-9 space-y-0.5 text-amber-700">
-                        <p>1) 일본어(심사지 1-7번, 13, 15번 항목), 중국어로 인사 연습</p>
-                        <p>2) 일본어, 중국어 음성 듣고 직접 말하는 연습 진행</p>
-                    </div>
-                </div>
-
-                <div id="assignmentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-        </section>
-
-        <!-- 7. TAB: 데이터 관리 / 수정 (Manage) -->
+        <!-- 6. TAB: 데이터 관리 / 수정 (Manage - 과제 관리 제거됨) -->
         <section id="content-manage" class="tab-content space-y-6 hidden">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <div class="border-b border-slate-100 pb-4 mb-6 space-y-3">
@@ -661,7 +614,7 @@
                             <i data-lucide="settings" class="w-5 h-5 text-orange-500"></i>
                             <span>대시보드 전체 데이터 편집 및 관리</span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">시간표, 훈련생 명부, 벌점 내역, 과제 정보를 직접 등록/수정/삭제하고 JSON 백업 및 복원을 진행합니다.</p>
+                        <p class="text-xs text-slate-500 mt-1">시간표, 훈련생 명부, 벌점 내역 정보를 직접 등록/수정/삭제하고 JSON 백업 및 복원을 진행합니다.</p>
                     </div>
 
                     <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-xl w-full">
@@ -676,10 +629,6 @@
                         <button onclick="window.switchManageSubTab('demerits')" id="mbtn-demerits" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
                             <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
                             <span>벌점 삭제/수정</span>
-                        </button>
-                        <button onclick="window.switchManageSubTab('assignments')" id="mbtn-assignments" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
-                            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
-                            <span>과제 삭제/수정</span>
                         </button>
                         <button onclick="window.switchManageSubTab('backup')" id="mbtn-backup" class="manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1">
                             <i data-lucide="database" class="w-3.5 h-3.5"></i>
@@ -781,19 +730,7 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB 4: Assignments Management -->
-                <div id="manage-sec-assignments" class="manage-sec hidden space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-sm font-bold text-slate-800">과제 수정 및 삭제</h3>
-                        <button onclick="window.openAssignmentModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1 transition shadow-sm">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                            <span>신규 과제 추가</span>
-                        </button>
-                    </div>
-                    <div id="manageAssignmentsList" class="space-y-3"></div>
-                </div>
-
-                <!-- SUB-TAB 5: Backup & Restore -->
+                <!-- SUB-TAB 4: Backup & Restore -->
                 <div id="manage-sec-backup" class="manage-sec space-y-6 hidden">
                     <div class="p-5 bg-orange-50/60 rounded-2xl border border-orange-100 space-y-3">
                         <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
@@ -801,7 +738,7 @@
                             <span>전체 데이터 JSON 백업, 복원 및 데이터 초기화</span>
                         </h3>
                         <p class="text-xs text-slate-600 leading-relaxed">
-                            수정한 시간표, 훈련생 명단, 벌점 기록, TEST 결과 및 과제 데이터는 브라우저 내부(<code class="bg-white px-1 py-0.5 rounded border border-orange-200">localStorage</code>)에 자동 저장됩니다. 파일 형태(.json)로 PC에 소장해두거나, 초기 데이터 상태로 언제든 되돌릴 수 있습니다.
+                            수정한 시간표, 훈련생 명단, 벌점 기록, TEST 결과 데이터는 브라우저 내부(<code class="bg-white px-1 py-0.5 rounded border border-orange-200">localStorage</code>)에 자동 저장됩니다. 파일 형태(.json)로 PC에 소장해두거나, 초기 데이터 상태로 언제든 되돌릴 수 있습니다.
                         </p>
                         <div class="flex flex-wrap gap-3 pt-2">
                             <button onclick="window.exportFullDataJSON()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm">
@@ -994,12 +931,12 @@
                 <div>
                     <label class="text-xs font-semibold text-slate-600 block mb-1">위반 항목 (제 2조 기준)</label>
                     <select id="demeritCategory" onchange="window.handleDemeritCategoryChange(this.value)" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
-                        <option value="근태불량 A" data-default="10">근태불량 A (공식 출근 시간까지 미출근) - 10점</option>
-                        <option value="근태불량 B" data-default="15">근태불량 B (공식 출근 시간 20분 초과 지각) - 15점</option>
-                        <option value="근태불량 C" data-default="20">근태불량 C (공식 출근 당일 미출근) - 20점</option>
-                        <option value="이론/실습 심사 1차 Fail" data-default="5">이론/실습 심사 1차 Fail - 5점</option>
-                        <option value="이론/실습 심사 2차 Fail" data-default="20">이론/실습 심사 2차 Fail - 20점</option>
-                        <option value="규정 위반 및 지시 불이행" data-default="5">규정 위반 및 지시 불이행 (물품 미소지, 절차 미준수 등) - 5~20점</option>
+                        <option value="근태불량 A">근태불량 A (공식 출근 시간까지 미출근) - 10점</option>
+                        <option value="근태불량 B">근태불량 B (공식 출근 시간 20분 초과 지각) - 15점</option>
+                        <option value="근태불량 C">근태불량 C (공식 출근 당일 미출근) - 20점</option>
+                        <option value="이론/실습 심사 1차 Fail">이론/실습 심사 1차 Fail - 5점</option>
+                        <option value="이론/실습 심사 2차 Fail">이론/실습 심사 2차 Fail - 20점</option>
+                        <option value="규정 위반 및 지시 불이행">규정 위반 및 지시 불이행 (물품 미소지, 절차 미준수 등) - 5~20점</option>
                     </select>
                 </div>
                 <div>
@@ -1054,57 +991,7 @@
         </div>
     </div>
 
-    <!-- Modal 8: Assignment Modal -->
-    <div id="assignmentModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-base font-bold text-slate-900" id="assignModalTitle">과제 등록 / 수정</h3>
-                <button onclick="window.closeAssignmentModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <input type="hidden" id="editAssignmentId" value="">
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">구분</label>
-                    <select id="assignCategory" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="안전">안전</option>
-                        <option value="서비스">서비스</option>
-                        <option value="기내 방송">기내 방송</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">과목명</label>
-                    <input type="text" id="assignSubject" placeholder="예: 비상장비 개론" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">과제명</label>
-                    <input type="text" id="assignTitle" placeholder="예: 비상장비 위치 점검표 작성" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">제출 기한</label>
-                    <input type="text" id="assignDueDate" placeholder="예: 2026-09-08 18:00" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">제출 방식</label>
-                    <input type="text" id="assignMethod" placeholder="예: 태블릿 LMS 업로드 / 실습실 직접 제출" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">담당 교관</label>
-                    <input type="text" id="assignInstructor" placeholder="예: 오아현 교관" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-600 block mb-1">과제 세부 설명 및 체크리스트 (줄바꿈 구분)</label>
-                    <textarea id="assignDetail" rows="3" class="w-full p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="과제 작성 요령 및 세부 수행 항목..."></textarea>
-                </div>
-            </div>
-            <div class="flex justify-end space-x-2 pt-2">
-                <button onclick="window.closeAssignmentModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">취소</button>
-                <button onclick="window.addAssignment()" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-semibold hover:bg-orange-600">저장하기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 9: Schedule Add/Edit Modal -->
+    <!-- Modal 8: Schedule Add/Edit Modal -->
     <div id="scheduleModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -1154,7 +1041,7 @@
         </div>
     </div>
 
-    <!-- Modal 10: Add Trainee Modal -->
+    <!-- Modal 9: Add Trainee Modal -->
     <div id="traineeAddModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex justify-between items-center">
@@ -1217,36 +1104,37 @@
             ]
         };
 
+        // 제공해주신 최신 JSON 데이터로 완벽 치환
         let DEFAULT_TRAINNEES_ARR = [
-            { empId: "2608007", name: "강다영A", observationNote: "특이사항 없음", counselingNote: "PUS Base \n2000.11.17 / 진주 / 중어중문학과 / ISTP", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608008", name: "강미선", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608007", name: "강다영A", observationNote: "특이사항 없음", counselingNote: "PUS Base / 2000.11.17 / 진주 / 중어중문학과 / ISTP", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608008", name: "강미선", observationNote: "특이사항 없음", counselingNote: "2003.03.14 / 신소재공학과 / ENFJ / 취미: 헬스", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608011", name: "권다인", observationNote: "특이사항 없음", counselingNote: "2001.05.14 / 항공서비스학과 / ISTJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608012", name: "김가영", observationNote: "특이사항 없음", counselingNote: "2001.03.31 / 안양 / 방송연예학과 / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608013", name: "김규림", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608013", name: "김규림", observationNote: "특이사항 없음", counselingNote: "2001.04.28 / ISTP / 국제통상학과", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608014", name: "김다경", observationNote: "특이사항 없음", counselingNote: "2001.04.19 / ISFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608015", name: "김다윤", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608015", name: "김다윤", observationNote: "특이사항 없음", counselingNote: "PUS Base / 2001.11.27 / ENTJ / 부산 / 영어영문학과", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608016", name: "김서현A", observationNote: "특이사항 없음", counselingNote: "2004.03.01 / 항공서비스과 / ESFJ / 졸업예정", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608017", name: "김승윤", observationNote: "표정 및 태도 관찰 필요", counselingNote: "2002.06.10 / 관악구 / 항공서비스 외국어학과 / INFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608018", name: "김예진A", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608019", name: "김유진L", observationNote: "특이사항 없음", counselingNote: "2002.04.02 / 항공관광학과 / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608020", name: "김유진M", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608022", name: "김주은A", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608019", name: "김유진L", observationNote: "특이사항 없음", counselingNote: "2002.04.02 / 클래스리더 / 항공관광학과 / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608020", name: "김유진M", observationNote: "특이사항 없음", counselingNote: "2001.02.08 / 경영학과 / 인천(부천)", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608022", name: "김주은A", observationNote: "특이사항 없음", counselingNote: "2000.11.28 / 일산", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608025", name: "김형진A", observationNote: "특이사항 없음", counselingNote: "1999.05.26 / 노량진 / 정치외교학과", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608026", name: "문채원", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608026", name: "문채원", observationNote: "특이사항 없음", counselingNote: "2003.12.09 / 경주", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608028", name: "박현정C", observationNote: "특이사항 없음", counselingNote: "2003.02.15 / 광주 / 영어영문학과 / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608029", name: "배지윤", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608031", name: "신명진", observationNote: "특이사항 없음", counselingNote: "2000.04.08 / 동대문 / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608031", name: "신명진", observationNote: "특이사항 없음", counselingNote: "2000.04.08 / 동대문 (본가: 부산) / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608033", name: "심영주", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608034", name: "오민주", observationNote: "특이사항 없음", counselingNote: "2002.08.26 / 부천 / 간호학과 / ISFP", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608037", name: "이다은B", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608043", name: "이채민", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608046", name: "이해름", observationNote: "특이사항 없음", counselingNote: "PUS Base\n2002.08.28 / 대구 / 항공서비스학과", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608047", name: "임태희", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608043", name: "이채민", observationNote: "특이사항 없음", counselingNote: "2001.09.29 / 일산 / ISFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608046", name: "이해름", observationNote: "특이사항 없음", counselingNote: "PUS Base / 2002.08.28 / 대구 / 항공서비스학과", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608047", name: "임태희", observationNote: "특이사항 없음", counselingNote: "2001.12.14 / 공덕 (부천) / 연기, 심리학 전공", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608048", name: "임화은", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608049", name: "정다빈", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608049", name: "정다빈", observationNote: "특이사항 없음", counselingNote: "2001.07.26 / 항공관광학과 / 가양 / ISTP", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
             { empId: "2608051", name: "정우혁", observationNote: "특이사항 없음", counselingNote: "2001.06.19 / 풍무 / 항공서비스학과 / ENFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608055", name: "허수연", observationNote: "특이사항 없음", counselingNote: "면담 내역 없음", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
-            { empId: "2608056", name: "황승욱", observationNote: "특이사항 없음", counselingNote: "PUS Base / 서브리더 /\n2001.09.08 / 대구 / ESFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } }
+            { empId: "2608055", name: "허수연", observationNote: "특이사항 없음", counselingNote: "2001.10.11 / ENFP / 방송국 임원 비서 전직", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } },
+            { empId: "2608056", name: "황승욱", observationNote: "특이사항 없음", counselingNote: "PUS Base / 서브리더 / 2001.09.08 / 대구 / ESFJ", competency: { safety: 4, lowCost: 4, trust: 4, teamwork: 4, challenge: 4, strengths: "특이사항 없음", weaknesses: "특이사항 없음" } }
         ];
 
         let DEFAULT_LEADERS_OBJ = {
@@ -1268,30 +1156,180 @@
             { week: 1, date: "09/01", dayName: "09월 01일 (화)", period: "7~8교시 (16:00~17:50)", cat: "기타", name: "유니폼 체촌", instructor: "이지애" },
             { week: 1, date: "09/02", dayName: "09월 02일 (수)", period: "1~4교시 (09:00~12:50)", cat: "서비스", name: "IMAGE MAKING", instructor: "김연희, 오아현, 박민지A, 유재진 교관" },
             { week: 1, date: "09/02", dayName: "09월 02일 (수)", period: "5~6교시 (14:00~15:50)", cat: "서비스", name: "인사와 표정", instructor: "박민지A 교관" },
-            { week: 1, date: "09/02", dayName: "09월 02일 (수)", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "항공용어 및 비행정보 지식 습득", instructor: "임청 교관" },
-            { week: 1, date: "09/03", dayName: "09월 03일 (목)", period: "1~3교시 (09:00~11:50)", cat: "안전", name: "제주항공의 조직, 운영범위 및 행정절차", instructor: "조제민 교관" },
-            { week: 1, date: "09/03", dayName: "09월 03일 (목)", period: "4~5교시 (12:00~14:50)", cat: "안전", name: "항공용어 및 비행정보 지식 습득", instructor: "정동신 교관" },
-            { week: 1, date: "09/03", dayName: "09월 03일 (목)", period: "6~8교시 (15:00~17:50)", cat: "안전", name: "법규정의 적용 및 기타 관련안고자료", instructor: "정동신 교관" },
+            { week: 1, date: "09/02", dayName: "09월 02일 (수)", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "항공용어 및 비행정보 지식 습득", instructor: "윤준영 교관" },
+            { week: 1, date: "09/03", dayName: "09월 03일 (목)", period: "1~3교시 (09:00~11:50)", cat: "안전", name: "제주항공의 조직, 운영범위 및 행정절차", instructor: "강신욱 교관" },
+            { week: 1, date: "09/03", dayName: "09월 03일 (목)", period: "4~5교시 (12:00~14:50)", cat: "안전", name: "항공용어 및 비행정보 지식 습득", instructor: "변지섭 교관" },
+            { week: 1, date: "09/03", dayName: "09월 03일 (목)", period: "6~8교시 (15:00~17:50)", cat: "안전", name: "법규정의 적용 및 기타 관련안고자료", instructor: "변지섭 교관" },
             { week: 1, date: "09/04", dayName: "09월 04일 (금)", period: "1~2교시 (09:00~10:50)", cat: "서비스", name: "말씨와 동작", instructor: "최미정 교관" },
             { week: 1, date: "09/04", dayName: "09월 04일 (금)", period: "3~5교시 (11:00~14:50)", cat: "서비스", name: "기초 서비스 이론 및 실습 (SVC BASIC)", instructor: "최미정, 박민지A 교관" },
             { week: 1, date: "09/04", dayName: "09월 04일 (금)", period: "6~7교시 (15:00~16:50)", cat: "서비스", name: "서비스 마인드", instructor: "박민지A 교관" },
-            { week: 1, date: "09/04", dayName: "09월 04일 (금)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" }
-        ];
-
-        let DEFAULT_ASSIGNMENTS_ARR = [
-            { id: "etc-checklist-01", category: "기타", subject: "입과 행정 서류 및 앱 체크리스트", title: "입과 준비 서류 및 필수 애플리케이션 설치", dueDate: "2026-09-01 18:00", method: "직접 지참 및 태블릿 설치 확인", instructor: "담임교관", items: [{ id: "item_0", text: "여권 및 증명사진, 외화통장 제출", done: false }, { id: "item_1", text: "서약서 및 동의서 (5장)", done: false }, { id: "item_2", text: "PAYCO", done: false }, { id: "item_3", text: "HRD", done: false }, { id: "item_4", text: "J-ONE/MDM", done: false }, { id: "item_5", text: "Crew Connex", done: false }, { id: "item_6", text: "에어부산 가입", done: false }, { id: "item_7", text: "법인카드", done: false }, { id: "item_8", text: "미국비자", done: false }] },
-            { id: "svc-0902-1", category: "서비스", subject: "Image Making", title: "Hair-do 영상 시청 및 준비물 지참", dueDate: "수업 전날", method: "실습 수업 참여 점검", instructor: "조연진, 오아현 교관", items: [{ id: "im1", text: "러닝플랫폼 내 Hair-do 영상 시청", done: false }, { id: "im2", text: "[수업 준비물] 메이크업, 헤어 연출을 위한 전체 도구 지참", done: false }] }
+            { week: 1, date: "09/04", dayName: "09월 04일 (금)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 2, date: "09/07", dayName: "09월 07일 (월)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "용모와 복장 1", instructor: "오아현, 박민지A, 김연희, 현윤선 교관" },
+            { week: 2, date: "09/07", dayName: "09월 07일 (월)", period: "2~3교시 (10:00~11:50)", cat: "서비스", name: "국제선 승객응대 화법(대양주)", instructor: "김연희 교관" },
+            { week: 2, date: "09/07", dayName: "09월 07일 (월)", period: "4~6교시 (12:00~15:50)", cat: "서비스", name: "기내서비스 용어", instructor: "박민지A, 현윤선, 오아현 교관" },
+            { week: 2, date: "09/07", dayName: "09월 07일 (월)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "기본응대화법(실습)", instructor: "오아현, 김연희 교관" },
+            { week: 2, date: "09/08", dayName: "09월 08일 (화)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "다정함이 살아남는다.", instructor: "김연희 교관" },
+            { week: 2, date: "09/08", dayName: "09월 08일 (화)", period: "2교시 (10:00~10:50)", cat: "서비스", name: "달라진 승객, 달라져야 할 다정함", instructor: "김연희 교관" },
+            { week: 2, date: "09/08", dayName: "09월 08일 (화)", period: "3~6교시 (11:00~15:50)", cat: "서비스", name: "국내선 이론1", instructor: "박혜린 교관" },
+            { week: 2, date: "09/08", dayName: "09월 08일 (화)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "승객 응대 롤플레이", instructor: "오아현 교관" },
+            { week: 2, date: "09/09", dayName: "09월 09일 (수)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "국제선 승객응대 화법(대양주) TEST", instructor: "김연희, 이은비, 현윤선 교관" },
+            { week: 2, date: "09/09", dayName: "09월 09일 (수)", period: "2~5교시 (10:00~14:50)", cat: "서비스", name: "국내선 이론2", instructor: "박민지A 교관" },
+            { week: 2, date: "09/09", dayName: "09월 09일 (수)", period: "6교시 (15:00~15:50)", cat: "서비스", name: "J-LOG의 이해", instructor: "김연희 교관" },
+            { week: 2, date: "09/09", dayName: "09월 09일 (수)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "국내선 에어카페 이론1", instructor: "김연희 교관" },
+            { week: 2, date: "09/10", dayName: "09월 10일 (목)", period: "1~3교시 (09:00~11:50)", cat: "서비스", name: "국제선 승객응대 화법(중국)", instructor: "박민지A 교관" },
+            { week: 2, date: "09/10", dayName: "09월 10일 (목)", period: "4~5교시 (12:00~14:50)", cat: "서비스", name: "국내선 에어카페 이론2", instructor: "이주희 교관" },
+            { week: 2, date: "09/10", dayName: "09월 10일 (목)", period: "6교시 (15:00~15:50)", cat: "서비스", name: "판매서비스 화법1 (국내선)", instructor: "이주희 교관" },
+            { week: 2, date: "09/10", dayName: "09월 10일 (목)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "표현의 뉘앙스", instructor: "이주희 교관" },
+            { week: 2, date: "09/11", dayName: "09월 11일 (금)", period: "1~4교시 (09:00~12:50)", cat: "서비스", name: "국내선 에어카페 판매 서비스", instructor: "김연희, 현윤선 교관" },
+            { week: 2, date: "09/11", dayName: "09월 11일 (금)", period: "5~6교시 (14:00~15:50)", cat: "서비스", name: "국내선 FLIGHT 실습", instructor: "오아현, 이은비 교관" },
+            { week: 2, date: "09/11", dayName: "09월 11일 (금)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "국내선 에어카페 실습 1-1_설렘배송", instructor: "김연희, 현윤선, 오아현, 이은비 교관" },
+            { week: 3, date: "09/14", dayName: "09월 14일 (월)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "국제선 승객응대 화법(중국) TEST", instructor: "박민지A, 현윤선, 이은비 교관" },
+            { week: 3, date: "09/14", dayName: "09월 14일 (월)", period: "2~4교시 (10:00~12:50)", cat: "서비스", name: "국내선 에어카페 실습 2", instructor: "이은비, 김연희, 현윤선, 박민지A 교관" },
+            { week: 3, date: "09/14", dayName: "09월 14일 (월)", period: "5교시 (14:00~14:50)", cat: "서비스", name: "국내선 에어카페 실습 3", instructor: "최수연, 김연희, 이은비, 박민지A 교관" },
+            { week: 3, date: "09/14", dayName: "09월 14일 (월)", period: "6~8교시 (15:00~17:50)", cat: "서비스", name: "국제선 승객응대 화법(일본)", instructor: "최수연 교관" },
+            { week: 3, date: "09/15", dayName: "09월 15일 (화)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "용모와 복장 2", instructor: "오아현, 이은비, 현윤선 교관" },
+            { week: 3, date: "09/15", dayName: "09월 15일 (화)", period: "2~4교시 (10:00~12:50)", cat: "서비스", name: "국내선 에어카페 실습 4", instructor: "최슬기, 현윤선, 오아현, 이은비 교관" },
+            { week: 3, date: "09/15", dayName: "09월 15일 (화)", period: "5~7교시 (14:00~16:50)", cat: "서비스", name: "국제선이론1", instructor: "최슬기 교관" },
+            { week: 3, date: "09/15", dayName: "09월 15일 (화)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 3, date: "09/16", dayName: "09월 16일 (수)", period: "1~3교시 (09:00~11:50)", cat: "기내 방송", name: "기내방송1", instructor: "한재민 교관" },
+            { week: 3, date: "09/16", dayName: "09월 16일 (수)", period: "4~6교시 (12:00~15:50)", cat: "서비스", name: "국제선이론2", instructor: "정진영B 교관" },
+            { week: 3, date: "09/16", dayName: "09월 16일 (수)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "VOC", instructor: "정진영B 교관" },
+            { week: 3, date: "09/17", dayName: "09월 17일 (목)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "국제선 승객응대 화법(일본) TEST", instructor: "이은비, 김연희, 박민지A 교관" },
+            { week: 3, date: "09/17", dayName: "09월 17일 (목)", period: "2~4교시 (10:00~12:50)", cat: "서비스", name: "사전기내식", instructor: "오아현 교관" },
+            { week: 3, date: "09/17", dayName: "09월 17일 (목)", period: "5~7교시 (14:00~16:50)", cat: "서비스", name: "사전기내식_실습", instructor: "오아현, 이은비, 김연희, 박민지A 교관" },
+            { week: 3, date: "09/17", dayName: "09월 17일 (목)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 3, date: "09/18", dayName: "09월 18일 (금)", period: "1~3교시 (09:00~11:50)", cat: "서비스", name: "CIQ이론1,2", instructor: "현윤선 교관" },
+            { week: 3, date: "09/18", dayName: "09월 18일 (금)", period: "4교시 (12:00~14:50)", cat: "서비스", name: "승무원 CIQ", instructor: "현윤선 교관" },
+            { week: 3, date: "09/18", dayName: "09월 18일 (금)", period: "5~7교시 (14:00~16:50)", cat: "기내 방송", name: "기내방송2", instructor: "한재민 교관" },
+            { week: 3, date: "09/18", dayName: "09월 18일 (금)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 4, date: "09/21", dayName: "09월 21일 (월)", period: "1~2교시 (09:00~10:50)", cat: "서비스", name: "사전기내식 TEST", instructor: "오아현, 이은비, 김연희 교관" },
+            { week: 4, date: "09/21", dayName: "09월 21일 (월)", period: "3교시 (11:00~11:50)", cat: "서비스", name: "용모와 복장 3", instructor: "박민지A, 이은비, 김연희 교관" },
+            { week: 4, date: "09/21", dayName: "09월 21일 (월)", period: "4~5교시 (12:00~14:50)", cat: "기내 방송", name: "기내방송3(중국어)", instructor: "정혜윤 교관" },
+            { week: 4, date: "09/21", dayName: "09월 21일 (월)", period: "6교시 (15:00~15:50)", cat: "서비스", name: "유니폼의 이해 1", instructor: "박민지A 교관" },
+            { week: 4, date: "09/21", dayName: "09월 21일 (월)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "유니폼의 이해 2", instructor: "박민지A, 김연희 교관" },
+            { week: 4, date: "09/22", dayName: "09월 22일 (화)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "국내&국제선이론 TEST", instructor: "이은비 교관" },
+            { week: 4, date: "09/22", dayName: "09월 22일 (화)", period: "2~3교시 (10:00~11:50)", cat: "서비스", name: "CIQ 롤플레이", instructor: "오아현, 박민지A 교관" },
+            { week: 4, date: "09/22", dayName: "09월 22일 (화)", period: "4~5교시 (12:00~14:50)", cat: "서비스", name: "CIQ실습", instructor: "이은비, 김연희 교관" },
+            { week: 4, date: "09/22", dayName: "09월 22일 (화)", period: "6~8교시 (15:00~17:50)", cat: "서비스", name: "기내 면세 이론1 (상품의 이해)", instructor: "오아현, 박민지A, 김연희 교관" },
+            { week: 4, date: "09/23", dayName: "09월 23일 (수)", period: "1~3교시 (09:00~11:50)", cat: "서비스", name: "기내 면세 이론2 (절차)", instructor: "박민지A 교관" },
+            { week: 4, date: "09/23", dayName: "09월 23일 (수)", period: "4~6교시 (12:00~15:50)", cat: "서비스", name: "기내 면세 PDA", instructor: "현윤선, 박민지A 교관" },
+            { week: 4, date: "09/23", dayName: "09월 23일 (수)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "기내 면세 실습1_예약주문서", instructor: "현윤선, 이은비, 오아현, 김연희 교관" },
+            { week: 4, date: "09/24", dayName: "09월 24일 (목)", period: "1~8교시 (09:00~17:50)", cat: "기타", name: "추석 연휴", instructor: "-" },
+            { week: 4, date: "09/25", dayName: "09월 25일 (금)", period: "1~8교시 (09:00~17:50)", cat: "기타", name: "추석 연휴", instructor: "-" },
+            { week: 5, date: "09/28", dayName: "09월 28일 (월)", period: "1~4교시 (09:00~12:50)", cat: "서비스", name: "CIQ TEST", instructor: "현윤선, 이은비, 박민지A, 김연희 교관" },
+            { week: 5, date: "09/28", dayName: "09월 28일 (월)", period: "5~8교시 (14:00~17:50)", cat: "서비스", name: "기내 면세 실습2", instructor: "현윤선, 이은비, 오아현, 김연희 교관" },
+            { week: 5, date: "09/29", dayName: "09월 29일 (화)", period: "1교시 (09:00~09:50)", cat: "서비스", name: "용모와 복장4", instructor: "오아현, 이은비, 현윤선 교관" },
+            { week: 5, date: "09/29", dayName: "09월 29일 (화)", period: "2~5교시 (10:00~14:50)", cat: "서비스", name: "기내 면세 실습 3", instructor: "현윤선, 박민지A, 이은비, 오아현 교관" },
+            { week: 5, date: "09/29", dayName: "09월 29일 (화)", period: "6~7교시 (15:00~16:50)", cat: "기내 방송", name: "기내방송4 일본어", instructor: "조상현 교관" },
+            { week: 5, date: "09/29", dayName: "09월 29일 (화)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 5, date: "09/30", dayName: "09월 30일 (수)", period: "1~2교시 (09:00~10:50)", cat: "서비스", name: "국제선 에어카페 이론1 (상품의 이해)", instructor: "김연희 교관" },
+            { week: 5, date: "09/30", dayName: "09월 30일 (수)", period: "3~5교시 (11:00~14:50)", cat: "서비스", name: "국제선 에어카페 이론2", instructor: "이은비 교관" },
+            { week: 5, date: "09/30", dayName: "09월 30일 (수)", period: "6교시 (15:00~15:50)", cat: "서비스", name: "판매서비스 화법2 (국제선)", instructor: "박민지A 교관" },
+            { week: 5, date: "09/30", dayName: "09월 30일 (수)", period: "7~8교시 (16:00~17:50)", cat: "서비스", name: "국제선 에어카페 판매 서비스", instructor: "박민지A, 김연희 교관" },
+            { week: 5, date: "10/01", dayName: "10월 01일 (목)", period: "1~5교시 (09:00~14:50)", cat: "서비스", name: "기내 면세 TEST", instructor: "한재민 이은비 박민지A 김연희 교관" },
+            { week: 5, date: "10/01", dayName: "10월 01일 (목)", period: "6~7교시 (15:00~16:50)", cat: "서비스", name: "국제선 에어카페 실습1", instructor: "오아현 이은비 박민지A 김연희 교관" },
+            { week: 5, date: "10/01", dayName: "10월 01일 (목)", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 5, date: "10/02", dayName: "10월 02일 (금)", period: "1교시 (09:00~09:50)", cat: "기내 방송", name: "방송TEST (터블런스)", instructor: "이은비 오아현 교관" },
+            { week: 5, date: "10/02", dayName: "10월 02일 (금)", period: "2~5교시 (10:00~14:50)", cat: "서비스", name: "국제선 에어카페 실습2", instructor: "박민지A 김연희 이윤석 김관섭 교관" },
+            { week: 5, date: "10/02", dayName: "10월 02일 (금)", period: "6~8교시 (15:00~17:50)", cat: "서비스", name: "FUN SVC", instructor: "크루쇼퍼" },
+            { week: 6, date: "10/05", dayName: "10월05일", period: "1교시~8교시 (09:00~17:50)", cat: "기타", name: "대체공휴일", instructor: "-" },
+            { week: 6, date: "10/06", dayName: "10월06일", period: "1교시 (09:00~09:50)", cat: "서비스", name: "에어카페&기내 면세 이론 TEST", instructor: "이은비 교관" },
+            { week: 6, date: "10/06", dayName: "10월06일", period: "2~6교시 (10:00~15:50)", cat: "서비스", name: "국제선 에어카페 실습3", instructor: "김연희 오아현 신아성 김혜성 교관" },
+            { week: 6, date: "10/06", dayName: "10월06일", period: "7교시 (16:00~16:50)", cat: "서비스", name: "Cabin Crew Vision", instructor: "이은비 교관" },
+            { week: 6, date: "10/06", dayName: "10월06일", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 6, date: "10/07", dayName: "10월07일", period: "1교시~4교시 (09:00~12:50)", cat: "서비스", name: "에어카페 실습TEST", instructor: "한재민 김연희 오아현 이은비 교관" },
+            { week: 6, date: "10/07", dayName: "10월07일", period: "5교시~8교시 (14:00~17:50)", cat: "서비스", name: "단거리 FLIGHT 실습", instructor: "이은비 김연희 정지철 김광민 교관" },
+            { week: 6, date: "10/08", dayName: "10월08일", period: "1교시~4교시 (09:00~12:50)", cat: "기타", name: "비자 인터뷰", instructor: "-" },
+            { week: 6, date: "10/08", dayName: "10월08일", period: "5~6교시 (14:00~15:50)", cat: "서비스", name: "에어카페 PDA", instructor: "김연희 오아현 교관" },
+            { week: 6, date: "10/08", dayName: "10월08일", period: "7~8교시 (16:00~17:50)", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 6, date: "10/09", dayName: "10월09일", period: "1교시~8교시 (09:00~17:50)", cat: "기타", name: "한글날", instructor: "-" },
+            { week: 7, date: "10/12", dayName: "10월12일", period: "1~6교시 (09:00~15:50)", cat: "안전", name: "제주항공의 운항규정의 해당부분", instructor: "송지원 교관" },
+            { week: 7, date: "10/12", dayName: "10월12일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "비상구 열 브리핑 & Safety DEMO (국내선)", instructor: "송지원, 유재진 교관" },
+            { week: 7, date: "10/13", dayName: "10월13일", period: "1~2교시 (09:00~10:50)", cat: "기타", name: "운항 원리의 이해", instructor: "-" },
+            { week: 7, date: "10/13", dayName: "10월13일", period: "3~4교시 (11:00~12:50)", cat: "기타", name: "운항관리 업무의 이해", instructor: "-" },
+            { week: 7, date: "10/13", dayName: "10월13일", period: "5~6교시 (14:00~15:50)", cat: "기타", name: "운송 업무의 이해", instructor: "박유선님 (운송기획팀)" },
+            { week: 7, date: "10/13", dayName: "10월13일", period: "7~8교시 (16:00~17:50)", cat: "기타", name: "영업 업무의 이해", instructor: "-" },
+            { week: 7, date: "10/14", dayName: "10월14일", period: "1~2교시 (09:00~10:50)", cat: "기타", name: "정비 업무의 이해", instructor: "고영진님 (정비훈련팀)" },
+            { week: 7, date: "10/14", dayName: "10월14일", period: "2~6교시 (11:00~15:50)", cat: "안전", name: "제주항공의 운항규정의 해당부분", instructor: "윤준영 교관" },
+            { week: 7, date: "10/14", dayName: "10월14일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "비상구 열 브리핑 & Safety DEMO (국제선)", instructor: "임청, 김사라 교관" },
+            { week: 7, date: "10/15", dayName: "10월15일", period: "1~4교시 (09:00~12:50)", cat: "안전", name: "제주항공의 안전정책 및 절차 (SMS)", instructor: "강신욱 교관" },
+            { week: 7, date: "10/15", dayName: "10월15일", period: "5~6교시 (14:00~15:50)", cat: "안전", name: "제주항공의 운항규정의 해당부분", instructor: "김사라 교관" },
+            { week: 7, date: "10/15", dayName: "10월15일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "항공기 지상훈련(7) 비상장비", instructor: "이동찬 교관" },
+            { week: 7, date: "10/16", dayName: "10월16일", period: "1~3교시 (09:00~11:50)", cat: "안전", name: "승무원에게 적용되는 메뉴얼", instructor: "유재진 교관" },
+            { week: 7, date: "10/16", dayName: "10월16일", period: "4교시 (12:00~12:50)", cat: "안전", name: "항공기 지상훈련(1) 항공기 숙지", instructor: "임청 교관" },
+            { week: 7, date: "10/16", dayName: "10월16일", period: "5교시 (14:00~14:50)", cat: "안전", name: "항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템", instructor: "이동찬 교관" },
+            { week: 7, date: "10/16", dayName: "10월16일", period: "6교시 (15:00~15:50)", cat: "안전", name: "항공기 지상훈련(4) 승무원간 통신과 협조", instructor: "이동찬 교관" },
+            { week: 7, date: "10/16", dayName: "10월16일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "항공기 지상훈련(7) 비상장비", instructor: "임청 교관" },
+            { week: 8, date: "10/19", dayName: "10월19일", period: "1교시 (09:00~09:50)", cat: "안전", name: "항공사 절차 기본교육 심사평가", instructor: "이동찬 교관" },
+            { week: 8, date: "10/19", dayName: "10월19일", period: "2~3교시 (10:00~11:50)", cat: "안전", name: "항공기 지상훈련(5) 승무원의 임무와 표준절차", instructor: "이동찬 교관" },
+            { week: 8, date: "10/19", dayName: "10월19일", period: "4교시 (12:00~12:50)", cat: "안전", name: "항공기 지상훈련(6) 승객처리책임", instructor: "이동찬 교관" },
+            { week: 8, date: "10/19", dayName: "10월19일", period: "5~8교시 (14:00~17:50)", cat: "안전", name: "항공기 지상훈련(8) 비상임무와 절차", instructor: "임청 교관" },
+            { week: 8, date: "10/20", dayName: "10월20일", period: "1교시 (06:00~09:00)", cat: "안전", name: "항공기 지상훈련(2)(3) 항공기 장비와 부품/시스템 항공기 견학", instructor: "이광석 임청 이동찬 교관" },
+            { week: 8, date: "10/20", dayName: "10월20일", period: "2교시 (10:00~12:00)", cat: "안전", name: "항공기 지상훈련(8) 비상임무와 절차", instructor: "이동찬 교관" },
+            { week: 8, date: "10/20", dayName: "10월20일", period: "3교시 (13:00~15:00)", cat: "안전", name: "항공기 지상훈련(8) 비상임무와 절차", instructor: "임청 교관" },
+            { week: 8, date: "10/21", dayName: "10월21일", period: "1교시 (09:00~09:50)", cat: "안전", name: "항공기 지상훈련 심사평가1(1,2,3,7)", instructor: "김사라 교관" },
+            { week: 8, date: "10/21", dayName: "10월21일", period: "2~4교시 (10:00~12:50)", cat: "안전", name: "비상훈련 (비상상황 발생 시 의사소통과 정보 공유를 포함한 비상장비 훈련)", instructor: "김사라 윤준영 최홍규 교관" },
+            { week: 8, date: "10/21", dayName: "10월21일", period: "5교시 (14:00~14:50)", cat: "안전", name: "비상구 열 브리핑 Test", instructor: "강신욱 지혜진 이광석 심사관" },
+            { week: 8, date: "10/21", dayName: "10월21일", period: "6교시 (15:00~15:50)", cat: "안전", name: "DEMO Test", instructor: "강신욱 지혜진 이광석 심사관" },
+            { week: 8, date: "10/21", dayName: "10월21일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "응급처치훈련(이론)", instructor: "이동찬 교관" },
+            { week: 8, date: "10/22", dayName: "10월22일", period: "1교시 (09:00~09:50)", cat: "안전", name: "항공기 지상훈련 심사평가2(4,5,6,8)", instructor: "이동찬 교관" },
+            { week: 8, date: "10/22", dayName: "10월22일", period: "2~6교시 (10:00~15:50)", cat: "안전", name: "비상훈련 (비상상황 발생 시 의사소통과 정보 공유를 포함한 비상장비 훈련)", instructor: "윤준영 이동찬 김환태 교관" },
+            { week: 8, date: "10/22", dayName: "10월22일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "비상훈련 (비상상황 대응훈련)_샤우팅", instructor: "임청 김사라 김환태 교관" },
+            { week: 8, date: "10/23", dayName: "10월23일", period: "1~7교시 (09:00~16:50)", cat: "안전", name: "승무원 자원관리", instructor: "태형식 교관" },
+            { week: 8, date: "10/23", dayName: "10월23일", period: "8교시 (17:00~17:50)", cat: "안전", name: "승무원 자원관리 심사평가", instructor: "태형식 교관" },
+            { week: 9, date: "10/26", dayName: "10월26일", period: "1~2교시 (09:00~10:50)", cat: "안전", name: "비상훈련 심사평가 비상장비_도슬오/장비구술 심사", instructor: "이동찬 김사라 윤준영 교관, 강신욱 지혜진 이광석 심사관" },
+            { week: 9, date: "10/26", dayName: "10월26일", period: "3~5교시 (11:00~14:50)", cat: "안전", name: "응급처치훈련(이론)", instructor: "이동찬 교관" },
+            { week: 9, date: "10/26", dayName: "10월26일", period: "6교시 (15:00~15:50)", cat: "안전", name: "응급처치훈련(이론) 항공생리", instructor: "이정희 간호사" },
+            { week: 9, date: "10/26", dayName: "10월26일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "비상훈련 (비상상황 대응훈련)_샤우팅", instructor: "임청, 김사라, 윤준영 교관" },
+            { week: 9, date: "10/27", dayName: "10월27일", period: "1교시 (12:00~16:00)", cat: "안전", name: "비상훈련 (비상상황 대응훈련)_착수", instructor: "편희원 김사라 임청 교관" },
+            { week: 9, date: "10/27", dayName: "10월27일", period: "2교시 (15:00~16:00)", cat: "안전", name: "착수 심사", instructor: "서동천 지혜진 이광석 심사관" },
+            { week: 9, date: "10/28", dayName: "10월28일", period: "1교시 (09:00~09:50)", cat: "안전", name: "응급처치훈련 심사평가(이론)", instructor: "임청 교관" },
+            { week: 9, date: "10/28", dayName: "10월28일", period: "2~6교시 (10:00~15:50)", cat: "안전", name: "응급처치훈련(실습)", instructor: "임청, 이동찬, 김사라 교관" },
+            { week: 9, date: "10/28", dayName: "10월28일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "위험물훈련", instructor: "지혜진 교관" },
+            { week: 9, date: "10/29", dayName: "10월29일", period: "1교시 (09:00~09:50)", cat: "안전", name: "응급처치훈련 심사평가(실습)", instructor: "윤준영 김사라 이동찬 교관, 강신욱 지혜진 이광석 심사관" },
+            { week: 9, date: "10/29", dayName: "10월29일", period: "2~4교시 (10:00~12:50)", cat: "안전", name: "비상훈련 (비상상황 대응훈련)_화재", instructor: "윤준영 김사라 이동찬 교관" },
+            { week: 9, date: "10/29", dayName: "10월29일", period: "5~6교시 (14:00~15:50)", cat: "안전", name: "비상훈련 (비상상황 대응훈련)_난동/감압/비탈", instructor: "윤준영 김사라 이동찬 교관" },
+            { week: 9, date: "10/29", dayName: "10월29일", period: "7~8교시 (16:00~17:50)", cat: "안전", name: "비상훈련 (비상상황 대응훈련)_롤플레이(난동/감압/비탈)", instructor: "윤준영 김사라 이동찬 교관" },
+            { week: 9, date: "10/30", dayName: "10월30일", period: "1~3교시 (09:00~11:50)", cat: "안전", name: "위험물 훈련", instructor: "지혜진 교관" },
+            { week: 9, date: "10/30", dayName: "10월30일", period: "4교시 (12:00~12:50)", cat: "안전", name: "위허물 훈련 심사평가", instructor: "지혜진 교관" },
+            { week: 9, date: "10/30", dayName: "10월30일", period: "5~8교시 (14:00~17:50)", cat: "안전", name: "항공보안훈련(이론)", instructor: "윤준영 교관" },
+            { week: 10, date: "11/02", dayName: "11월02일", period: "1~5교시 (09:00~14:50)", cat: "안전", name: "비상훈련 심사평가_샤우팅/비탈롤", instructor: "임청 김사라 윤준영 교관, 강신욱 진혜진 이광석 심사관" },
+            { week: 10, date: "11/02", dayName: "11월02일", period: "6~7교시 (15:00~16:50)", cat: "안전", name: "항공보안훈련(이론)", instructor: "윤준영 교관" },
+            { week: 10, date: "11/02", dayName: "11월02일", period: "8교시 (17:00~17:50)", cat: "안전", name: "항공보안훈련(이론)", instructor: "임청 김사라 윤준영 교관" },
+            { week: 10, date: "11/03", dayName: "11월03일", period: "1교시 (09:00~09:50)", cat: "안전", name: "항공보안훈련 심사평가(이론)", instructor: "임청 교관" },
+            { week: 10, date: "11/03", dayName: "11월03일", period: "2~5교시 (10:00~12:50)", cat: "안전", name: "항공보안훈련(실습)", instructor: "임청 김사라 윤준영 교관" },
+            { week: 10, date: "11/03", dayName: "11월03일", period: "6~7교시 (15:00~16:50)", cat: "안전", name: "산업재해 교육", instructor: "-" },
+            { week: 10, date: "11/03", dayName: "11월03일", period: "8교시", cat: "기타", name: "ADMIN", instructor: "담임교관" },
+            { week: 10, date: "11/04", dayName: "11월04일", period: "1~3교시 (09:00~11:50)", cat: "안전", name: "항공보안훈련 심사평가(실습)", instructor: "임청 김사라 윤준영 교관, 강신욱 지혜진 이광석 심사관" },
+            { week: 10, date: "11/04", dayName: "11월04일", period: "4~5교시 (12:00~14:50)", cat: "기타", name: "객실브리핑의 이해", instructor: "-" },
+            { week: 10, date: "11/04", dayName: "11월04일", period: "6~7교시 (15:00~16:50)", cat: "기타", name: "슬기로운 레이오버 생활", instructor: "-" },
+            { week: 10, date: "11/04", dayName: "11월04일", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN", instructor: "-" },
+            { week: 10, date: "11/05", dayName: "11월05일", period: "1~4교시 (09:00~12:50)", cat: "안전", name: "우주방사선 교육", instructor: "-" },
+            { week: 10, date: "11/05", dayName: "11월05일", period: "5교시 (14:00~14:50)", cat: "기타", name: "객실 승원실의 이해", instructor: "승원팀장" },
+            { week: 10, date: "11/05", dayName: "11월05일", period: "6교시 (15:00~15:50)", cat: "기타", name: "객실품질팀의 이해", instructor: "김만수 팀장" },
+            { week: 10, date: "11/05", dayName: "11월05일", period: "7교시 (16:00~16:50)", cat: "기타", name: "객실커머스팀의 이해", instructor: "이동규 팀장" },
+            { week: 10, date: "11/05", dayName: "11월05일", period: "8교시 (17:00~17:50)", cat: "기타", name: "ADMIN (OE비행 안내 및 면담)", instructor: "담임교관" },
+            { week: 10, date: "11/06", dayName: "11월06일", period: "1~8교시 (09:00~17:50)", cat: "안전", name: "객실승무원 운항경험", instructor: "지혜진 강신욱 태형식 조혜정 이준우 이상엽 윤윤선 심사관" },
+            { week: 11, date: "11/09", dayName: "11월09일", period: "1~4교시 (09:00~12:50)", cat: "기타", name: "홍보촬영", instructor: "홍보팀" },
+            { week: 11, date: "11/09", dayName: "11월09일", period: "5~8교시 (14:00~17:50)", cat: "안전", name: "재심사 보충 및 면담, OE 교육 등", instructor: "-" },
+            { week: 11, date: "11/10", dayName: "11월10일", period: "1~2교시 (09:00~10:50)", cat: "기타", name: "객실편조팀의 이해", instructor: "유은희 팀장" },
+            { week: 11, date: "11/10", dayName: "11월10일", period: "3교시 (11:00~11:50)", cat: "기타", name: "객실기획팀의 이해", instructor: "-" },
+            { week: 11, date: "11/10", dayName: "11월10일", period: "3~8교시 (11:00~17:50)", cat: "기타", name: "수료식", instructor: "객실훈련팀" }
         ];
 
         let DEFAULT_EVAL_RESULTS_OBJ = {
-            "2608007_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" }
+            "2608007_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608008_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608011_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608012_test_safety_k_proc": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608007_test_safety_s_sec": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" },
+            "2608007_test_service_int_speech": { pass1: "PASS", pass2: "-", finalPass: "PASS", score: 90, feedback: "" }
         };
 
         let trainees = [];
         let leaders = { ...DEFAULT_LEADERS_OBJ };
         let demerits = [];
         let scheduleData = [];
-        let assignmentsData = [];
         let evaluationResults = {};
         let isOnlyRiskFilterActiveFlag = false;
 
@@ -1302,7 +1340,6 @@
                     leaders,
                     demerits,
                     scheduleData,
-                    assignmentsData,
                     evaluationResults,
                     noticeContent: document.getElementById('noticeContent')?.innerText || ''
                 };
@@ -1324,7 +1361,6 @@
 
                     demerits = data.demerits || JSON.parse(JSON.stringify(DEFAULT_DEMERITS_ARR));
                     scheduleData = data.scheduleData || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_ARR));
-                    assignmentsData = data.assignmentsData || JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS_ARR));
                     evaluationResults = data.evaluationResults || JSON.parse(JSON.stringify(DEFAULT_EVAL_RESULTS_OBJ));
                     
                     if (data.noticeContent && document.getElementById('noticeContent')) {
@@ -1344,7 +1380,6 @@
             leaders = { ...DEFAULT_LEADERS_OBJ };
             demerits = JSON.parse(JSON.stringify(DEFAULT_DEMERITS_ARR));
             scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_ARR));
-            assignmentsData = JSON.parse(JSON.stringify(DEFAULT_ASSIGNMENTS_ARR));
             evaluationResults = JSON.parse(JSON.stringify(DEFAULT_EVAL_RESULTS_OBJ));
         };
 
@@ -1379,7 +1414,6 @@
             window.renderTraineesTable();
             window.renderCompetencyTable();
             window.renderDemeritsTable();
-            window.renderAssignmentsGrid();
             window.showToast("기본 초기 데이터로 정상 복원되었습니다.");
         };
 
@@ -1464,7 +1498,6 @@
             }
             if (tabName === 'demerit') window.renderDemeritsTable();
             if (tabName === 'evaluation') window.renderTestsTable();
-            if (tabName === 'assignment') window.renderAssignmentsGrid();
             if (tabName === 'manage') window.switchManageSubTab('schedule');
 
             if (window.lucide) window.lucide.createIcons();
@@ -1499,14 +1532,12 @@
             window.showToast('학급 임원 정보가 업로드되었습니다.');
         };
 
-        // 실시간 오늘 날짜 및 오늘 시간표 렌더링 로직
         window.renderDashboard = function () {
             const countBadge = document.getElementById('traineeCountBadge');
             const dashCount = document.getElementById('dashTraineeCount');
             if (countBadge) countBadge.innerText = `초기 훈련생 ${trainees.length}명`;
             if (dashCount) dashCount.innerHTML = `${trainees.length} <span class="text-sm font-normal text-slate-500">명</span>`;
 
-            // 1. 입과일(2026-08-31) 기준 현재 진행 주차 자동 계산
             const today = new Date();
             const startDate = new Date('2026-08-31');
             const diffDaysFromStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
@@ -1519,7 +1550,6 @@
                 progressEl.innerHTML = `${currentWeekCalculated}주차 <span class="text-sm font-normal text-slate-500">/ 11주</span>`;
             }
 
-            // 2. 오늘의 시간표 날짜 포맷 (MM/DD) 자동 감지
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
             const todayDateCode = `${mm}/${dd}`;
@@ -1534,7 +1564,6 @@
                 titleEl.innerText = `오늘의 시간표 (${mm}월 ${dd}일)`;
             }
 
-            // 오늘 날짜와 일치하는 시간표 아이템 필터링
             const todayEvents = scheduleData.filter(s => s.date === todayDateCode);
 
             if (listEl && badgeEl) {
@@ -1955,6 +1984,7 @@
                 demeritMap[d.empId] = (demeritMap[d.empId] || 0) + Number(d.points);
             });
 
+            // 1. 종합 시트
             const summaryData = trainees.map((t, idx) => {
                 const totalDemerits = demeritMap[t.empId] || 0;
                 const safetySubjects = categorySubjectMap.safety || [];
@@ -1971,6 +2001,13 @@
                     if (res && res.finalPass === 'PASS') servicePassCount++;
                 });
 
+                const broadcastSubjects = categorySubjectMap.broadcast || [];
+                let broadcastPassCount = 0;
+                broadcastSubjects.forEach(s => {
+                    const res = evaluationResults[`${t.empId}_${s.value}`];
+                    if (res && res.finalPass === 'PASS') broadcastPassCount++;
+                });
+
                 const c = t.competency || {};
 
                 return {
@@ -1980,6 +2017,7 @@
                     '누적 벌점': totalDemerits,
                     '안전 과목 통과': `${safetyPassCount} / ${safetySubjects.length}`,
                     '서비스 과목 통과': `${servicePassCount} / ${serviceSubjects.length}`,
+                    '기내방송 과목 통과': `${broadcastPassCount} / ${broadcastSubjects.length}`,
                     '[안전] 역량 점수': c.safety ? `${c.safety}점` : '미평가',
                     '[저비용] 역량 점수': c.lowCost ? `${c.lowCost}점` : '미평가',
                     '[신뢰] 역량 점수': c.trust ? `${c.trust}점` : '미평가',
@@ -1991,6 +2029,7 @@
             const wsSummary = window.XLSX.utils.json_to_sheet(summaryData);
             window.XLSX.utils.book_append_sheet(wb, wsSummary, '종합');
 
+            // 2. 안전 성적 시트
             const safetyData = [];
             let safetyRowNo = 1;
             trainees.forEach(t => {
@@ -2013,6 +2052,7 @@
             const wsSafety = window.XLSX.utils.json_to_sheet(safetyData);
             window.XLSX.utils.book_append_sheet(wb, wsSafety, '안전 성적');
 
+            // 3. 서비스 성적 시트
             const serviceData = [];
             let serviceRowNo = 1;
             trainees.forEach(t => {
@@ -2035,6 +2075,30 @@
             const wsService = window.XLSX.utils.json_to_sheet(serviceData);
             window.XLSX.utils.book_append_sheet(wb, wsService, '서비스 성적');
 
+            // 4. 기내방송 성적 시트
+            const broadcastData = [];
+            let broadcastRowNo = 1;
+            trainees.forEach(t => {
+                (categorySubjectMap.broadcast || []).forEach(s => {
+                    const resKey = `${t.empId}_${s.value}`;
+                    const res = evaluationResults[resKey] || { pass1: 'PASS', pass2: '-', finalPass: 'PASS', score: 90, feedback: '' };
+                    broadcastData.push({
+                        'No': broadcastRowNo++,
+                        '사번': t.empId,
+                        '성명': t.name || '',
+                        '과목명': s.label,
+                        '1차 판정': res.pass1 || '-',
+                        '2차 판정': res.pass2 || '-',
+                        '최종 판정': res.finalPass || 'PASS',
+                        '취득 점수': res.score !== undefined ? res.score : 90,
+                        '교관 평가 피드백': res.feedback || ''
+                    });
+                });
+            });
+            const wsBroadcast = window.XLSX.utils.json_to_sheet(broadcastData);
+            window.XLSX.utils.book_append_sheet(wb, wsBroadcast, '기내방송 성적');
+
+            // 5. 기본정보 & 정성평가 시트
             const basicData = trainees.map((t, idx) => {
                 const c = t.competency || {};
                 return {
@@ -2055,6 +2119,7 @@
             const wsBasic = window.XLSX.utils.json_to_sheet(basicData);
             window.XLSX.utils.book_append_sheet(wb, wsBasic, '기본정보');
 
+            // 6. 벌점 정보 시트
             const demeritData = demerits.map((d, idx) => {
                 const tr = trainees.find(t => t.empId === d.empId);
                 return {
@@ -2240,109 +2305,6 @@
             }
         };
 
-        let currentAssignmentCat = 'ALL';
-
-        window.filterAssignmentCat = function (cat) {
-            currentAssignmentCat = cat;
-            document.querySelectorAll('.assign-cat-btn').forEach(btn => btn.className = 'assign-cat-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs');
-            const activeBtn = document.getElementById(`btn-assign-${cat === 'ALL' ? 'all' : cat === '기타' ? 'etc' : cat === '안전' ? 'safety' : cat === '서비스' ? 'service' : 'broadcast'}`);
-            if (activeBtn) activeBtn.className = 'assign-cat-btn bg-white text-orange-600 font-bold shadow-sm px-3 py-1.5 rounded-lg text-xs';
-            window.renderAssignmentsGrid();
-        };
-
-        window.toggleChecklistItem = function (assignId, itemIdx) {
-            const assign = assignmentsData.find(a => a.id === assignId);
-            if (assign && assign.items && assign.items[itemIdx]) {
-                assign.items[itemIdx].done = !assign.items[itemIdx].done;
-                window.saveStateToLocalStorage();
-                window.renderAssignmentsGrid();
-            }
-        };
-
-        window.renderAssignmentsGrid = function () {
-            const grid = document.getElementById('assignmentGrid');
-            if (!grid) return;
-
-            const filtered = currentAssignmentCat === 'ALL' ? assignmentsData : assignmentsData.filter(a => a.category === currentAssignmentCat);
-
-            grid.innerHTML = filtered.map(a => {
-                const totalItems = a.items ? a.items.length : 0;
-                const doneItems = a.items ? a.items.filter(i => i.done).length : 0;
-                const percent = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
-
-                return `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md ${a.category === '안전' ? 'bg-red-50 text-red-600' : a.category === '서비스' ? 'bg-blue-50 text-blue-600' : a.category === '기내 방송' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}">${a.category}</span>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-xs font-semibold text-slate-400">${a.subject}</span>
-                                    <button onclick="window.openEditAssignmentModal('${a.id}')" title="과제 수정" class="text-slate-400 hover:text-orange-600 p-0.5"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                                    <button onclick="window.openConfirmModal('해당 과제를 삭제하시겠습니까?', () => window.deleteAssignmentById('${a.id}'))" title="과제 삭제" class="text-slate-400 hover:text-red-600 p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                                </div>
-                            </div>
-                            <h3 class="text-sm font-bold text-slate-900 mb-2">${a.title}</h3>
-                            
-                            <!-- Progress Bar -->
-                            <div class="mb-3 bg-slate-100 rounded-full h-2 overflow-hidden">
-                                <div class="bg-orange-500 h-2 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
-                            </div>
-
-                            <!-- Interactive Checklist Items -->
-                            <div class="space-y-1.5 mb-4 max-h-48 overflow-y-auto custom-scrollbar pr-1">
-                                ${a.items ? a.items.map((item, idx) => `
-                                    <div onclick="window.toggleChecklistItem('${a.id}', ${idx})" class="p-2 rounded-xl border text-xs cursor-pointer flex items-start space-x-2 transition ${item.done ? 'bg-orange-50/60 border-orange-200 text-slate-800' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">
-                                        <input type="checkbox" ${item.done ? 'checked' : ''} class="mt-0.5 text-orange-500 rounded focus:ring-orange-500">
-                                        <span class="${item.done ? 'line-through text-slate-400 font-medium' : 'font-semibold'}">${item.text}</span>
-                                    </div>
-                                `).join('') : '<p class="text-xs text-slate-400">세부 작성요령 참고</p>'}
-                            </div>
-                        </div>
-
-                        <div class="pt-3 border-t border-slate-100 text-xs text-slate-500 space-y-1">
-                            <div class="flex justify-between"><span>제출 기한:</span><span class="font-bold text-slate-800">${a.dueDate}</span></div>
-                            <div class="flex justify-between"><span>제출 방식:</span><span class="text-slate-700">${a.method}</span></div>
-                            <div class="flex justify-between"><span>담당 교관:</span><span class="text-slate-700">${a.instructor}</span></div>
-                            <div class="flex justify-between font-bold text-orange-600 pt-1">
-                                <span>체크 이행률:</span><span>${doneItems}/${totalItems} (${percent}%)</span>
-                            </div>
-                            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-50">
-                                <button onclick="window.openEditAssignmentModal('${a.id}')" class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold rounded-lg text-[11px]">수정</button>
-                                <button onclick="window.openConfirmModal('해당 과제를 삭제하시겠습니까?', () => window.deleteAssignmentById('${a.id}'))" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg text-[11px]">삭제</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            if (window.lucide) window.lucide.createIcons();
-        };
-
-        window.openEditAssignmentModal = function (assignId) {
-            const assign = assignmentsData.find(a => a.id === assignId);
-            if (!assign) return;
-            document.getElementById('assignModalTitle').innerText = '과제 수정';
-            document.getElementById('editAssignmentId').value = assign.id;
-            document.getElementById('assignCategory').value = assign.category || '안전';
-            document.getElementById('assignSubject').value = assign.subject || '';
-            document.getElementById('assignTitle').value = assign.title || '';
-            document.getElementById('assignDueDate').value = assign.dueDate || '';
-            document.getElementById('assignMethod').value = assign.method || '';
-            document.getElementById('assignInstructor').value = assign.instructor || '';
-            document.getElementById('assignDetail').value = assign.items ? assign.items.map(i => i.text).join('\n') : '';
-            document.getElementById('assignmentModal').classList.remove('hidden');
-        };
-
-        window.deleteAssignmentById = function (assignId) {
-            const idx = assignmentsData.findIndex(a => a.id === assignId);
-            if (idx !== -1) {
-                assignmentsData.splice(idx, 1);
-                window.saveStateToLocalStorage();
-                window.renderAssignmentsGrid();
-                window.renderManageAssignmentsList();
-                window.showToast('과제가 삭제되었습니다.');
-            }
-        };
-
         window.switchManageSubTab = function (subTab) {
             document.querySelectorAll('.manage-sec').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.manage-subtab-btn').forEach(btn => btn.className = 'manage-subtab-btn text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1');
@@ -2356,7 +2318,6 @@
             if (subTab === 'schedule') window.renderManageScheduleTable();
             if (subTab === 'trainees') window.renderManageTraineesTable();
             if (subTab === 'demerits') window.renderManageDemeritsTable();
-            if (subTab === 'assignments') window.renderManageAssignmentsList();
             if (window.lucide) window.lucide.createIcons();
         };
 
@@ -2540,24 +2501,6 @@
             window.showToast('벌점 기록이 삭제되었습니다.');
         };
 
-        window.renderManageAssignmentsList = function () {
-            const list = document.getElementById('manageAssignmentsList');
-            if (!list) return;
-            list.innerHTML = assignmentsData.map((a) => `
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
-                    <div>
-                        <span class="font-bold text-slate-900">[${a.category}] ${a.title}</span>
-                        <p class="text-slate-500 mt-0.5">과목: ${a.subject} | 제출기한: ${a.dueDate}</p>
-                    </div>
-                    <div class="space-x-1">
-                        <button onclick="window.openEditAssignmentModal('${a.id}')" class="px-2.5 py-1 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded text-xs font-bold">수정</button>
-                        <button onclick="window.openConfirmModal('해당 과제를 삭제하시겠습니까?', () => window.deleteAssignmentById('${a.id}'))" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs font-bold">삭제</button>
-                    </div>
-                </div>
-            `).join('');
-            if (window.lucide) window.lucide.createIcons();
-        };
-
         window.openNoticeModal = function () {
             const noticeContent = document.getElementById('noticeContent')?.innerText || '';
             document.getElementById('modalNoticeInput').value = noticeContent.replace('📌 ', '');
@@ -2577,73 +2520,8 @@
             window.showToast('교관 전달사항이 업데이트되었습니다.');
         };
 
-        window.openAssignmentModal = function () {
-            document.getElementById('assignModalTitle').innerText = '신규 과제 등록';
-            document.getElementById('editAssignmentId').value = '';
-            document.getElementById('assignCategory').value = '안전';
-            document.getElementById('assignSubject').value = '';
-            document.getElementById('assignTitle').value = '';
-            document.getElementById('assignDueDate').value = '';
-            document.getElementById('assignMethod').value = '';
-            document.getElementById('assignInstructor').value = '';
-            document.getElementById('assignDetail').value = '';
-            document.getElementById('assignmentModal').classList.remove('hidden');
-        };
-
-        window.closeAssignmentModal = function () {
-            document.getElementById('assignmentModal').classList.add('hidden');
-        };
-
-        window.addAssignment = function () {
-            const editId = document.getElementById('editAssignmentId').value;
-            const category = document.getElementById('assignCategory').value;
-            const subject = document.getElementById('assignSubject').value || '일반';
-            const title = document.getElementById('assignTitle').value || '신규 과제';
-            const dueDate = document.getElementById('assignDueDate').value || '수업 당일';
-            const method = document.getElementById('assignMethod').value || 'LMS 제출';
-            const instructor = document.getElementById('assignInstructor').value || '담당교관';
-            const detailText = document.getElementById('assignDetail').value || '세부사항 없음';
-
-            const items = detailText.split('\n').filter(t => t.trim().length > 0).map((t, i) => ({ id: `item_${i}`, text: t, done: false }));
-
-            if (editId) {
-                const idx = assignmentsData.findIndex(a => a.id === editId);
-                if (idx !== -1) {
-                    assignmentsData[idx] = {
-                        ...assignmentsData[idx],
-                        category,
-                        subject,
-                        title,
-                        dueDate,
-                        method,
-                        instructor,
-                        items
-                    };
-                    window.showToast('과제 내용이 수정되었습니다.');
-                }
-            } else {
-                assignmentsData.unshift({
-                    id: `custom_${Date.now()}`,
-                    category,
-                    subject,
-                    title,
-                    dueDate,
-                    method,
-                    instructor,
-                    completedCount: 0,
-                    items
-                });
-                window.showToast('신규 과제가 등록되었습니다.');
-            }
-
-            window.saveStateToLocalStorage();
-            window.renderAssignmentsGrid();
-            window.renderManageAssignmentsList();
-            window.closeAssignmentModal();
-        };
-
         window.exportFullDataJSON = function () {
-            const fullData = { trainees, leaders, demerits, scheduleData, assignmentsData, evaluationResults };
+            const fullData = { trainees, leaders, demerits, scheduleData, evaluationResults };
             const jsonStr = JSON.stringify(fullData, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -2665,7 +2543,6 @@
                     if (data.leaders) leaders = data.leaders;
                     if (data.demerits) demerits = data.demerits;
                     if (data.scheduleData) scheduleData = data.scheduleData;
-                    if (data.assignmentsData) assignmentsData = data.assignmentsData;
                     if (data.evaluationResults) evaluationResults = data.evaluationResults;
 
                     window.saveStateToLocalStorage();
@@ -2674,54 +2551,12 @@
                     window.renderTraineesTable();
                     window.renderCompetencyTable();
                     window.renderDemeritsTable();
-                    window.renderAssignmentsGrid();
                     window.showToast('데이터가 정상적으로 복원되었습니다.');
                 } catch (err) {
                     window.showToast('유효하지 않은 JSON 백업 파일입니다.');
                 }
             };
             reader.readAsText(file);
-        };
-
-        window.handleExcelUpload = function (e) {
-            const file = e.target.files[0];
-            if (!file || !window.XLSX) return;
-            const reader = new FileReader();
-            reader.onload = function (evt) {
-                const workbook = window.XLSX.read(evt.target.result, { type: 'binary' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonRows = window.XLSX.utils.sheet_to_json(worksheet);
-
-                jsonRows.forEach((row, i) => {
-                    const category = row['구분'] || row['카테고리'] || '서비스';
-                    const subject = row['과목명'] || row['과목'] || '서비스 과목';
-                    const title = row['과제명'] || row['숙제'] || '과제';
-                    const dueDate = row['제출기한'] || row['숙제 시점'] || '수업 전날';
-                    const method = row['제출방식'] || row['TEST'] || 'LMS 제출';
-                    const instructor = row['담당교관'] || '담당교관';
-                    const detail = row['세부내용'] || row['설명'] || '';
-
-                    const items = detail.split('\n').filter(t => t.trim().length > 0).map((t, idx) => ({ id: `xl_${i}_${idx}`, text: t, done: false }));
-
-                    assignmentsData.unshift({
-                        id: `xl_assign_${Date.now()}_${i}`,
-                        category,
-                        subject,
-                        title,
-                        dueDate,
-                        method,
-                        instructor,
-                        completedCount: 0,
-                        items
-                    });
-                });
-
-                window.saveStateToLocalStorage();
-                window.renderAssignmentsGrid();
-                window.showToast(`${jsonRows.length}건의 과제가 엑셀에서 등록되었습니다.`);
-            };
-            reader.readAsBinaryString(file);
         };
 
         window.onload = function () {
@@ -2735,7 +2570,6 @@
             window.renderDemeritsTable();
             window.populateTestSubjectOptions();
             window.renderTestsTable();
-            window.renderAssignmentsGrid();
             
             window.switchTab('dashboard');
 
@@ -2744,4 +2578,5 @@
             }
         };
     </script>
-</body></html>
+</body>
+</html>
